@@ -1,0 +1,129 @@
+<title>Абсолютно не подозрительный тест</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Mono&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Layout: one narrow paper form, one question per sheet, rubber-stamp accent */
+:root{
+  --bg:#e9ebe6; --paper:#fbfbf7; --ink:#23261f; --muted:#6b7064; --line:#cfd3c8; --stamp:#b3412f; --hover:#f0f2ea;
+  --serif:"PT Serif",Georgia,"Times New Roman",serif; --mono:"PT Mono","Courier New",monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#171915; --paper:#22251f; --ink:#e6e8e0; --muted:#9a9f92; --line:#3a3e35; --stamp:#e0705c; --hover:#2b2f27; color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#171915; --paper:#22251f; --ink:#e6e8e0; --muted:#9a9f92; --line:#3a3e35; --stamp:#e0705c; --hover:#2b2f27; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--serif);font-size:17px;line-height:1.5}
+.wrap{max-width:620px;margin:0 auto;padding:32px 16px 48px}
+.sheet{background:var(--paper);border:1px solid var(--line);padding:28px 24px;position:relative}
+.meta{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-bottom:1px dashed var(--line);padding-bottom:12px;margin-bottom:20px}
+h1{font-size:28px;line-height:1.2;margin:0 0 12px;text-wrap:balance}
+h2{font-size:21px;line-height:1.3;margin:0 0 20px;font-weight:700;text-wrap:balance}
+p{margin:0 0 14px;max-width:65ch}
+.small{color:var(--muted);font-size:15px}
+.bar{height:4px;background:var(--line);margin-bottom:20px}
+.bar i{display:block;height:100%;background:var(--ink);transition:width .25s}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;gap:14px;align-items:flex-start;text-align:left;width:100%;font:inherit;color:inherit;background:transparent;border:1px solid var(--line);padding:14px 16px;cursor:pointer}
+.opt:hover{background:var(--hover)}
+.opt:focus-visible,.btn:focus-visible{outline:2px solid var(--stamp);outline-offset:2px}
+.opt.sel{border-color:var(--ink);background:var(--hover)}
+.box{flex:none;width:18px;height:18px;border:1.5px solid var(--ink);margin-top:3px;font-family:var(--mono);font-size:15px;line-height:15px;text-align:center}
+.opt.sel .box::after{content:"✕"}
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:20px;gap:12px}
+.btn{font-family:var(--mono);font-size:14px;letter-spacing:.05em;text-transform:uppercase;background:var(--ink);color:var(--paper);border:0;padding:12px 18px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--muted);padding:12px 0}
+.btn[disabled]{visibility:hidden}
+.stamp{position:absolute;top:18px;right:18px;transform:rotate(-8deg);border:2px solid var(--stamp);color:var(--stamp);font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;padding:4px 8px;opacity:.85}
+.code{font-family:var(--mono);font-size:16px;word-break:break-all;background:var(--hover);border:1px dashed var(--line);padding:14px;margin:6px 0 14px;user-select:all}
+.note{font-family:var(--mono);font-size:13px;color:var(--muted);min-height:1.4em}
+@media (max-width:480px){.sheet{padding:22px 16px}.stamp{position:static;display:inline-block;margin-bottom:14px}}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+
+<div class="wrap">
+  <div class="sheet" id="app"></div>
+</div>
+
+<script>
+// 0 Крепость, 1 Прыть, 2 Смекалка, 3 Чутьё, 4 Обаяние, 5 Странность
+const Q = [
+ ["Незнакомец в подворотне просит «закурить».",[["Через пять минут он рассказывает мне про маму и провожает до метро.",4],["Расправляю плечи и смотрю на него сверху вниз.",0],["Меня уже нет в этой подворотне.",1]]],
+ ["Ты на вечеринке, где никого не знаешь.",[["Стою у стены и уже понимаю, кто кому нравится.",3],["Танцую.",1],["К концу вечера у меня пять новых друзей.",4]]],
+ ["Банка с огурцами не открывается.",[["Поддеваю крышку ножом, чтобы сбить вакуум.",2],["Замечаю на крышке надпись «нажмите здесь».",3],["Открываю руками. Со второй попытки.",0]]],
+ ["На собеседовании спрашивают: «Почему мы должны взять именно вас?»",[["Отвечаю вопросом на вопрос и молча смотрю в глаза.",5],["Я заранее изучил компанию и отвечаю цифрами.",2],["Через десять минут мы шутим и обсуждаем рыбалку.",4]]],
+ ["Надо затащить диван на пятый этаж без лифта.",[["Беру за один конец. Второй конец — тоже я.",0],["Смотрю на пролёт: не пройдёт. Снимаем ножки.",2],["Пока все пыхтят с диваном, я трижды сбегал с коробками.",1]]],
+ ["Начался ливень, а зонта нет.",[["Я с утра видел тучи и взял зонт.",3],["Иду медленно и разговариваю с лужами.",5],["Перебежками от козырька к козырьку. Почти сухой.",1]]],
+ ["На экзамене попался вопрос, ответа на который ты не знаешь.",[["Быстро подсматриваю, пока никто не видит.",1],["Вспоминаю, что преподаватель на лекции на этом месте сделал паузу.",3],["Исключаю неправильные варианты логикой.",2]]],
+ ["Соседи сверху сверлят в 7 утра.",[["Договариваюсь, и в итоге мы пьём кофе.",4],["Поднимаюсь к ним. Моё лицо заканчивает ремонт.",0],["Цитирую закон о тишине с номером статьи.",2]]],
+ ["Вы с друзьями заблудились в незнакомом городе.",[["Предлагаю остаться здесь жить. Тут неплохо.",5],["Спрашиваю местных, и нас подвозят.",4],["Я запомнил дорогу по приметам.",3]]],
+ ["Ты проснулся в незнакомой комнате.",[["Осматриваюсь: окно, звуки, запахи.",3],["Обычный вторник.",5],["Прикидываю, выдержит ли дверь мой удар.",0]]],
+ ["Билеты на концерт распроданы.",[["Читаю правила: за час до начала снимают неоплаченные брони. Покупаю.",2],["Знакомлюсь с музыкантом у служебного входа.",4],["Проскальзываю мимо охраны.",1]]],
+ ["Пропал кот.",[["Через час его ищет весь подъезд.",4],["Замечаю клочок шерсти на заборе.",3],["Обхожу весь район дважды, не присев.",0]]],
+ ["Вы играете в «Мафию».",[["Обвиняю ведущего.",5],["Вычисляю мафию по логике голосований.",2],["Замечаю, кто дёрнулся, когда ведущий сказал «мафия просыпается».",3]]],
+ ["Опаздываешь на поезд с тяжёлым чемоданом.",[["Бегу, лавируя в толпе.",1],["Чемодан на плечо и напролом.",0],["Замечаю на табло, что поезд задерживается.",3]]],
+ ["В магазине огромная очередь на кассу.",[["Меня пропускают вперёд. Сам не знаю как.",4],["Раздаю людям в очереди номерки собственного изготовления.",5],["Первым успеваю к только что открывшейся кассе.",1]]],
+ ["Компьютер сломался за час до дедлайна.",[["Гуглю ошибку с телефона и чиню.",2],["Стукну как следует.",0],["Пишу отчёт от руки. На салфетке.",5]]],
+ ["Мяч улетел на крышу гаража.",[["Пишу мячу письмо с извинениями.",5],["Залезаю за минуту.",1],["Сбиваю его вторым мячом под точно рассчитанным углом.",2]]],
+ ["Друзья зовут в поход на выходные.",[["Беру самый тяжёлый рюкзак.",0],["Беру с собой аквариум. Рыбке тоже нужен отдых.",5],["Да я сам этот поход и организовал.",4]]],
+ ["Ты нашёл на улице кошелёк с паспортом.",[["Я видел, кто его выронил.",3],["Объявляю на всю улицу, и через пять минут толпа помогает искать владельца.",4],["Нахожу владельца по фамилии в соцсетях.",2]]],
+ ["Начался зомби-апокалипсис. Первое действие?",[["Бегу. Неважно куда, главное быстро.",1],["Пытаюсь приручить зомби.",5],["Хватаю лом.",0]]]
+];
+
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+let deck, answers, pos;
+function start(){
+  deck = shuffle(Q).map(([q,opts])=>({q,opts:shuffle(opts)}));
+  answers = new Array(deck.length).fill(null);
+  pos = -1; render();
+}
+
+const app = document.getElementById('app');
+const esc = s => s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function render(){
+  if(pos<0){
+    app.innerHTML = `
+      <div class="meta"><span>Форма № 0-0-0</span><span>Для служебного пользования</span></div>
+      <span class="stamp">Ничего такого</span>
+      <h1>Абсолютно не подозрительный тест</h1>
+      <p>Двадцать бытовых ситуаций, в каждой три варианта. Выбери тот, что ближе всего к тому, как ты поступил бы на самом деле. Если не подходит ни один, выбирай наименее чужой.</p>
+      <p class="small">Правильных ответов нет. Неправильных тоже. Ничего не случится. Совсем.</p>
+      <div class="nav"><span></span><button class="btn" id="go">Начать</button></div>`;
+    document.getElementById('go').onclick=()=>{pos=0;render();};
+    return;
+  }
+  if(pos>=deck.length){ return finish(); }
+  const it = deck[pos];
+  app.innerHTML = `
+    <div class="meta"><span>Вопрос ${pos+1} из ${deck.length}</span><span>Отвечай честно</span></div>
+    <div class="bar"><i style="width:${(pos/deck.length)*100}%"></i></div>
+    <h2>${esc(it.q)}</h2>
+    <div class="opts">${it.opts.map((o,i)=>`<button class="opt${answers[pos]===i?' sel':''}" data-i="${i}"><span class="box"></span><span>${esc(o[0])}</span></button>`).join('')}</div>
+    <div class="nav"><button class="btn ghost" id="back" ${pos===0?'disabled':''}>← Назад</button><span></span></div>`;
+  app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+    answers[pos]=+b.dataset.i; b.classList.add('sel');
+    setTimeout(()=>{pos++;render();},180);
+  });
+  document.getElementById('back').onclick=()=>{pos--;render();};
+}
+
+function finish(){
+  const r=[0,0,0,0,0,0];
+  deck.forEach((it,i)=>{ r[it.opts[answers[i]][1]]++; });
+  const code = btoa(JSON.stringify(r));
+  app.innerHTML = `
+    <div class="meta"><span>Форма № 0-0-0</span><span>Заполнено</span></div>
+    <span class="stamp">Принято</span>
+    <h1>Спасибо. Ничего не произошло.</h1>
+    <p>Скопируй этот код и отправь ведущему. Что он значит, тебе знать не обязательно.</p>
+    <div class="code" id="code">${code}</div>
+    <div class="nav"><button class="btn ghost" id="again">Пройти заново</button><button class="btn" id="copy">Скопировать код</button></div>
+    <div class="note" id="note" aria-live="polite"></div>`;
+  document.getElementById('copy').onclick=()=>{
+    const note=document.getElementById('note');
+    const sel=()=>{const rg=document.createRange();rg.selectNodeContents(document.getElementById('code'));const s=getSelection();s.removeAllRanges();s.addRange(rg);note.textContent='Код выделен, скопируй его вручную.';};
+    try{navigator.clipboard.writeText(code).then(()=>note.textContent='Скопировано.',sel);}catch(e){sel();}
+  };
+  document.getElementById('again').onclick=start;
+}
+start();
+</script>
+

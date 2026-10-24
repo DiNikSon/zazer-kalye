@@ -1,0 +1,1229 @@
+<title>Свод правил Зазеркалья</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alice&family=PT+Sans:ital,wght@0,400;0,700;1,400&family=PT+Mono&family=Forum&family=Kurale&family=Ruslan+Display&family=Yeseva+One&display=swap">
+<style>
+/* Справочник ведущего: оглавление слева, статья в центре, связи справа — как картотека с перекрёстными ссылками */
+:root{
+  --bg:#f3f3f6; --panel:#ffffff; --ink:#22212c; --muted:#686676; --line:#d9d8e2; --accent:#5b4bb7; --accent-soft:#ece9fb;
+  --ok:#2f7d4f; --ok-soft:#e3f2e8; --draft:#9a6a12; --draft-soft:#f8eed8; --open:#a33a5c; --open-soft:#f8e4ea;
+  --f-disp:"Alice",Georgia,serif; --f-body:"PT Sans",system-ui,sans-serif; --f-mono:"PT Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#15151b; --panel:#1d1d25; --ink:#e7e5f0; --muted:#9d9ab0; --line:#33333f; --accent:#a99bff; --accent-soft:#2a2645;
+  --ok:#6fd398; --ok-soft:#1d3327; --draft:#e5b45a; --draft-soft:#3a2f17; --open:#f08aab; --open-soft:#3d1f2a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15151b; --panel:#1d1d25; --ink:#e7e5f0; --muted:#9d9ab0; --line:#33333f; --accent:#a99bff; --accent-soft:#2a2645;
+  --ok:#6fd398; --ok-soft:#1d3327; --draft:#e5b45a; --draft-soft:#3a2f17; --open:#f08aab; --open-soft:#3d1f2a; color-scheme:dark}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 var(--f-body);display:flex;flex-direction:column}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+header{display:flex;flex-wrap:wrap;gap:10px 20px;align-items:center;padding:12px 20px;border-bottom:1px solid var(--line);background:var(--panel)}
+header h1{font:400 24px/1 var(--f-display,var(--f-disp));margin:0}
+header h1 span{display:inline-block;transform:scaleX(-1);opacity:.35}
+.search{position:relative;flex:1 1 240px;max-width:420px;min-width:0}
+.search input{width:100%;box-sizing:border-box;font:inherit;font-size:15px;padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
+.sugg{position:absolute;z-index:5;left:0;right:0;top:100%;margin-top:4px;background:var(--panel);border:1px solid var(--line);border-radius:6px;max-height:340px;overflow:auto;box-shadow:0 10px 30px rgba(0,0,0,.15)}
+.sugg a{display:block;padding:7px 10px;text-decoration:none}
+.sugg a small{display:block;color:var(--muted);font-size:12px}
+.sugg a.on,.sugg a:hover{background:var(--accent-soft)}
+.legend{display:flex;gap:8px;flex-wrap:wrap;font-size:12px;margin-left:auto}
+.ext{font:12px var(--f-mono);display:flex;gap:12px}
+.ext a{color:var(--accent)}
+main{flex:1;display:grid;grid-template-columns:270px minmax(0,1fr) 260px;min-height:0}
+nav,aside{overflow:auto;padding:18px 16px 40px;min-height:0}
+nav{border-right:1px solid var(--line);background:var(--panel)}
+aside{border-left:1px solid var(--line)}
+nav h2{font:11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:18px 0 6px;font-weight:400}
+nav h2:first-child{margin-top:0}
+nav ol{list-style:none;margin:0;padding:0;display:grid;gap:1px}
+nav a{display:flex;gap:8px;align-items:baseline;text-decoration:none;padding:4px 8px;border-radius:5px;font-size:15px}
+nav a:hover{background:var(--bg)}
+nav a[aria-current="true"]{background:var(--accent-soft);font-weight:700}
+nav a .n{font:11px var(--f-mono);color:var(--muted);min-width:2.2em}
+.dot{width:7px;height:7px;border-radius:50%;flex:none;margin-left:auto;align-self:center}
+.dot.ok{background:var(--ok)}.dot.draft{background:var(--draft)}.dot.open{background:var(--open)}
+.content{overflow:auto;padding:28px clamp(16px,4vw,48px) 60px;min-height:0}
+article{max-width:68ch}
+.crumbs{font:12px var(--f-mono);color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.atype{font:11px var(--f-mono);font-style:normal;padding:1px 7px;border-radius:99px;border:1px solid currentColor;margin-right:6px;white-space:nowrap}
+.at-main{color:var(--accent)}.at-move{color:#2f7d6d}.at-react{color:#b5476b}
+
+/* распечатки: белые листы А4 */
+.pr-tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:4px 0 14px}
+.pr-btn{font:600 14px var(--f-body);background:var(--accent);color:#fff;border:0;border-radius:6px;padding:8px 16px;cursor:pointer}
+.pr-btn:disabled{opacity:.5;cursor:default}
+.pr-note{font-size:13px;color:var(--muted)}
+.pr-box{width:100%;overflow:hidden}
+.pr-scaler{transform-origin:0 0}
+.pp{width:210mm;height:297mm;box-sizing:border-box;background:#fff;color:#1c1b24;padding:13mm 14mm 11mm;display:flex;flex-direction:column;gap:4mm;font:10pt/1.3 "Kurale","PT Sans",serif;box-shadow:0 1px 2px rgba(0,0,0,.08),0 14px 34px -18px rgba(0,0,0,.4)}
+.pp *{box-sizing:border-box}
+.pp table{margin:0;font-size:inherit}.pp td,.pp th{font-size:inherit;line-height:inherit;color:inherit}
+.pp-head{position:relative;display:grid;grid-template-columns:1fr auto;align-items:end;gap:4mm;border-bottom:.7mm solid #1c1b24;padding-bottom:2.5mm;margin-bottom:1.6mm}
+.pp-head::after{content:"";position:absolute;left:0;right:0;bottom:-1.7mm;border-bottom:.2mm solid #1c1b24}
+.pp-kick{font:400 8pt/1.2 "Forum",serif;letter-spacing:.2em;text-transform:uppercase;color:#5b4bb7;margin-bottom:1.6mm}
+.pp-head h2{font:400 25pt/1 "Ruslan Display","Alice",serif;margin:0;letter-spacing:.01em}
+.pp-stamp{position:relative;width:23mm;height:23mm;border:.55mm solid #5b4bb7;border-radius:50%;color:#5b4bb7;transform:rotate(-9deg)}
+.pp-stamp::before{content:"";position:absolute;inset:3.7mm;border:.25mm solid #5b4bb7;border-radius:50%}
+.pp-stamp span{position:absolute;left:50%;top:.25mm;width:3mm;margin-left:-1.5mm;height:10.7mm;transform-origin:50% 100%;text-align:center;font:400 5.6pt/1 "Forum",serif}
+.pp-stamp b{position:absolute;inset:0;display:grid;place-items:center;font:400 9pt/1 "Ruslan Display",serif;letter-spacing:.04em}
+.pp-tbl{width:100%;border-collapse:collapse;table-layout:fixed;font-size:9pt;line-height:1.15}
+.pp-tbl th,.pp-tbl td{border:.25mm solid #c3c2cf;padding:0 1.5mm}
+.pp-tbl thead th{vertical-align:bottom;font:400 7.4pt/1.2 "Forum",serif;letter-spacing:.14em;text-transform:uppercase;color:#686676;text-align:left;padding-bottom:1.2mm}
+.pp-tbl td.n{text-align:right;font:400 9pt/1 "Yeseva One",serif;color:#5b4bb7}
+.pp-tbl tr.blank td.g{color:#c3c2cf}
+.pp-set{display:flex;flex-direction:column;gap:8mm;width:210mm}
+.pp-sq tbody tr{height:15mm}
+.pp-sq td{vertical-align:middle}
+.pp-sq td.g{font-size:11pt;line-height:1.2}
+.pp-sq th.nm{border-bottom:.45mm solid #1c1b24}
+.pp-sq td.c::after{width:12mm!important;height:12mm!important;border-color:#e0dfe8!important}
+.pp-turn{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:6mm;font:400 7.4pt/1.3 "Forum",serif;letter-spacing:.14em;text-transform:uppercase;color:#686676}
+.pp-turn span{white-space:nowrap}
+.pp-turn i{display:inline-block;vertical-align:-.9mm;width:4mm;height:4mm;border:.25mm dashed #b9b2dc;border-radius:50%}
+.pp-turn i.lg-g{width:8mm;border-radius:.8mm;border:.35mm solid #5b4bb7}
+.pp-sq tr.grp td.g em{display:block;font:400 6.6pt/1 "Forum",serif;letter-spacing:.2em;text-transform:uppercase;color:#5b4bb7;font-style:normal;margin-top:1.2mm}
+.pp-sq td.gc{padding:0;position:relative;vertical-align:middle}
+.pp-sq td.gc .gs{position:absolute;inset:1.1mm;border:.35mm solid #5b4bb7;border-radius:1.4mm;display:flex;align-items:center;justify-content:center}
+.pp-sq td.gc .gs i{width:10.6mm;height:10.6mm;border:.2mm dashed #cfcfd8;border-radius:50%}
+.pp-tbl td.c{position:relative}
+.pp-tbl td.c::after{content:"";position:absolute;inset:0;margin:auto;width:4.6mm;height:4.6mm;border:.2mm dashed #cfcfd8;border-radius:50%}
+.pp-tbl td.b{text-align:center}
+.pp-tbl td.b i{display:inline-block;width:3.6mm;height:3.6mm;border:.3mm solid #1c1b24;border-radius:.6mm}
+.pp-tbl th.v{text-align:center;font:400 8pt/1.1 "Kurale",serif;letter-spacing:0;text-transform:none;color:#1c1b24;padding:1mm .5mm;height:12mm}
+.pp-foot{display:grid;grid-template-columns:1.25fr 1fr;gap:5mm;font-size:8.4pt;line-height:1.3}
+.pp-foot table{width:100%;border-collapse:collapse}
+.pp-foot td{border-bottom:.2mm solid #d9d8e2;padding:.7mm 1mm;vertical-align:top}
+.pp-foot td:first-child{font:400 8.6pt/1.3 "Kurale",serif;color:#5b4bb7;white-space:nowrap}
+.pp-foot td:first-child i{font:400 8.6pt/1 "Yeseva One",serif;font-style:normal;margin-right:1.2mm}
+.pp-foot p{margin:0 0 1.5mm}
+.pp-foot p b{font-weight:400;color:#5b4bb7}
+#pr-off{position:fixed;left:-10000px;top:0;pointer-events:none}
+
+/* выдвижная карточка атласа */
+.ad-back{position:fixed;inset:0;background:rgba(10,10,20,.35);z-index:40}
+.ad{position:fixed;top:0;right:0;bottom:0;width:min(440px,100%);background:var(--panel);border-left:1px solid var(--line);z-index:41;display:flex;flex-direction:column;box-shadow:-20px 0 40px -20px rgba(0,0,0,.35)}
+.ad-bar{display:flex;gap:8px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line);font:12px var(--f-mono)}
+.ad-bar button{font:12px var(--f-mono);border:1px solid var(--line);background:none;color:var(--ink);border-radius:6px;padding:4px 10px;cursor:pointer}
+.ad-bar a{margin-left:auto;color:var(--accent)}
+.ad-body{overflow:auto;padding:16px 18px 30px;flex:1}
+.ad-body h2{font:400 26px/1.15 var(--f-disp);margin:2px 0 6px}
+.ad-type{font:11px var(--f-mono);text-transform:uppercase;letter-spacing:.08em;color:var(--accent)}
+.ad-alias{font:12px var(--f-mono);color:var(--muted);margin-bottom:10px}
+.ad-body img.pt{display:block;width:100%;max-height:300px;object-fit:cover;object-position:center top;border-radius:8px}
+.ad-body figure{margin:0 0 12px}.ad-body figcaption{font:12px var(--f-mono);color:var(--muted);margin-top:4px}
+.ad-body h3{font:11px var(--f-mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:16px 0 6px;font-weight:400}
+.ad-body ul{margin:0;padding-left:1.1em;display:grid;gap:3px;font-size:14px}
+.ad-chips{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:13px;margin:6px 0}
+.ad-chips b{font:11px var(--f-mono);color:var(--muted);font-weight:400;text-transform:uppercase;letter-spacing:.05em;margin-right:4px}
+.ad-stats{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin:8px 0}
+.ad-stats div{border:1px solid var(--line);border-radius:6px;text-align:center;padding:3px 0}
+.ad-stats span{display:block;font:10px var(--f-mono);color:var(--muted)}.ad-stats b{font:400 18px var(--f-disp)}
+.ad-st{font:11px var(--f-mono);padding:1px 7px;border-radius:99px;background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+.ad-body blockquote{margin:14px 0 0;padding:8px 12px;border-left:3px solid var(--accent);font:15px/1.45 var(--f-disp);background:var(--accent-soft);border-radius:0 6px 6px 0}
+.ad-rel{list-style:none!important;padding:0!important}
+.ad-rel .l{color:var(--muted);font-size:13px}
+.ad a.ain{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--accent)}
+.ad-par{font-size:15px;line-height:1.55}
+.atl{color:inherit;text-decoration:none;border-bottom:1px dotted currentColor}.atl::after{content:"↗";font-size:.7em;margin-left:1px;opacity:.6}
+.badge{font:11px var(--f-mono);padding:2px 8px;border-radius:99px;letter-spacing:.04em}
+.badge.ok{background:var(--ok-soft);color:var(--ok)}.badge.draft{background:var(--draft-soft);color:var(--draft)}.badge.open{background:var(--open-soft);color:var(--open)}
+article h1{font:400 36px/1.15 var(--f-disp);margin:8px 0 6px;text-wrap:balance}
+.lead{font-size:18px;color:var(--muted);margin:0 0 22px}
+article h3{font:400 21px/1.25 var(--f-disp);margin:28px 0 8px}
+article p{margin:0 0 12px}
+article ul,article ol{margin:0 0 14px;padding-left:1.3em}
+article li{margin:0 0 5px}
+a.ref{color:var(--accent);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--accent) 40%,transparent)}
+a.ref:hover{border-bottom-color:var(--accent)}
+.tbl{overflow-x:auto;margin:6px 0 16px}
+.tbl.nw td{white-space:nowrap}
+table{border-collapse:collapse;font-size:15px;font-variant-numeric:tabular-nums}
+th{font:11px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;font-weight:400}
+th,td{padding:6px 14px 6px 0;border-bottom:1px solid var(--line);vertical-align:top}
+.rule{border-left:3px solid var(--accent);background:var(--panel);padding:12px 16px;border-radius:0 8px 8px 0;margin:6px 0 16px}
+.rule p:last-child{margin:0}
+.note{font-size:14px;color:var(--muted);border-top:1px dashed var(--line);padding-top:10px;margin-top:20px}
+aside h3{font:11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 8px;font-weight:400}
+aside ul{list-style:none;padding:0;margin:0 0 22px;display:grid;gap:4px}
+aside a{color:var(--accent);text-decoration:none;font-size:15px}
+aside .empty{color:var(--muted);font-size:14px}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:36px;border-top:1px solid var(--line);padding-top:14px;flex-wrap:wrap}
+.pager a{text-decoration:none;color:var(--accent);font-size:15px}
+.pager small{display:block;font:11px var(--f-mono);color:var(--muted)}
+.navtoggle{display:none}
+@media (max-width:1100px){main{grid-template-columns:250px minmax(0,1fr)}aside{display:none}.content .side-inline{display:block}}
+@media (min-width:1101px){.content .side-inline{display:none}}
+.side-inline{margin-top:26px}
+@media (max-width:760px){
+  body{height:auto}
+  main{display:block}
+  nav{display:none;border-right:0;border-bottom:1px solid var(--line)}
+  nav.open{display:block}
+  .navtoggle{display:inline-block;font:inherit;font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
+  .content{padding-top:20px}
+  .legend{margin-left:0}
+}
+</style>
+
+<header>
+  <h1>Свод правил<span>Я</span></h1>
+  <button class="navtoggle" id="navtoggle" type="button" aria-expanded="false">Оглавление</button>
+  <div class="search"><input id="q" type="search" placeholder="Найти правило: подготовка, лицо, отдых…" autocomplete="off" aria-label="Поиск по своду"><div class="sugg" id="sugg" hidden></div></div>
+  <div class="ext"><a href="https://claude.ai/artifact/3pfFpJ5XBXeQC9YmwMiw4u" target="_blank" rel="noopener">Лист путника ↗</a><a href="https://claude.ai/artifact/ThYN3MvgSKqpgR8yRx12sm" target="_blank" rel="noopener">Атлас ↗</a></div>
+</header>
+<main>
+  <nav id="nav" aria-label="Оглавление"></nav>
+  <div class="content" id="content"></div>
+  <aside id="aside" aria-label="Связи статьи"></aside>
+</main>
+
+<div id="pr-off" aria-hidden="true"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+/* Статьи. В тексте [[id]] или [[id|текст]] — ссылка на другую статью. Статус: ok — принято, draft — черновик, open — открытый вопрос. */
+const SECTIONS=[
+ ["cheat","Шпаргалки"],["print","Распечатки"],["base","Основы"],["mirror","Между мирами"],["order","Порядки Зазеркалья"],["odd","Странности"],["cond","Состояния"],["gear","Предметы"],["check","Проверки"],["fight","Конфликт и урон"],["act","Действия"],["state","Состояния и восстановление"],["char","Персонаж"],["open","Открытые вопросы"]];
+
+const SK=[["Драка","КР","Коканье","КР"],["Мастеровитость","ПР","Колупание","СМ"],["Техника","СМ","Механика","СМ"],["Торговля","СМ","Кукичество","ЧУ"],["Этикет","ОБ","Сыворотка общества","ОБ"],["Убеждение","ОБ","Шепоток","СТ"],["Обман","ОБ","Лицедейство","СТ"],["Скрытность","ПР","Хождение в копытах","ЧУ"],["Медицина","СМ","Знахарство","ЧУ"],["Кулинария","ЧУ","Варево","СТ"],["Обращение с животными","ЧУ","Бобылеведение","ОБ"],["Ориентирование","ЧУ","Трубоведение","СМ"],["Эрудиция","СМ","Летопись","ОБ"],["Спорт","КР","Чак-чак","ПР"],["Сновидения","СТ","Сноходчество","СТ"],["Соблазнение","ОБ","Щекотка","ПР"]];
+
+const A=[
+{id:"sh-roll",sec:"cheat",st:"ok",t:"Бросок",lead:"Пул — характеристика навыка в текущем мире. Успех — кубик не ниже порога.",b:`
+<div class="tbl"><table><tr><th>Что бросаем</th><th>Успех на</th></tr>
+<tr><td>навык 0</td><td>6</td></tr><tr><td>навык 1, голая характеристика, защита</td><td>5–6</td></tr><tr><td>навык 2</td><td>4–6</td></tr><tr><td>навык 3</td><td>4–6, шестёрка = два успеха</td></tr></table></div>
+<div class="tbl"><table><tr><th>Нужно успехов</th><th>Задача</th></tr><tr><td>1</td><td>обычная</td></tr><tr><td>2</td><td>трудная</td></tr><tr><td>3</td><td>почти невозможная</td></tr></table></div>
+<ul>
+<li><b>Встречный:</b> бросают обе стороны, больше успехов — победа, ничья — защищающемуся. [[opposed]]</li>
+<li><b>Групповая:</b> успехи всех складываются, сложность × число участников. [[q-group]]</li>
+<li><b>Подготовка:</b> +1 к уровню (не выше 3), на уровне 3 — +1 кубик. Не складывается. Помощь — логичная заявка, навык не нужен. Спутник даёт её постоянно к своему навыку. [[prep]], [[q-companions]]</li>
+<li><b>Переброс:</b> +1 Усталость / Разваристость — перебросить все неудачные кубики, раз за бросок. [[reroll]]</li>
+<li><b>Усталость / Разваристость:</b> 4–5 — −1 кубик, 6 — один кубик и без переброса. [[fatigue]]</li>
+<li><b>Странность:</b> пул Странность, успех 5–6, стоит 1 Разваристость (на 6 — 1 Лицо); наяву сложность +1. [[odd-rules]]</li>
+<li><b>Темнота:</b> агрессивные обитатели +1 кубик во встречных. [[night]]</li></ul>
+<p>Исход только «да» или «нет» — [[outcome]]. Шансы — [[odds]].</p>`},
+
+{id:"sh-turn",sec:"cheat",st:"ok",t:"Ход в бою",lead:"Основное, движение и реакция — по одному за ход. Защита — всегда, бесплатно.",b:`
+<div class="tbl"><table><tr><th>Вид</th><th>Варианты</th></tr>
+<tr><td><i class="atype at-main">основное</i></td><td>кокнуть · колупнуть · кинуть · пощекотать · странность · помочь · глухая оборона · предмет · вырваться · задобрить · заболтать · спрятаться</td></tr>
+<tr><td><i class="atype at-move">движение</i></td><td>сменить дистанцию на ступень · встать · удрать · достать вещь · странность-движение; можно вместо основного</td></tr>
+<tr><td><i class="atype at-react">реакция</i></td><td>удар вдогонку (враг ушёл с ближней) · прикрыть союзника · странность-реакция</td></tr></table></div>
+<div class="tbl"><table><tr><th>Действие</th><th>Бросок</th><th>Против</th><th>Итог</th></tr>
+<tr><td>Кокнуть</td><td>Коканье</td><td>Прыть + броня</td><td>урон = лишние успехи</td></tr>
+<tr><td>Колупнуть</td><td>Колупание</td><td>Прыть + броня</td><td>Опутан / отнял / обшарил</td></tr>
+<tr><td>Кинуть</td><td>Чак-чак</td><td>Прыть + броня</td><td>урон, до средней</td></tr>
+<tr><td>Пощекотать</td><td>Щекотка</td><td>Крепость</td><td>Колосится</td></tr>
+<tr><td>Вырваться</td><td>Крепость</td><td>Колупание</td><td>снять Опутан</td></tr>
+<tr><td>Удрать — [[q-chase|погоня]]</td><td>Прыть или навык по обстановке</td><td>Прыть преследователя</td><td>перевес +1 к шкале; 3 — оторвался</td></tr>
+<tr><td>Заболтать / спрятаться</td><td>Лицедейство / Хождение в копытах</td><td>Чутьё</td><td>поверил / не видит</td></tr></table></div>
+<p><b>Дистанции:</b> ближняя — рукой подать, средняя — докинуть камень, дальняя — докуда видно. <b>Первыми</b> ходят начавшие; засада — первый раунд только у них.</p>
+<p><b>Храбрость противника:</b> храбрый не бежит; нормальный бежит, оставшись один или отпугнутый, в одиночку не нападает; трусливый бежит, когда повержена половина своих, и не нападает, если их меньше трёх. Догнал беглеца — добей (тогда добыча) или пощади. [[q-morale]]</p>
+<p>Подробно — раздел «Действия»: [[act-turn]], [[act-main]], [[act-defense]].</p>`},
+
+{id:"sh-cond",sec:"cheat",st:"ok",t:"Состояния",lead:"Одинаковые не складываются, разные — складываются; пул не меньше одного кубика.",b:`
+<div class="tbl"><table><tr><th>Состояние</th><th>Эффект</th><th>Снимает</th></tr>
+<tr><td colspan="3"><b>Ослабления</b></td></tr>
+<tr><td>Разварен / Устал</td><td>игроку +1 Разваристость; противнику −1 кубик ко всему (до −2)</td><td>отдых; у противника — конец сцены</td></tr>
+<tr><td>Колосится</td><td>−1 кубик ко всему</td><td>конец сцены</td></tr>
+<tr><td>Неуклюж</td><td>−1 кубик к Прыти и навыкам на ней, и в защите</td><td>убрать помеху, отдых</td></tr>
+<tr><td>Кислый</td><td>−1 кубик к навыкам на Обаянии; никто не съест</td><td>отдых (<i>следующий обед</i>)</td></tr>
+<tr><td>Красные уши</td><td>проступки в темноте видны без броска; −1 кубик к Обману</td><td>конец сцены</td></tr>
+<tr><td>Влажный</td><td>громики отстают; огонь не горит, бумага раскисает</td><td>высохнуть</td></tr>
+<tr><td colspan="3"><b>Сковывания</b></td></tr>
+<tr><td>Заполиплен</td><td>без странностей; говоришь только чужое</td><td>конец раунда</td></tr>
+<tr><td>Опутан</td><td>нет движения; −1 кубик к атакам и защите</td><td>вырваться, Вывернут, помощь</td></tr>
+<tr><td>Опрокинут</td><td>встать — движение; по тебе с ближней +1 кубик</td><td>встать</td></tr>
+<tr><td>Ошарашен</td><td>в следующий ход нет основного и реакции</td><td>через ход</td></tr>
+<tr><td>Напуган</td><td>нельзя подойти к источнику; −1 кубик к атакам по нему</td><td>конец сцены</td></tr>
+<tr><td>В петле</td><td>пропускаешь ходы, пока не выбросишь успех</td><td>успех</td></tr>
+<tr><td colspan="3"><b>Недуги</b> — снимает только лечение</td></tr>
+<tr><td>Пуча</td><td>−1 кубик к Чутью</td><td>жимпаж: Коканье или Знахарство, 1 успех</td></tr>
+<tr><td>Простуда</td><td>говоришь волнисто; −1 кубик к Обаянию-навыкам</td><td>бурлешка и отдых</td></tr>
+<tr><td>Ангина ламантинов</td><td>как простуда, заразна (Крепость в конце сцены)</td><td>только доктор Лист</td></tr>
+<tr><td>Икота</td><td>−1 кубик к Хождению в копытах</td><td>испуг (Напуган)</td></tr>
+<tr><td colspan="3"><b>Усиления</b></td></tr>
+<tr><td>Подготовлен</td><td>+1 к уровню на одну проверку</td><td>после проверки</td></tr>
+<tr><td>Воодушевлён</td><td>+1 кубик к следующему броску</td><td>после броска</td></tr>
+<tr><td>Раскрепощён</td><td>+1 кубик к атакам на ближней</td><td>конец сцены</td></tr>
+<tr><td>Гуттаперчив</td><td>подготовка к Прыти и Чак-чаку; падения без урона</td><td>конец сцены</td></tr>
+<tr><td>Вывернут</td><td>нельзя схватить, связать, колупнуть; снимает Опутан</td><td>конец сцены</td></tr>
+<tr><td>В раковине</td><td>броня 2 (берётся лучшая); Коканье не действует</td><td>конец сцены</td></tr>
+<tr><td>Парит</td><td>достать только со средней или дальней</td><td>конец сцены</td></tr>
+<tr><td>Свой</td><td>подготовка к общению с зазеркальцами</td><td>конец сцены</td></tr>
+<tr><td>Светится</td><td>темнота не даёт врагам +1 кубик</td><td>конец сцены</td></tr>
+<tr><td>С двойником</td><td>первая атака — в двойника</td><td>конец раунда</td></tr></table></div>
+<p>Полностью — [[cond-weak]], [[cond-bind]], [[cond-ill]], [[cond-buff]]. Отмечаются карандашом на полях листа.</p>`},
+
+{id:"sh-hurt",sec:"cheat",st:"ok",t:"Урон и восстановление",lead:"Урон — лишние успехи атакующего. Наяву по Здоровью, в Зазеркалье по Лицу.",b:`
+<div class="tbl"><table><tr><th></th><th>Наяву</th><th>В Зазеркалье</th></tr>
+<tr><td><b>Трек</b></td><td>Здоровье, 3 + Крепость</td><td>Лицо, 3 + Крепость</td></tr>
+<tr><td><b>Шкала</b></td><td>Усталость 0–6</td><td>Разваристость 0–6</td></tr>
+<tr><td><b>На нуле</b></td><td>без сознания</td><td>безлик: не узнают, Обаяние-навыки как уровень 0, не проснуться, надзор слеп</td></tr>
+<tr><td><b>Легла вся группа</b></td><td>больница</td><td>сладкий хлев</td></tr></table></div>
+<ul>
+<li><b>Отдых</b> — всё до максимума, кроме потерянного лица. В безопасном месте — без броска; в остальных — под дозором: Хождение в копытах дозорных, успехи складываются. [[rest]], [[rest-watch]]</li>
+<li><b>Быстро в бою:</b> Шепоток — +1 Лицо за успех; гыча — −2 Разваристости; склянка ведьмы — +1 Лицо; банка сопения — −1 Разваристость.</li>
+<li><b>Вернуть лицо:</b> собрать (Колупание, 2 успеха, к6 на странность лица), маска с острова, портрет Алевтины, лицо от Истукануса. [[faceless]]</li></ul>`},
+
+{id:"sh-order",sec:"cheat",st:"ok",t:"День, темнота и надзор",lead:"Днём смотрит Оно, в темноте — Она. Три метки — наказание.",b:`
+<div class="tbl"><table><tr><th></th><th>Светлое время — Оно</th><th>Темнота — Она</th></tr>
+<tr><td><b>Проступки</b></td><td>ходьба на руках, поклонение сыру, сквернописьменность, есть уравнение времени, уклоняться от Истукануса, кинуть сыр в небо</td><td>щекотка и прочие пустяки — по решению ведущего</td></tr>
+<tr><td><b>Три метки</b></td><td>ссылка в сладкий хлев: к6 сцен, отработка или побег ([[q-hlev]])</td><td>к Видусу — цыплёнком в чак-чак: 3 выигранных раунда против 5к6 на 4+ ([[q-chicken]])</td></tr>
+<tr><td><b>Опасности</b></td><td>—</td><td>агрессивные +1 кубик; жадность на лайке; в роще не отдохнуть; открыт щекоточный клуб</td></tr></table></div>
+<ul><li><b>Незаметно</b> совершить проступок — Хождение в копытах, 1 успех: метки нет. Красные уши — видно без броска.</li>
+<li>Громики рядом — Оно забывает про сыр в небе. Безликому меток не ставят.</li>
+<li>Смену дня и темноты объявляет ведущий.</li>
+<li><b>Переход</b> — сцена; проводник бросает Трубоведение: тихо — без броска, опасно — 1, очень опасно — 2, темнота +1. Провал — +1 Разваристость всем и событие области. [[q-travel]]</li></ul>
+<p>Подробно — [[oversight]], [[misdeeds]], [[night]].</p>`},
+
+{id:"sh-skills",sec:"cheat",st:"ok",t:"Навыки двух миров",lead:"Уровень навыка общий, а характеристика под ним зависит от мира.",b:`
+<div class="tbl"><table><tr><th>Наяву</th><th>Хар.</th><th>В Зазеркалье</th><th>Хар.</th></tr>
+${SK.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join("")}</table></div>
+<p>Голая характеристика — когда навык не подходит: выдержать — Крепость, увернуться — Прыть, учуять — Чутьё. [[bare]]</p>`},
+
+{id:"sh-worlds",sec:"cheat",st:"ok",t:"Между мирами",lead:"Вошёл вечером через зеркало ПВЗ — вышел утром из него же, через сон.",b:`
+<ul>
+<li><b>Вход:</b> только вечером, зеркало за ширмой ПВЗ; за тобой выходит Поленыч. [[enter]]</li>
+<li><b>Выход:</b> уснуть с намерением проснуться. В опасном месте — Сноходчество, 1 успех. Безликий не просыпается; существам и безликим нужен [[q-exit|выход]]. [[wake]]</li>
+<li><b>Время:</b> сколько ни пробыл — наяву одна ночь, просыпаешься выспавшимся. [[time]]</li>
+<li><b>Вещи</b> отражаются в зазеркальные аналоги; домой возвращается то, что держал, засыпая. [[items]]</li>
+<li><b>Деньги:</b> купюры → пакичи (1 пакич = 2 кукича у честного менялы), монеты → кукичи 1:1, обратно — только шоколадные монеты.</li>
+<li><b>Работник ПВЗ:</b> ушёл без отражения +1, вышел утром +1, чертовщина на глазах +1; 8 очков — к6 по таблице. [[q-pvz]]</li>
+<li><b>Отдых ≠ сон-возвращение:</b> отдыхать можно, оставаясь в Зазеркалье.</li></ul>`},
+
+{id:"sh-brew",sec:"cheat",st:"ok",t:"Варево и сбор",lead:"Три разных ингредиента — одно варево. Варят на отдыхе и только в Зазеркалье; провал — испорчено, при питье 2к6.",b:`
+<p><b>З</b> — зеленика, <b>Г</b> — гриб, <b>П</b> — морковные пятки, <b>Х</b> — хрычи, <b>М</b> — мёд осов, <b>С</b> — скорлупа.</p>
+<ul><li><b>Сбор:</b> сцена, Знахарство на 1 успех — успех = ингредиент. З и Г — роща (за грибами к6: на 1 — Идибикс); П и Х — огород Жули (купить или мимо толстомясочки); М — у ос, Хождение в копытах на 2; С — скорлупная яма, Чутьё на 2.</li>
+<li><b>Цены:</b> З и Г — 1, П и Х — 2, М — 3, С — 4 кукича. Ингредиент и варево — по строке пожитков.</li>
+<li><b>Варка:</b> на отдыхе, сколько угодно раз. У Жули и в логове ведьм — подготовка. Наугад — ведущий описывает вид, эффект узнают, выпив.</li></ul>
+<div class="tbl"><table><tr><th>№</th><th>Состав</th><th>Варево</th><th>Сл.</th><th>Что делает</th></tr><tr><td>1</td><td><b>З Г П</b></td><td>Парение над слизнями</td><td>1</td><td>только голуби и пескари</td></tr><tr><td>2</td><td><b>З Г Х</b></td><td>Капли от пучи</td><td>2</td><td>снять Пучу</td></tr><tr><td>3</td><td><b>З Г М</b></td><td>Компот Куролесова</td><td>1</td><td>снять Напуган и Икоту</td></tr><tr><td>4</td><td><b>З Г С</b></td><td>Светлячковая кашица</td><td>1</td><td>Светишься</td></tr><tr><td>5</td><td><b>З П Х</b></td><td>Зелёный бальзам</td><td>3</td><td>+2 Лица</td></tr><tr><td>6</td><td><b>З П М</b></td><td>Зелье бега</td><td>2</td><td>уйти от погони без броска</td></tr><tr><td>7</td><td><b>З П С</b></td><td>Кураж-настойка</td><td>2</td><td>Раскрепощён</td></tr><tr><td>8</td><td><b>З Х М</b></td><td>От ангины ламантинов</td><td>2</td><td>иммунитет на сессию</td></tr><tr><td>9</td><td><b>З Х С</b></td><td>Кислый морс</td><td>1</td><td>Кислый — не съедят</td></tr><tr><td>10</td><td><b>З М С</b></td><td>Распознавание мигунов</td><td>2</td><td>видишь мигуна-бобыля</td></tr><tr><td>11</td><td><b>Г П Х</b></td><td>Гуттаперчевая похлёбка</td><td>2</td><td>Гуттаперчив</td></tr><tr><td>12</td><td><b>Г П М</b></td><td>Сонный взвар</td><td>2</td><td>уснуть без броска</td></tr><tr><td>13</td><td><b>Г П С</b></td><td>Бульон окумекивания</td><td>3</td><td>0 Лица → встаёшь с 1</td></tr><tr><td>14</td><td><b>Г Х М</b></td><td>Горячий хрычовник</td><td>2</td><td>снять Простуду</td></tr><tr><td>15</td><td><b>Г Х С</b></td><td>Панцирный отвар</td><td>3</td><td>В раковине</td></tr><tr><td>16</td><td><b>Г М С</b></td><td>Планы синих ящеров</td><td>2</td><td>узнать шалость</td></tr><tr><td>17</td><td><b>П Х М</b></td><td>Гыча</td><td>1</td><td>−2 Разваристости</td></tr><tr><td>18</td><td><b>П Х С</b></td><td>Дальнее коканье</td><td>2</td><td>Коканье на средней</td></tr><tr><td>19</td><td><b>П М С</b></td><td>Пятки в меду</td><td>1</td><td>Свой</td></tr><tr><td>20</td><td><b>Х М С</b></td><td>Скип</td><td>2</td><td>ящер выполнит просьбу</td></tr></table></div>
+<p><b>Испорчено — 2к6 при питье:</b> 2 чужое лицо (не узнают до конца сессии) · 3 ангина ламантинов · 4 Заполиплен · 5 икота · 6 Колосится · 7 +1 Разваристость · 8 красные уши · 9 Неуклюж до отдыха · 10 светишься зелёным · 11 простуда · 12 желтеешь — днём метка Оно.</p>
+<p>Подробно — [[q-brew]].</p>`},
+{id:"sh-ev-wide",sec:"cheat",st:"ok",t:"События: обширные области",lead:"Дозор не набрал сложность — бросьте 2к6 и сложите. Семь — обычное, два и двенадцать — редкость.",b:`
+<p>Сложность дозора — [[rest-watch]]. В темноте +1. Когда событие разрешилось, не-дозорные всё равно отдыхают.</p>
+<p class="note" style="margin-top:0;border:0;padding:0"><b>Как читать бой:</b> N — число путников. «Атака 3к6 на 5+» — пул и порог противника; «защита» — Прыть + броня, успех на 5–6; «Лицо» — сколько урона выдерживает. Ссылка ↗ открывает карточку в атласе.</p>
+<h3>{{roshcha|Сумеречная роща}}</h3>
+<div class="tbl"><table><tr><th>2к6</th><th>Событие</th></tr>
+<tr><td>2</td><td><b>{{kolenych|Коленыч}} преклоняет полено.</b> Один, сильный: Лицо 5, полено — атака 5к6 на 5+, цель Опрокинута; защита 4к6. Можно не драться: три шага из {{p29|абзаца 29}} — кинуть войлочные катышки (Чак-чак, 1 успех — он трётся о них и забывает про вас), прислушаться к суставу, убегать зигзагами (Прыть против его Прыти 4к6).</td></tr>
+<tr><td>3</td><td><b>{{sovyane|Совяне}} зовут.</b> Тихо будят одного спящего и зовут пройти с ними. Пошёл — к утру вернётся с вестью или тайной рощи; отказал — совяне обижены. Боя нет.</td></tr>
+<tr><td>4</td><td><b>{{yagodniki|Ягодники}} окружают стоянку.</b> 2 на каждого путника, мелочь: Лицо 1, окружение — 2к6 на 5+ против Прыти, проиграл — Опутан; защита 2к6. Сыр от Джо (одна порция на всех) — отходят без боя.</td></tr>
+<tr><td>5</td><td><b>{{gromiki|Громики}} громыхают.</b> Пара громиков, обычные: Лицо 3, «увлажнить» — 3к6 на 5+ на средней, цель Влажная (урона нет); защита 3к6. Отстают от тех, кто уже Влажный: облиться водой или прыгнуть в лужу — и они уходят ({{p193|абзац 193}}).</td></tr>
+<tr><td>6</td><td><b>{{kazimir|Казимир}} у пожитков.</b> Встречный бросок: его Прыть 5к6 на 5+ против Чутья дозорных (сложить). Выиграл он — пропала ложка или мелкая вещь (ведущий выбирает строку пожитков). Поймали — убегает без боя.</td></tr>
+<tr><td>7</td><td><b>{{bobyli|Бобыли}} на клокочущий запах.</b> Чаще всего. N + 1 бобыль, мелочь: Лицо 1, Коканье — 3к6 на 5+; защита 2к6. В темноте +1 кубик к атаке. Кокнутый окумекивается — [[kokanye]].</td></tr>
+<tr><td>8</td><td><b>{{kukushki|Кукушки}} допрашивают.</b> Стая будит всех и заваливает вопросами. Ведущий задаёт каждому путнику по вопросу о его прошлом наяву — ответы уйдут {{edgar|Птозному Эдгару}}. Не ответил — кукушки не отстанут до утра.</td></tr>
+<tr><td>9</td><td><b>{{osy|Осы}} под видом {{kalachi|калачей}}.</b> По одной на путника, обычные: Лицо 3, жало — 3к6 на 5+, урон и цель Разварена; защита 4к6. Распознать заранее — Чутьё на 1 успех: двенадцать крапинок в глазах вместо десяти ({{p114|абзац 114}}). Не лезут в болото.</td></tr>
+<tr><td>10</td><td><b>{{petuhi|Петухи}} разбежались.</b> Урчат и плюхаются об землю. Если их не трогать — сами соберутся в пучок и уйдут под мох. Тронул — Ошарашен.</td></tr>
+<tr><td>11</td><td><b>{{sator|Сатор Арепыч}} идёт по следу бобылей.</b> Один, сильный: Лицо 6, Коканье 5к6 на 4+ (шестёрка — два), струны — цель Опутана; защита 4к6. Нападёт на того, кто пахнет бобылём (кто дрался с бобылями или ел рядом с ними). Можно объясниться: Сыворотка общества против его Чутья.</td></tr>
+<tr><td>12</td><td><b>{{akakiy|Акакий Куролесов}} на ночной прогулке.</b> Видит стоянку и зовёт к себе. Дальше — отдых как в безопасном месте для всех, включая дозорных.</td></tr></table></div>
+<h3>{{boloto|Болото}}</h3>
+<div class="tbl"><table><tr><th>2к6</th><th>Событие</th></tr>
+<tr><td>2</td><td><b>{{knyaz|Желейный князь}} вышел на поверхность.</b> Дозорный в темноте принял его за лужу и наступил. Князь сильный (Лицо 5) и мудрый: извинения — Сыворотка общества на 2 успеха, тогда он даже подскажет дорогу в трубах. Не извинился — князь уходит, а в трубах он вам больше не помощник.</td></tr>
+<tr><td>3</td><td><b>{{skrepach|Болотный скрипач}} играет.</b> Звук канифоли зовёт к себе. Каждый спящий бросает Чутьё против его Лицедейства 3к6 на 4+: проиграл — проснулся и бредёт на звук; утром его ищут в тумане.</td></tr>
+<tr><td>4</td><td><b>{{muhachi|Мухачи}}.</b> Стоянка оказалась у гнезда. Рой: все до утра Неуклюжи. Можно драться: 3 роя, мелочь, Лицо 1, атака 3к6 на 5+.</td></tr>
+<tr><td>5</td><td><b>{{gromiki|Громики}}.</b> Как в роще: пара, «увлажнить» 3к6 на 5+, отстают от Влажных — на болоте облиться нетрудно.</td></tr>
+<tr><td>6</td><td><b>{{zubzubych|Зуб Зубыч}} ползёт мимо.</b> Медленно, всю ночь, и не может уйти от компании. Не опасен, но разговорчив — спать рядом нельзя: отдыхают только те, кто отошёл от тропы (сцена на поиск места).</td></tr>
+<tr><td>7</td><td><b>{{zhvachniki|Жвачники}} жуют пожитки.</b> 2 на путника, мелочь: Лицо 1, зажевать — 2к6 на 5+, цель Опутана; защита 2к6. Если их не прогнать, к утру одна вещь из пожитков в жвачке: отлепить — Колупание на 1 успех.</td></tr>
+<tr><td>8</td><td><b>{{bobyli|Бобыли}} у кромки болота.</b> N + 1, как в роще: Лицо 1, Коканье 3к6 на 5+, защита 2к6.</td></tr>
+<tr><td>9</td><td><b>{{zhabcy|Жабцы}} квакают.</b> Всю ночь. Пугливые (Акакий, кокши) Напуганы, путники — нет. Боя нет.</td></tr>
+<tr><td>10</td><td><b>{{svetlyachki|Светлячки}}.</b> Назойливо шутят про зеленику и врезаются в деревяшки. Не опасно, зато следующую сцену все Светятся.</td></tr>
+<tr><td>11</td><td><b>{{peskari|Пескарь}} с письмом.</b> Письмо {{edgar|Птозного Эдгара}} сбилось с пути. Прочитать — узнать чужую тайну; доставить — услуга Эдгару.</td></tr>
+<tr><td>12</td><td><b>{{gosha|Подводный Гоша}} выглянул.</b> Угостите мёдом — до конца сессии Гошу можно позвать один раз: он отгонит многоликого Филиппа или жадность на лайке.</td></tr></table></div>
+<h3>{{pustynya|Запретная пустыня}}</h3>
+<div class="tbl"><table><tr><th>2к6</th><th>Событие</th></tr>
+<tr><td>2</td><td><b>{{pustynny_bobyl|Пустынные бобыли}}.</b> По одному на путника, обычные: Лицо 3, броня 1; бьют первыми — Коканье 4к6 на 4+; не вышло — Колупание 3к6 на 4+ (шестёрка — два), цель Опутана в песке и теряет 1 Лицо за раунд; защита 4к6. Непуганы — отпугнуть нельзя.</td></tr>
+<tr><td>3</td><td><b>{{rimma|Костяная Римма}} проверяет.</b> Одна, сильная: Лицо 5, Коканье 4к6 на 4+ (шестёрка — два); защита 4к6. Спрашивает, не к {{kub|кубу}} ли вы. Честный ответ и мирные цели — уходит; соврали — Лицедейство против её Чутья 4к6.</td></tr>
+<tr><td>4</td><td><b>{{yashchery|Синие ящеры}} шалят.</b> У спящих поменялись местами две вещи из пожитков (между разными путниками). Поймать шалуна — Чутьё на 2 успеха; пойманный выдаст одну шалость сородичей.</td></tr>
+<tr><td>5</td><td><b>{{gorny_krab|Горный краб}} любезничает.</b> Притворяется путником и просится к костру. Распознать — кинуть кукич в сторону: краб ловит его без раздумий. Не распознали — утром пропали кукичи (к6).</td></tr>
+<tr><td>6</td><td><b>Ветер с песком.</b> Все без двенадцатикрапинчатых стёкол бросают Крепость, 1 успех: провал — {{pucha|Пуча}}.</td></tr>
+<tr><td>7</td><td><b>Жажда.</b> Самое частое. Кто без воды — своей фляги или воды Бутыльона, — отдыхает, но Разваристость не снимает.</td></tr>
+<tr><td>8</td><td><b>{{almazy|Алмаз}} вылез из-под земли</b> рядом со стоянкой. Стоит 10 кукичей. Но его заметили и другие: к утру — горный краб или синий ящер (бросьте ещё раз 4 или 5).</td></tr>
+<tr><td>9</td><td><b>Караван {{edgar|Птозного Эдгара}}</b> проходит мимо. Можно купить флягу влаги (3 кукича вместо 15) и пыльцу, передать письмо.</td></tr>
+<tr><td>10</td><td><b>{{butylon|Бутыльон}}.</b> Пугается жаждущих глаз и уходит в песок. Если у кого-то нет жажды (есть вода), можно спросить о {{zhemchuzhiny|потерянных жемчужинах}} — один честный ответ.</td></tr>
+<tr><td>11</td><td><b>{{brunyavy_marsh|Брунявый марш}}</b> перекрыл дорогу. До конца следующей сцены через него не пройти — только в обход.</td></tr>
+<tr><td>12</td><td><b>{{brunya|Бруня}} греется у костра.</b> Вызывает крайне тёплые чувства: утром все Воодушевлены.</td></tr></table></div>
+<h3>{{oskolok|Осколок ещё того Зазеркалья}}</h3>
+<div class="tbl"><table><tr><th>2к6</th><th>Событие</th></tr>
+<tr><td>2</td><td><b>Дверь выросла из земли</b> — как во {{do_istukanusa|времена до Истукануса}}. Кто откроет, попадёт в чужой сон (чей — решает ведущий) до утра.</td></tr>
+<tr><td>3</td><td><b>{{palchik_medal|Пальчик-медаль}}</b> подсаживается к дозорным с {{kristall|тёмным кристаллом}} и даёт совет. Совет ложный; поверивших ждёт пакость (Лицедейство против Чутья).</td></tr>
+<tr><td>4</td><td><b>{{kolenych|Коленыч}}</b> невзлюбил чью-то зелёную походку. Как в роще: Лицо 5, полено 5к6 на 5+, три шага ({{p29|абзац 29}}).</td></tr>
+<tr><td>5</td><td><b>Тени уходят от хозяев.</b> До утра у всех −1 кубик к Хождению в копытах. Утром тень возвращается и что-то приносит — одну мелочь из осколка.</td></tr>
+<tr><td>6</td><td><b>Местные молча наблюдают.</b> На контакт не идут. Утром у кого-то пропала одна вещь — забрали «на память».</td></tr>
+<tr><td>7</td><td><b>Враждебные сущности осколка.</b> Самое частое. По одной на путника, обычные: Лицо 3, атака 3к6 на 5+, защита 3к6; у каждой одна странность (ведущий выбирает из каталога или придумывает).</td></tr>
+<tr><td>8</td><td><b>Обыденная вещь тех времён</b> валяется рядом. Ведущий решает, что это и какое у неё свойство.</td></tr>
+<tr><td>9</td><td><b>{{dyrki|Дырка от двери}} проснулась.</b> До утра ведёт в другое место — может, туда, куда вам нужно.</td></tr>
+<tr><td>10</td><td><b>Ветер несёт сказку.</b> Кто вдохнул (Крепость, провал — вдохнул), знает, чем кончится следующая сцена — как странность «Вдохнуть сказку».</td></tr>
+<tr><td>11</td><td><b>{{hrychi|Хрычи}} прилетели</b> погреть хлеб на спине и оставили уголь на память — уголь горит всю следующую ночь без дров.</td></tr>
+<tr><td>12</td><td><b>{{kalachi|Калачи}} сами просятся в котелок.</b> Сытный завтрак: все +1 Лицо сверх отдыха (не выше максимума).</td></tr></table></div>`},
+
+{id:"sh-ev-narrow",sec:"cheat",st:"ok",t:"События: узкие области",lead:"Дозор не набрал сложность — бросьте к6.",b:`
+<p>Сложность дозора — [[rest-watch]]. В темноте +1. Когда событие разрешилось, не-дозорные всё равно отдыхают.</p>
+<p class="note" style="margin-top:0;border:0;padding:0"><b>Как читать бой:</b> N — число путников. «Атака 3к6 на 5+» — пул и порог противника; «защита» — Прыть + броня, успех на 5–6; «Лицо» — сколько урона выдерживает. Ссылка ↗ открывает карточку в атласе.</p>
+<h3>{{truby|Подземные трубы}}</h3>
+<div class="tbl"><table><tr><th>к6</th><th>Событие</th></tr>
+<tr><td>1</td><td><b>{{filipp|Многоликий Филипп}}</b> поднялся из старой части. Один, сильный: Лицо 6, «забрать лицо» — Странность 5к6 на 5+ против Странности цели, урон по Лицу; защита 5к6; в темноте быстр — не убежать. Отступает без броска от брошенного подводного Гоши.</td></tr>
+<tr><td>2</td><td><b>{{zubcy|Зубцы}}.</b> Стая из среднего сегмента: 2 на путника, мелочь: Лицо 1, укус — 2к6 на 5+, урон и цель Разварена; защита 3к6.</td></tr>
+<tr><td>3</td><td><b>Заплутали меж трёх дёсен.</b> Утром Трубоведение на 2 успеха (можно складывать с подготовкой проводника). Провал — сцена уходит на поиски выхода, +1 Разваристость всем.</td></tr>
+<tr><td>4</td><td><b>{{knyaz|Желейный князь}}</b> в проходе. Прыть на 1 успех, чтобы не наступить. Наступили — обижен и уходит; не наступили и поклонились — проводит к выходу (подготовка к Трубоведению).</td></tr>
+<tr><td>5</td><td><b>Записка {{rudlo|Рудло}}</b> подсунута под ногу дозорного: он что-то слышал. Ведущий даёт одну подсказку о ближайшей опасности или тайне.</td></tr>
+<tr><td>6</td><td><b>Свет сверху.</b> Неподалёку выход на землю — утром выбраться без броска.</td></tr></table></div>
+<h3>{{stary_labirint|Старый лабиринт}}</h3>
+<div class="tbl"><table><tr><th>к6</th><th>Событие</th></tr>
+<tr><td>1</td><td><b>{{filipp|Многоликий Филипп}}</b> — у себя дома. Как в трубах, но в первом раунде всегда ходит первым.</td></tr>
+<tr><td>2</td><td><b>Приподнятая темнота.</b> Давит со всех сторон: до утра все Напуганы темнотой — нельзя идти вглубь, только назад.</td></tr>
+<tr><td>3</td><td><b>Безликий бродяга</b> — тот, кто не сохранил лицо. Просит лицо и идёт следом. Безобиден, но отпугивает зазеркальцев: −1 кубик к Сыворотке общества, пока он рядом.</td></tr>
+<tr><td>4</td><td><b>Тайник {{kazimir|Казимира}}.</b> Он прячет здесь ложки — и прихватит одну вещь у вас (его Прыть 5к6 против Чутья дозорных). Зато можно найти тайник: Чутьё на 2 успеха — 1к6 ложек.</td></tr>
+<tr><td>5</td><td><b>Резервуар</b> с {{gosha|подводным Гошей}}. Угостите мёдом — Гоша пригодится против Филиппа.</td></tr>
+<tr><td>6</td><td><b>Эхо из {{krepost|логова Вальтасара}}</b> — понятно, где выход к крепости. Утром дорога туда без броска.</td></tr></table></div>
+<h3>{{labirint_kr|Лабиринт у имения Кривина}}</h3>
+<div class="tbl"><table><tr><th>к6</th><th>Событие</th></tr>
+<tr><td>1</td><td><b>{{sator|Сатор Арепыч}}</b> обходит владения. Один, сильный: Лицо 6, Коканье 5к6 на 4+ (шестёрка — два), струны — Опутан; защита 4к6. Чужаков ночью выдворяет — можно уйти, можно уговорить (Сыворотка общества против Чутья 4к6).</td></tr>
+<tr><td>2</td><td><b>{{smolomas|Смоломаз}}</b> ищет {{sortirny|сортирного сатира}}. Один, сильный: Лицо 5, Коканье 5к6 на 4+; защита 2к6. Подозревает того, кто шутил при нём; убедить — Лицедейство против Чутья 4к6.</td></tr>
+<tr><td>3</td><td><b>{{kolb_strazh|Колбасный страж}}</b> требует свежий укроп за ночлег. Нет укропа — выпроваживает (обычный, Лицо 3, Коканье 3к6 на 4+).</td></tr>
+<tr><td>4</td><td><b>{{peskari|Пескари}}</b> с чужими письмами сворачивают на запах кухни. Чьи письма — решает ведущий.</td></tr>
+<tr><td>5</td><td><b>{{vilki|Вилки}}</b> снуют мимо. За 3 кукича расскажут путь к {{orden|логову босых ведьм}}.</td></tr>
+<tr><td>6</td><td><b>Объедки с приёма {{krivin|Кривина}}.</b> Сытный завтрак: +1 Лицо сверх отдыха.</td></tr></table></div>
+<h3>{{lavovoe|Лавовое озеро}}</h3>
+<div class="tbl"><table><tr><th>к6</th><th>Событие</th></tr>
+<tr><td>1</td><td><b>{{kamnyuki|Камнюки}} обиделись.</b> 2 камнюка, обычные: Лицо 3, броня 2, валун — 5к6 на 5+, цель Опрокинута; защита 3к6.</td></tr>
+<tr><td>2</td><td><b>{{lavan|Лаван}}</b> кидается с острова. Мелкие камнюки — 3к6 на 4+, два броска за ход по разным целям на средней дистанции; сам не подходит.</td></tr>
+<tr><td>3</td><td><b>Жар.</b> Дозорные Разварены; спящие — нет.</td></tr>
+<tr><td>4</td><td><b>Пескарь {{edgar|Эдгара}}</b> несёт письмо камнюкам. Отдать — камнюки добрее (подготовка к общению с ними); прочитать — узнать, о чём Эдгар их просит.</td></tr>
+<tr><td>5</td><td><b>{{maska|Маска}} блеснула на острове.</b> Теперь видно, где она лежит: подготовка к поиску на острове.</td></tr>
+<tr><td>6</td><td><b>Тёплая ночь.</b> Все сухие — Влажный снят; утром +1 Лицо сверх отдыха.</td></tr></table></div>
+<h3>{{ugodya|Грязевые угодья}}</h3>
+<div class="tbl"><table><tr><th>к6</th><th>Событие</th></tr>
+<tr><td>1</td><td><b>{{gryazuny|Грязуны}} атакуют потоками грязи</b> — приняли кого-то за замаскированного мигуна. 2 на путника, мелочь: Лицо 1, обмазать — 3к6 на 5+, цель Неуклюжа; защита 2к6. Кокнуть их нельзя, колупнуть — можно. Хамон — отходят.</td></tr>
+<tr><td>2</td><td><b>{{megune|Мигуны}} и грязуны</b> воюют рядом. Вспышки: все Ошарашены на первый ход утром; можно не вмешиваться.</td></tr>
+<tr><td>3</td><td><b>{{boba|Боба}}</b> — грязун под видом бобыля — лезет к стоянке. Распознать — Чутьё на 2 успеха. Кто попытается его кокнуть, получает грязевой поток: урон 1 и Ошарашен.</td></tr>
+<tr><td>4</td><td><b>{{mopsosviny|Мопсосвины}} с {{buldogzer|бульдогзером}}.</b> Шумно, но мирно: договориться (Механика или Бобылеведение, 1 успех) — починят одну вещь.</td></tr>
+<tr><td>5</td><td><b>{{fantasmogor|Дядюшка Фантасмогор}}</b> донимает грязунов: хочет в угодья за рецептами. Предлагает работу за кукичи.</td></tr>
+<tr><td>6</td><td><b>Обрывок рецепта {{radomir|гнома Радомира}}</b> торчит из грязи. Один рецепт [[q-brew|варева]] на выбор ведущего.</td></tr></table></div>`},
+
+{id:"pr-seals",sec:"print",st:"ok",t:"Ведомость печатей",lead:"Общий лист на группу, с двух сторон: слева цели, сверху имена путников. Клетки квадратные — под печать. Три печати — новый уровень.",b:`
+<p>Печатайте на одном листе с двух сторон (переворот по длинному краю). Клетки — 15×15 мм, пунктирный круг 12 мм — ориентир для печати. У общих целей вместо клеток — одна широкая в рамке: одна печать на всех.</p>
+<div data-print="seals"></div>
+<p>Правила — [[q-growth]].</p>`},
+
+{id:"pr-rel",sec:"print",st:"ok",t:"Отношение зазеркальцев",lead:"Общий лист на группу: кто из зазеркальцев как к вам относится. Отмечайте карандашом.",b:`
+<div data-print="rel"></div>
+<p>Правила — [[q-attitude]].</p>`},
+
+{id:"worlds",sec:"base",st:"ok",t:"Два мира",lead:"Игра идёт в реальном Петербурге и в Зазеркалье. У каждого мира своя сторона листа.",b:`
+<p>Персонажи — обычные люди, которые попадают в Зазеркалье через порталы ПВЗ: зеркало за ширмой. Большая часть правил одинакова в обоих мирах. Различаются названия навыков, характеристика, на которую опирается навык, вещи, деньги и трек урона.</p>
+<div class="tbl"><table><tr><th></th><th>Реальный мир (сторона А)</th><th>Зазеркалье (сторона Я)</th></tr>
+<tr><td>Имя</td><td>настоящее</td><td>зазеркальное, вписывается в игре</td></tr>
+<tr><td>Характеристики</td><td colspan="2">общие — [[stats]]</td></tr>
+<tr><td>Навыки</td><td>обычные названия</td><td>зазеркальные названия — [[skills]]</td></tr>
+<tr><td>Уровни навыков</td><td colspan="2">общие — [[levels]]</td></tr>
+<tr><td>Трек урона</td><td>[[health|Здоровье]]</td><td>[[face|Лицо]]</td></tr>
+<tr><td>Трек сил</td><td>[[fatigue|Усталость]]</td><td>[[fatigue|Разваристость]]</td></tr>
+<tr><td>Деньги и вещи</td><td>рубли, инвентарь</td><td>кукичи, пожитки</td></tr></table></div>
+<p>Как персонаж переходит между мирами: [[enter]] и [[wake]].</p>`},
+
+{id:"excluded",sec:"base",st:"ok",t:"Исключено из кампании",lead:"Персонажи и вещи из видео, которых в кампании нет.",b:`
+<ul><li><b>Подмыхан и его нектар</b> — не используются. Его место у прохода в запретную пустыню занял Бутыльон — [[q-desert]].</li></ul>
+<p>Если в тексте видео или в атласе попадётся что-то из этого списка, считайте, что этого нет. Список пополняется ведущим.</p>`},
+{id:"stats",sec:"base",st:"ok",t:"Характеристики",lead:"Шесть характеристик от 1 до 5 (у противников может быть больше). Значение характеристики — это число кубиков в броске.",b:`
+<div class="tbl"><table><tr><th>Характеристика</th><th>Сокр.</th><th>Что описывает</th></tr>
+<tr><td>Крепость</td><td>КР</td><td>сила, выносливость; задаёт [[health|Здоровье]] и [[face|Лицо]]</td></tr>
+<tr><td>Прыть</td><td>ПР</td><td>ловкость, скорость, реакция</td></tr>
+<tr><td>Смекалка</td><td>СМ</td><td>ум, логика, расчёт</td></tr>
+<tr><td>Чутьё</td><td>ЧУ</td><td>внимательность, интуиция, нюх</td></tr>
+<tr><td>Обаяние</td><td>ОБ</td><td>умение договариваться и нравиться</td></tr>
+<tr><td>Странность</td><td>СТ</td><td>насколько персонаж «не отсюда»; заклинательная характеристика — пул для [[odd-rules|странностей]]</td></tr></table></div>
+<p>Характеристики общие для обоих миров. Без навыка их бросают как [[bare|голую характеристику]].</p>`},
+
+{id:"skills",sec:"base",st:"ok",t:"Навыки",lead:"Шестнадцать навыков. У каждого два названия и две опорные характеристики — по одной на мир.",b:`
+<p>Навык один и тот же в обоих мирах, но в Зазеркалье он может опираться на другую характеристику. Уровень навыка общий: см. [[levels]].</p>
+<div class="tbl"><table><tr><th>Реальный мир</th><th>Хар.</th><th>Зазеркалье</th><th>Хар.</th></tr>${SK.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join("")}</table></div>
+<p class="note">Соблазнение заменило Массаж; зазеркальная пара осталась прежней — Щекотка.</p>`},
+
+{id:"levels",sec:"base",st:"ok",t:"Уровни навыков",lead:"Уровень от 0 до 3 задаёт, какой результат на кубике считается успехом.",b:`
+<div class="tbl"><table><tr><th>Уровень</th><th>Название</th><th>Успех на кубике</th></tr>
+<tr><td>0</td><td>не умею</td><td>6</td></tr><tr><td>1</td><td>знаком</td><td>5–6</td></tr><tr><td>2</td><td>умею</td><td>4–6</td></tr><tr><td>3</td><td>мастер</td><td>4–6, шестёрка = два успеха</td></tr></table></div>
+<p>Уровень общий для обеих сторон листа: Мастеровитость 2 означает и Колупание 2. Временно поднять уровень можно [[prep|подготовкой]].</p>
+<p>Мастерство (уровень 3) дают только учителя — см. [[q-growth]]. Оно отличается от уровня 2 только на задачах, где нужно больше одного успеха — см. [[odds]].</p>`},
+
+{id:"enter",sec:"mirror",st:"ok",t:"Вход через ПВЗ",lead:"В Зазеркалье попадают только вечером — через зеркало за ширмой в примерочной ПВЗ.",b:`
+<div class="rule"><p>Войти можно только вечером. Днём зеркало примерочной — просто зеркало.</p></div>
+<p>Порталы разбросаны по всему Петербургу, но открываются единицам. Стучать бесполезно: Поленыч сам выходит из зеркала за теми, кому путь открыт. Его дружеский жест — преклонить колено.</p>
+<p>Персонаж уходит в зеркало целиком; в реальном мире на его месте никто не остаётся. Как это выглядит для работника — [[pvz-worker]]. Вещи, которые он несёт, [[items|отражаются]].</p>
+<p>Обратно возвращаются только утром — [[wake|через сон]].</p>`},
+
+{id:"wake",sec:"mirror",st:"ok",t:"Возвращение через сон",lead:"Чтобы вернуться, нужно уснуть в Зазеркалье с намерением проснуться. Утром персонаж выходит из того же зеркала ПВЗ, через которое вошёл, — выспавшимся.",b:`
+<div class="rule"><p>Сон-возвращение — отдельное действие, а не [[rest|отдых]]. Отдыхать в Зазеркалье можно сколько угодно, не покидая его.</p></div>
+<ul><li><b>Куда:</b> в тот же ПВЗ и из того же зеркала, через которое персонаж [[enter|вошёл]].</li>
+<li><b>Когда:</b> утром следующего дня — см. [[time]].</li>
+<li><b>В каком состоянии:</b> выспавшимся — наяву это полноценная ночь сна.</li></ul>
+<h3>Уточнения</h3>
+<ul><li>В безопасном месте персонаж засыпает без броска. В опасном — проверка Сноходчества на 1 успех; при провале уснуть не получается.</li>
+<li>Безликий проснуться не может: сон его не отражает — см. [[faceless]]. Существа Зазеркалья через сон тоже не уходят — см. [[q-exit]].</li>
+<li>Если персонажи засыпают порознь, каждый выходит из зеркала сам по себе; в Зазеркалье остаются только те, кто не спит.</li></ul>`},
+
+{id:"time",sec:"mirror",st:"ok",t:"Время между мирами",lead:"Вечером вошёл — утром вышел. Сколько бы ни прошло в Зазеркалье, наяву проходит одна ночь.",b:`
+<p>Персонаж может провести в Зазеркалье хоть неделю — наяву он отсутствует ровно одну ночь, с вечера до утра. Всё это время его нет нигде: ни дома, ни на связи.</p>
+<p>Пока персонаж не [[wake|вернулся]], наяву длится та самая ночь. Застрять в Зазеркалье (например, [[faceless|без лица]]) — значит, что утро для него не наступает.</p>`},
+
+{id:"pvz-worker",sec:"mirror",st:"ok",t:"Взгляд работника ПВЗ",lead:"Вечером клиент зашёл в примерочную и не вышел. Утром кто-то вышел из примерочной, хотя ПВЗ только открылся.",b:`
+<p>Никакого двойника на месте персонажа не остаётся. Работник просто видит то, что видит:</p>
+<ul><li><b>Первые разы</b> он решает, что клиент выбежал, пока он отвернулся, или что ему показалось.</li>
+<li><b>Потом</b> начинает относиться к этим клиентам подозрительно: присматривается к примерочной, задаёт вопросы, может что-то предпринять.</li></ul>
+<p>Работник ПВЗ — сквозной персонаж реального мира, чьё отношение к группе меняется от визита к визиту. Механика — [[q-pvz]].</p>
+<p>Своё отражение персонаж может призвать сам — это отдельная тема: [[q-reflection]].</p>`},
+
+{id:"items",sec:"mirror",st:"ok",t:"Отражённые вещи",lead:"Вещи переходят вместе с персонажем, но превращаются в свой зазеркальный аналог.",b:`
+<p>Что именно получится из вещи, решает ведущий. Принцип — вещь остаётся «собой», но в логике Зазеркалья.</p>
+<div class="tbl"><table><tr><th>Наяву</th><th>В Зазеркалье (примеры)</th></tr>
+<tr><td>рубли</td><td>пакичи</td></tr><tr><td>телефон</td><td>свой пескарь: носит записки, но может свернуть на запах кухни</td></tr>
+<tr><td>ключи</td><td>ключ от чего-то другого — неизвестно чего</td></tr><tr><td>проездной</td><td>билет на караван Птозного Эдгара</td></tr>
+<tr><td>зонт</td><td>укрытие от громиков</td></tr><tr><td>шоколадка</td><td>скип — лакомство синих ящеров</td></tr></table></div>
+<p>Полный список вещей, которые игроки берут с собой, — [[gear-home]].</p>
+<h3>Обратный путь</h3>
+<p>При [[wake|возвращении]] обратно отражаются только вещи, которые персонаж держал, засыпая. Всё остальное остаётся в Зазеркалье, а наяву эти вещи пропадают.</p>`},
+
+{id:"daynight",sec:"order",st:"ok",t:"День и темнота",lead:"В Зазеркалье сменяются светлое время и темнота. Днём за миром смотрит Оно, в темноте — Она.",b:`
+<div class="rule"><p><b>Сцена</b> — эпизод в одном месте с одной целью; <b>сессия</b> — одна встреча за столом. Где кончается сцена, когда сменяются день и темнота — решает ведущий.</p>
+<p>Смену объявляет ведущий — например, раз в несколько сцен или после [[rest|отдыха]]. Отдыхать можно в любое время суток.</p></div>
+<p>От времени суток зависит, чей [[oversight|надзор]] действует и насколько [[night|опасна темнота]]. Сон-[[wake|возвращение]] выводит персонажа наяву всегда утром, в какое бы время суток Зазеркалья он ни уснул.</p>`},
+
+{id:"oversight",sec:"order",st:"ok",t:"Метки надзора",lead:"У каждого персонажа две шкалы по три клетки — Оно и Она. Три метки — наказание.",b:`
+<div class="tbl"><table><tr><th></th><th>Оно</th><th>Она</th></tr>
+<tr><td>Когда смотрит</td><td>в светлое время</td><td>в темноте</td></tr>
+<tr><td>За что метка</td><td colspan="2">за [[misdeeds|проступок]], совершённый в его / её время</td></tr>
+<tr><td>Три метки</td><td>ссылка в [[all-down|сладкий хлев]]</td><td>к Видусу — цыплёнком в чак-чак</td></tr></table></div>
+<ul><li>Если персонаж старается совершить проступок незаметно, он бросает Хождение в копытах на 1 успех. Успех — метки нет.</li>
+<li>После наказания шкала обнуляется.</li>
+<li>[[faceless|Безликому]] метки не ставятся: Оно и Она его не узнают.</li>
+<li>Шкалы есть только на стороне Я [[sheet|листа]]: наяву никто не надзирает.</li></ul>
+<p class="note">Из лора: Оно никого не держит в хлеву вечно — «кто-то пробыл там всего пару секунд и даже хочет обратно». Цыплёнок в чак-чаке побеждает, если сумеет выбраться.</p>`},
+
+{id:"misdeeds",sec:"order",st:"ok",t:"Проступки",lead:"Оно и Она карают за пустяки из своих списков. Настоящие злодейства — кража, драка — не их дело: с ними разбирается сам мир.",b:`
+<h3>Перед Оно (светлое время)</h3>
+<ul><li>ходьба на руках</li><li>поклонение сыру</li><li>сквернописьменность</li><li>поедание уравнения времени</li><li>уклонение от появления перед Истуканусом</li><li>кинуть сыр в небо — ничто не может быть желтее Оно (но если рядом громики, Оно отвлечётся на них и забудет)</li></ul>
+<h3>Перед Ею (темнота)</h3>
+<ul><li>щекотка — Она считает её слишком пустяковым испытанием и времяпровождением</li><li>прочие пустяковые занятия — по решению ведущего</li></ul>
+<p>Списки пополняет ведущий. Принцип: проступок — это что-то нелепое или пустяковое, а не опасное. За проступок ставится [[oversight|метка надзора]].</p>`},
+
+{id:"night",sec:"order",st:"ok",t:"Опасности темноты",lead:"В темноте Зазеркалье становится опаснее.",b:`
+<ul><li><b>Агрессивные</b> — те, у кого это сказано в карточке (бобыли, пустынные бобыли, зубцы, жвачники, осы, ягодники, коленыч, многоликий Филипп, Боба), — бросают на 1 кубик больше во [[opposed|встречных бросках]].</li>
+<li>Появляется жадность на лайке: рядом с ней замедляются и останавливаются катушки. Прогоняют её подводным Гошей или кукичами.</li>
+<li>Выходит сырный Джо — днём он прячется от Оно.</li>
+<li>Некоторые места открыты только в темноте, например подпольный щекоточный клуб — прямо под носом у Её.</li></ul>
+<p>Дозор на [[rest-watch|отдыхе]] — сложность +1.</p>`},
+
+{id:"odd-rules",sec:"odd",st:"ok",t:"Как работают странности",lead:"Странность — заклинательная характеристика. С её помощью персонаж совершает странности: от лёгкого провала сквозь землю до призыва собственного отражения.",b:`
+<div class="rule"><p>Бросок: пул — Странность, успех на 5–6, как у [[bare|голой характеристики]]. Нужно набрать сложность странности (1–3 успеха). Каждая попытка стоит 1 Разваристость (наяву — Усталость), получилось или нет. Если шкала уже на 6, платят 1 Лицом (наяву — Здоровьем).</p></div>
+<ul><li><b>Подготовка</b> работает как обычно: ритуал, нужный предмет или место силы дают +1 к уровню — успех на 4–6 ([[prep]]).</li>
+<li><b>Наяву</b> странности работают, но реальность сопротивляется: сложность +1.</li>
+<li><b>Против существа</b> странность бросается [[opposed|встречно]]: цель бросает указанную характеристику, эффект срабатывает, если у тебя больше успехов и набрана сложность.</li>
+<li><b>Сверх сложности.</b> У некоторых странностей лишние успехи усиливают эффект — это написано в описании.</li>
+<li><b>Отдача.</b> По общему правилу провал — просто «не вышло» ([[outcome]]). Если у странности есть отдача, она срабатывает при провале.</li>
+<li><b>Тип действия</b> указан у каждой странности: основное, движение или реакция — см. [[act-turn]]. <b>Длительность:</b> мгновенно, раунд или до конца сцены — указано в описании.</li>
+<li><b>Проступки.</b> Некоторые странности — проступки перед Оно или Ею ([[misdeeds]]).</li></ul>
+<h3>Каталог — 40 странностей</h3><ul><li>[[odd-fight|Бой и власть]] — 11</li><li>[[odd-guard|Защита]] — 5</li><li>[[odd-move|Перемещение]] — 5</li><li>[[odd-help|Поддержка]] — 5</li><li>[[odd-word|Слово и облик]] — 6</li><li>[[odd-know|Знание]] — 4</li><li>[[odd-special|Особые]] — 4</li></ul>`},
+
+{id:"odd-learn",sec:"odd",st:"ok",t:"Как учатся странностям",lead:"На старте персонаж не знает ни одной странности. Им учатся по ходу игры у зазеркальцев.",b:`
+<ul><li><b>Старт:</b> 0 странностей.</li>
+<li><b>Максимум:</b> столько странностей, сколько очков в [[stats|Странности]].</li>
+<li><b>Учителя:</b> у каждой странности в каталоге указан, кто ей учит. Найти учителя и убедить его — уже приключение.</li>
+<li><b>Плата — услуга,</b> а не кукичи: Сатор Арепыч попросит помочь с охраной имения, Магога — три шага, синие ящеры — шалость. Так же учителя дают мастерство — третий уровень навыка ([[q-growth]]).</li></ul>
+<p><b>Забыть странность</b> можно, чтобы выучить новую, когда достигнут максимум: старая уходит, место освобождается.</p>`},
+{id:"odd-fight",sec:"odd",st:"ok",t:"Бой и власть",lead:"Атакующие и подчиняющие странности.",b:`
+<div class="tbl"><table><tr><th>Странность</th><th>Слож.</th><th>Тип и эффект</th><th>Учитель</th><th>Абзац</th></tr><tr><td><b>Клокочущий запах</b></td><td>1</td><td><i class="atype at-main">основное</i>Встречный бросок против Крепости цели на ближней или средней дистанции. Каждый лишний успех — 1 урон. До конца сцены бобыли считают тебя своим, а Сатор Арепыч — бобылем.</td><td>бобыли</td><td>5</td></tr><tr><td><b>Кокнуть издалека</b></td><td>2</td><td><i class="atype at-main">основное</i>Коканье на средней дистанции, пул — Странность. Урон — лишние успехи во встречном броске; бобыля кокает как обычное Коканье.</td><td>Вальтасар</td><td>35</td></tr><tr><td><b>Впиться в печень</b></td><td>2</td><td><i class="atype at-main">основное</i>Язык выстреливает на среднюю дистанцию: встречный против Прыти цели. Урон — лишние успехи, и цель [[cond-weak|Разварена]]. Отдача: язык прилипает — до конца раунда ты не можешь говорить.</td><td>н'ясортеп</td><td>12</td></tr><tr><td><b>Анекдот Гузлика</b></td><td>1</td><td><i class="atype at-main">основное</i>Цели, способные смеяться, бросают Чутьё против твоих успехов; проигравшие [[cond-bind|Ошарашены]]. Целей — 1 + каждый успех сверх сложности.</td><td>Гузлик</td><td>173</td></tr><tr><td><b>Похомить</b></td><td>2</td><td><i class="atype at-main">основное</i>Касание: цель [[cond-weak|Колосится]] до конца сцены; с успехом сверх сложности ещё и [[cond-weak|Разварена]]. Пацаноидов похомить нельзя.</td><td>Пахомий</td><td>16</td></tr><tr><td><b>Захват речи</b></td><td>3</td><td><i class="atype at-main">основное</i>Цель на ближней или средней дистанции [[cond-bind|Заполиплена]] до конца раунда: говорит только то, что говоришь ты, и не может применять странности. Отдача: до отдыха ты говоришь чужим голосом.</td><td>полипы — через большого Диму</td><td>45</td></tr><tr><td><b>Укрощение Григорьев</b></td><td>2</td><td><i class="atype at-main">основное</i>Неразумное существо выполняет простые команды до конца сцены. Если перед этим не извинился — сложность +1.</td><td>цирк Фантасмогора</td><td>173</td></tr><tr><td><b>Лицо Видуса</b></td><td>2</td><td><i class="atype at-main">основное</i>Мелкие существа на ближней и средней дистанции (калачи, ягодники, петухи) разбегаются. Один крупный противник бросает Странность против твоих успехов; проиграв, [[cond-bind|Ошарашен]]. Отдача: сфальшивил — метка Её.</td><td>Видус</td><td>114</td></tr><tr><td><b>Ходьба на руках</b></td><td>1</td><td><i class="atype at-move">движение</i>Твоё движение — на руках. Ноги свободны: до конца сцены ты [[cond-buff|Раскрепощён]]. Днём это проступок перед Оно. {{shnekishmyak|Шнеки-Шмяк}} принимает идущего на руках за своего и пропускает в трубы.</td><td>Птозный Эдгар</td><td>173, 220</td></tr><tr><td><b>Брунявый марш</b></td><td>3</td><td><i class="atype at-main">основное</i>Вызвать марш поперёк прохода или участка шириной до средней дистанции: до конца сцены его никто не может пересечь — ни враги, ни ты.</td><td>братья Мишеневы</td><td>111</td></tr><tr><td><b>Расщепить атом</b></td><td>3</td><td><i class="atype at-main">основное</i>Уничтожить неживой предмет размером до двери. Отдача: 1 урон тебе.</td><td>синие ящеры — в награду за шалость</td><td>61</td></tr></table></div><p class="note">Общие правила — [[odd-rules]]. «Абзац» — номер эпизода во вкладке «Текст» атласа. Сложности и эффекты поправим по итогам игры.</p>`},
+
+{id:"odd-guard",sec:"odd",st:"ok",t:"Защита",lead:"Странности, которые спасают от урона и плена. «Реакция» — применяется в ответ, вне своего хода.",b:`
+<div class="tbl"><table><tr><th>Странность</th><th>Слож.</th><th>Тип и эффект</th><th>Учитель</th><th>Абзац</th></tr><tr><td><b>Сократить вершины</b></td><td>1</td><td><i class="atype at-react">реакция</i>На атаку по тебе: каждый успех снимает 1 урон. Вне боя — пролезть в щель шириной с ладонь.</td><td>Магога</td><td>104</td></tr><tr><td><b>Провалиться сквозь землю</b></td><td>2</td><td><i class="atype at-react">реакция</i>Избежать атаки целиком или под землёй переместиться на среднюю дистанцию. Отдача: застрял по пояс — [[cond-bind|Ошарашен]].</td><td>Магога</td><td>104</td></tr><tr><td><b>Выворачивание</b></td><td>2</td><td><i class="atype at-react">реакция</i>Немедленно выскользнуть из хватки, пут, ловушки или клетки. До конца сцены ты [[cond-buff|Вывернут]].</td><td>кожник — в сладком хлеву</td><td>173</td></tr><tr><td><b>Отрастить раковину</b></td><td>2</td><td><i class="atype at-main">основное</i>До конца сцены ты [[cond-buff|В раковине]].</td><td>говорящие холмы</td><td>152</td></tr><tr><td><b>Окумекиться</b></td><td>2</td><td><i class="atype at-react">реакция</i>Когда Лицо или Здоровье падает до 0: встаёшь с 1. Раз за сцену.</td><td>Сатор Арепыч — видел это тысячи раз</td><td>121</td></tr></table></div><p class="note">Общие правила — [[odd-rules]]. «Абзац» — номер эпизода во вкладке «Текст» атласа. Сложности и эффекты поправим по итогам игры.</p>`},
+
+{id:"odd-move",sec:"odd",st:"ok",t:"Перемещение",lead:"Как попасть туда, куда не пускают.",b:`
+<div class="tbl"><table><tr><th>Странность</th><th>Слож.</th><th>Тип и эффект</th><th>Учитель</th><th>Абзац</th></tr><tr><td><b>Зависнуть в воздухе</b></td><td>2</td><td><i class="atype at-move">движение</i>Взлететь вместо движения. До конца сцены ты [[cond-buff|Паришь]]: достать тебя можно только со средней или дальней дистанции. Отдача: падаешь — 1 урон.</td><td>Магога</td><td>104</td></tr><tr><td><b>Прыжки с кротами</b></td><td>1</td><td><i class="atype at-move">движение</i>Вместо обычного движения — прыжок на среднюю дистанцию или на высоту дерева, до любого дупла.</td><td>цирк Фантасмогора</td><td>173</td></tr><tr><td><b>Удлинить отросток</b></td><td>1</td><td><i class="atype at-main">основное</i>Дотянуться на среднюю дистанцию: взять предмет или ударить Дракой. Успех сверх сложности — на дальнюю дистанцию. Отдача: отросток не втягивается — [[cond-weak|Неуклюж]] до отдыха.</td><td>автор объявления на бесхозном камне</td><td>93</td></tr><tr><td><b>Вихрь</b></td><td>3</td><td><i class="atype at-main">основное</i>Пара вихрей переносит всю группу в любую видимую точку на дальней дистанции. Рассеивается от толчка: если до перехода кого-то из группы атаковали, не срабатывает.</td><td>профессор Игорь Диод</td><td>140</td></tr><tr><td><b>Растягивание дырок</b></td><td>2</td><td><i class="atype at-main">основное</i>Растянуть любую дырку — в сыре, заборе, стене, сети — до размера прохода. Дырку от двери — сложность 3: проход в осколок ещё того Зазеркалья.</td><td>Сырный Джо</td><td>173</td></tr></table></div><p class="note">Общие правила — [[odd-rules]]. «Абзац» — номер эпизода во вкладке «Текст» атласа. Сложности и эффекты поправим по итогам игры.</p>`},
+
+{id:"odd-help",sec:"odd",st:"ok",t:"Поддержка",lead:"Лечение и помощь себе и союзникам.",b:`
+<div class="tbl"><table><tr><th>Странность</th><th>Слож.</th><th>Тип и эффект</th><th>Учитель</th><th>Абзац</th></tr><tr><td><b>Шепоток</b></td><td>1</td><td><i class="atype at-main">основное</i>Восстановить союзнику 1 Лицо (наяву — Здоровье) за каждый успех. Потерянное лицо не возвращает.</td><td>доктор Лист</td><td>157</td></tr><tr><td><b>Игра на подмышках</b></td><td>2</td><td><i class="atype at-main">основное</i>Союзники на ближней дистанции [[cond-buff|Воодушевлены]].</td><td>цирк Фантасмогора</td><td>173</td></tr><tr><td><b>Быть себе битубисасом</b></td><td>1</td><td><i class="atype at-react">реакция</i>Перед своей проверкой: ты сам себе подготовка на эту проверку.</td><td>Кловунец</td><td>177</td></tr><tr><td><b>Гуттаперчивость</b></td><td>1</td><td><i class="atype at-main">основное</i>Нужен гриб. До конца сцены ты [[cond-buff|Гуттаперчив]].</td><td>Идибикс</td><td>120</td></tr><tr><td><b>Ведьмин смех</b></td><td>1</td><td><i class="atype at-main">основное</i>Осветить смехом всё вокруг на средней дистанции: до конца сцены ты [[cond-buff|Светишься]], светобоязненные уходят.</td><td>орден босых ведьм</td><td>26</td></tr></table></div><p class="note">Общие правила — [[odd-rules]]. «Абзац» — номер эпизода во вкладке «Текст» атласа. Сложности и эффекты поправим по итогам игры.</p>`},
+
+{id:"odd-word",sec:"odd",st:"ok",t:"Слово и облик",lead:"Общение, обман и чужие лица.",b:`
+<div class="tbl"><table><tr><th>Странность</th><th>Слож.</th><th>Тип и эффект</th><th>Учитель</th><th>Абзац</th></tr><tr><td><b>Сальто природы</b></td><td>1</td><td><i class="atype at-move">движение</i>Твоё движение — сальто. Зазеркальцы признают тебя своим: до конца сцены ты [[cond-buff|Свой]].</td><td>Магога</td><td>104</td></tr><tr><td><b>Волнистая речь</b></td><td>1</td><td><i class="atype at-main">основное</i>Сказанное понимают только выбранные слушатели. Отдача: понимают все, кроме выбранных.</td><td>Орлундий — «лишь среди волн он может быть собой»</td><td>1, 72</td></tr><tr><td><b>Показать голос</b></td><td>1</td><td><i class="atype at-main">основное</i>Твой голос становится видимым: можно говорить без звука, под водой, сквозь шум — до дальней дистанции.</td><td>таинственный незнакомец</td><td>1</td></tr><tr><td><b>Сменить лицо</b></td><td>2</td><td><i class="atype at-main">основное</i>До конца сцены принять облик увиденного существа: внешне не отличить, подготовка к Лицедейству. Отдача: многоликий Филипп узнаёт, где ты.</td><td>Епень</td><td>188</td></tr><tr><td><b>Тонкий феодал</b></td><td>1</td><td><i class="atype at-main">основное</i>Иллюзия, будто феодал появился везде: пугливые бегут, остальные [[cond-bind|Напуганы]]. Рвётся от первого касания.</td><td>Фубоня</td><td>77, 85</td></tr><tr><td><b>Кислое касание</b></td><td>1</td><td><i class="atype at-main">основное</i>Касанием сделать еду или существо кислым до отдыха (<i>до следующего обеда</i>): этого никто не захочет есть (Михаил и Баранча отстанут), существо становится [[cond-weak|Кислым]].</td><td>Борька</td><td>95</td></tr></table></div><p class="note">Общие правила — [[odd-rules]]. «Абзац» — номер эпизода во вкладке «Текст» атласа. Сложности и эффекты поправим по итогам игры.</p>`},
+
+{id:"odd-know",sec:"odd",st:"ok",t:"Знание",lead:"Узнать то, что скрыто.",b:`
+<div class="tbl"><table><tr><th>Странность</th><th>Слож.</th><th>Тип и эффект</th><th>Учитель</th><th>Абзац</th></tr><tr><td><b>Вдохнуть сказку</b></td><td>3</td><td><i class="atype at-main">основное</i>Ведущий честно говорит, чем закончится текущая сцена или затея, если ничего не менять. Раз за сессию.</td><td>братья Мишеневы — помнят ветер, разносивший сказки</td><td>84</td></tr><tr><td><b>Вчерашний сон</b></td><td>2</td><td><i class="atype at-main">основное</i>Узнать вчерашний сон существа, которого касаешься: что его тревожит и чего оно хочет.</td><td>горбатый крупоед</td><td>25</td></tr><tr><td><b>Отпустить тень</b></td><td>2</td><td><i class="atype at-main">основное</i>Тень уходит на сцену: разведывает всё до дальней дистанции (ты видишь её глазами) или несёт до трёх пожитков. Отдача: тень не вернулась до отдыха — −1 кубик к Хождению в копытах.</td><td>братья Мишеневы — помнят тени, ходившие отдельно</td><td>84</td></tr><tr><td><b>Чужие голоса</b></td><td>1</td><td><i class="atype at-main">основное</i>Увидеть следы голосов, звучавших здесь за последний час: кто и что говорил.</td><td>Рудло — боится незваных ушей</td><td>59</td></tr></table></div><p class="note">Общие правила — [[odd-rules]]. «Абзац» — номер эпизода во вкладке «Текст» атласа. Сложности и эффекты поправим по итогам игры.</p>`},
+
+{id:"odd-special",sec:"odd",st:"ok",t:"Особые",lead:"Странности, которые меняют правила игры.",b:`
+<div class="tbl"><table><tr><th>Странность</th><th>Слож.</th><th>Тип и эффект</th><th>Учитель</th><th>Абзац</th></tr><tr><td><b>Повторить шаг</b></td><td>3</td><td><i class="atype at-react">реакция</i>Сразу после любого броска — своего или чужого: отменить его и перебросить. Отдача: шаг повторяет тебя — ты [[cond-bind|В петле]].</td><td>неизвестно — говорят, это след дегенератора</td><td>76</td></tr><tr><td><b>Призвать отражение</b></td><td>2</td><td><i class="atype at-main">основное</i>Творят в Зазеркалье: из примерочной ПВЗ наяву выходят двойники всех, кто вошёл через него вместе с тобой, и проживают за вас ночь — работник ничего не заподозрит. Альтернативное использование — двойник на раунд: ты [[cond-buff|С двойником]]. Отдача: отражение что-то натворило (ведущий бросает к6).</td><td>Поленыч</td><td>50</td></tr><tr><td><b>Разбудить дверь</b></td><td>3</td><td><i class="atype at-main">основное</i>Дырка от двери на сцену ведёт в осколок ещё того Зазеркалья или в сон спящего рядом существа.</td><td>пальчик медаль — с подвохом</td><td>84, 91</td></tr><tr><td><b>Кинуть сыр в небо</b></td><td>1</td><td><i class="atype at-main">основное</i>Нужен сыр. Если рядом громики — они уходят, и Оно не ставит метку. Если громиков нет — метка Оно.</td><td>Сырный Джо</td><td>193</td></tr></table></div><p class="note">Общие правила — [[odd-rules]]. «Абзац» — номер эпизода во вкладке «Текст» атласа. Сложности и эффекты поправим по итогам игры.</p>`},
+
+{id:"cond-rules",sec:"cond",st:"ok",t:"Как работают состояния",lead:"Состояние — временный эффект на персонаже или противнике: ослабление, помеха, недуг или усиление.",b:`
+<ul><li><b>Длительность</b> указана у каждого состояния: ход, раунд, сцена, до отдыха или пока не снимут особым средством.</li>
+<li><b>Одно и то же состояние не складывается</b>: повторное наложение только продлевает его. Исключение — Разварен у противника, он копится до −2.</li>
+<li><b>Разные состояния складываются</b>: Колосится и Разварен вместе дают −3 кубика (пул не меньше одного).</li>
+<li><b>Снятие.</b> Почти всё снимает [[rest|отдых]] или конец сцены. [[cond-ill|Недуги]] снимает только лечение.</li>
+<li><b>Противники</b> не имеют трека Разваристости — для них Разварен работает иначе (см. [[cond-weak]], [[q-foes]]).</li>
+<li><b>На листе</b> состояния отмечают карандашом на полях.</li></ul>
+<h3>Разделы</h3><ul><li>[[cond-weak]] — 6</li><li>[[cond-bind]] — 6</li><li>[[cond-ill]] — 4</li><li>[[cond-buff]] — 10</li></ul>`},
+
+{id:"cond-weak",sec:"cond",st:"ok",t:"Ослабления",lead:"Состояния, которые снижают пул или мешают отдельным навыкам.",b:`
+<div class="tbl"><table><tr><th>Состояние</th><th>Эффект</th><th>Длится / снимает</th><th>Откуда</th></tr><tr><td><b>Разварен</b><br><small>наяву — Устал</small></td><td>Игрок: +1 Разваристость (наяву — Усталость). Противник: −1 кубик ко всем броскам; накапливается до −2.</td><td>до конца сцены (у противника); у игрока — как трек: снимает [[rest|отдых]]</td><td>Впиться в печень, изнурение</td></tr><tr><td><b>Колосится</b></td><td>−1 кубик ко всем броскам</td><td>до конца сцены</td><td>Похомить, вялость, дурман</td></tr><tr><td><b>Неуклюж</b></td><td>−1 кубик к Прыти и навыкам на Прыти</td><td>пока не уйдёт помеха; отдых</td><td>длинный отросток, тяжёлая ноша, мокрая одежда</td></tr><tr><td><b>Кислый</b></td><td>−1 кубик к навыкам на Обаянии; тебя никто не съест</td><td>до отдыха (<i>до следующего обеда</i>)</td><td>Кислое касание, Борька</td></tr><tr><td><b>Красные уши</b></td><td>[[misdeeds|Проступки]] в темноте замечены без броска; −1 кубик к Обману</td><td>до конца сцены</td><td>мысли о щекотке, смущение</td></tr><tr><td><b>Влажный</b></td><td>громики отстают; портрет Алевтины смывается; огонь не горит, бумага раскисает</td><td>пока не высохнешь</td><td>громики, болото, дождь</td></tr></table></div>`},
+
+{id:"cond-bind",sec:"cond",st:"ok",t:"Сковывания",lead:"Состояния, которые лишают хода, движения или странностей.",b:`
+<div class="tbl"><table><tr><th>Состояние</th><th>Эффект</th><th>Длится / снимает</th><th>Откуда</th></tr><tr><td><b>Заполиплен</b></td><td>нельзя применять [[odd-rules|странности]]; говоришь только то, что велит наложивший (или молчишь)</td><td>до конца раунда, если не сказано иное</td><td>Захват речи, полипы</td></tr><tr><td><b>Опутан</b></td><td>нет движения; −1 кубик к атакам и защите. Если держат колупанием — вырваться основным действием: Крепость против Колупания держащего</td><td>Вывернут; Колупание или Мастеровитость на 1 успех; помощь союзника</td><td>струны Сатора Арепыча, сети, ловушки</td></tr><tr><td><b>Опрокинут</b></td><td>встать — это твоё [[act-move|движение]]; атаки по тебе с ближней дистанции +1 кубик</td><td>встать</td><td>Ванька Буран, коленыч, падение</td></tr><tr><td><b>Ошарашен</b></td><td>в следующий ход нет основного действия и реакции</td><td>один ход</td><td>хохот (Анекдот Гузлика), Лицо Видуса, застрял по пояс, окумекивание</td></tr><tr><td><b>Напуган</b></td><td>нельзя приблизиться к источнику страха; −1 кубик к атакам по нему</td><td>до конца сцены; снимает Икоту</td><td>тонкий феодал, Лицо Видуса, жуткие зазеркальцы</td></tr><tr><td><b>В петле</b></td><td>пропускаешь ходы, пока не выбросишь хотя бы один успех Странности</td><td>—</td><td>отдача Повторить шаг</td></tr></table></div>`},
+
+{id:"cond-ill",sec:"cond",st:"ok",t:"Недуги",lead:"Болезни. Отдых их не снимает — нужно лечение.",b:`
+<div class="tbl"><table><tr><th>Недуг</th><th>Эффект</th><th>Лечение</th><th>Откуда и где</th></tr><tr><td><b>Пуча</b></td><td>−1 кубик к Чутью ({{glaznye|глазным яблокам}} — −2)</td><td>тщательный жимпаж: Коканье или Знахарство, 1 успех</td><td>всё, у чего есть глаза; только в Зазеркалье</td></tr><tr><td><b>Простуда</b></td><td>говоришь волнисто — тебя видят, но не слышат; −1 кубик к навыкам на Обаянии</td><td>бурлешка и отдых</td><td>забыл надеть бурлешку; в обоих мирах</td></tr><tr><td><b>Ангина ламантинов</b></td><td>как простуда, но заразна: в конце сцены союзник на ближней дистанции бросает Крепость, при провале заражается</td><td>только доктор Лист</td><td>заразившиеся; только в Зазеркалье</td></tr><tr><td><b>Икота</b></td><td>−1 кубик к Хождению в копытах (наяву — к Скрытности)</td><td>испуг: состояние Напуган снимает Икоту</td><td>многоликий Филипп, нервы; в обоих мирах</td></tr></table></div>
+<p>Простуда и икота бывают и наяву; пуча и ангина ламантинов — только в Зазеркалье.</p>`},
+
+{id:"cond-buff",sec:"cond",st:"ok",t:"Усиления",lead:"Полезные состояния — от союзников, странностей и обстоятельств.",b:`
+<div class="tbl"><table><tr><th>Состояние</th><th>Эффект</th><th>Длится / снимает</th><th>Откуда</th></tr><tr><td><b>Подготовлен</b></td><td>+1 к уровню навыка на одну проверку; на уровне 3 — +1 кубик</td><td>одна проверка</td><td>[[prep|подготовка]], Быть себе битубисасом</td></tr><tr><td><b>Воодушевлён</b></td><td>+1 кубик к следующему броску</td><td>один бросок</td><td>Игра на подмышках</td></tr><tr><td><b>Раскрепощён</b></td><td>+1 кубик к атакам на ближней дистанции</td><td>до конца сцены</td><td>Ходьба на руках, кураж</td></tr><tr><td><b>Гуттаперчив</b></td><td>[[prep|подготовка]] к проверкам Прыти и Чак-чаку; падения не наносят урона</td><td>до конца сцены</td><td>Гуттаперчивость (грибы Идибикса)</td></tr><tr><td><b>Вывернут</b></td><td>нельзя схватить, связать или колупнуть; снимает Опутан</td><td>до конца сцены</td><td>Выворачивание</td></tr><tr><td><b>В раковине</b></td><td>[[act-defense|броня]] 2 — не складывается с другой, берётся лучшая; Коканье не действует</td><td>до конца сцены</td><td>Отрастить раковину, скорлупа, латы</td></tr><tr><td><b>Парит</b></td><td>достать можно только со средней или дальней дистанции</td><td>до конца сцены</td><td>Зависнуть в воздухе</td></tr><tr><td><b>Свой</b></td><td>подготовка к общению с зазеркальцами; майонезные тётеньки не придираются</td><td>до конца сцены</td><td>Сальто природы</td></tr><tr><td><b>Светится</b></td><td>темнота вокруг на средней дистанции не даёт противникам +1 кубик</td><td>до конца сцены</td><td>Ведьмин смех, светлячки</td></tr><tr><td><b>С двойником</b></td><td>первая атака по тебе приходится в двойника</td><td>один раунд</td><td>Призвать отражение</td></tr></table></div>`},
+
+{id:"gear-rules",sec:"gear",st:"ok",t:"Как работают предметы",lead:"Предметы дают подготовку, накладывают состояния или делают что-то особенное. У каждого есть цена в кукичах и аналог в реальном мире.",b:`
+<ul><li><b>Вещи из дома</b> переходят через зеркало [[items|отражёнными]]: у каждой есть зазеркальный аналог — [[gear-home]].</li>
+<li><b>Эффект</b> чаще всего — [[prep|подготовка]] к навыку или [[cond-rules|состояние]]. Подготовка не складывается: два предмета на одну проверку дают всё равно +1.</li>
+<li><b>Цена</b> — сколько предмет стоит в кукичах, если купить или продать его в Зазеркалье. Ориентиры: мелочь — 1–5, полезная вещь — 6–15, редкость — 20–40, сокровище — от 50.</li>
+<li><b>Пакичи</b> меняются на кукичи: 1 пакич = 2 кукича (у честного менялы; остальные дают «хорошо если пять половин»).</li>
+<li><b>Монеты.</b> Бумажные деньги за зеркалом становятся пакичами, а любые монеты — кукичами, огрызками яблок (1 монета = 1 кукич). Обратно кукичи превращаются только в шоколадные монеты: заработать наяву на Зазеркалье нельзя.</li>
+<li><b>Предметы с зарядом</b> («раз за сцену», «раз между отдыхами») восстанавливаются [[rest|отдыхом]].</li></ul>
+<p>Каталоги: [[gear-weapons]] — 11, [[gear-home]] — 17, [[gear-shop]] — 19, [[gear-potions]] — 6.</p>`},
+
+{id:"gear-home",sec:"gear",st:"ok",t:"Вещи из дома",lead:"Что игроки берут с собой и во что это превращается за зеркалом.",b:`
+<div class="tbl"><table><tr><th>Предмет</th><th>Аналог наяву</th><th>Кукичи</th><th>Эффект</th></tr><tr><td><b>Свой пескарь</b></td><td>телефон</td><td>15</td><td>Носит записки другим путникам и знакомым зазеркальцам — так группа держит связь, разойдясь. Доставка — бросок Чутья пескаря (2к6) на 1 успех; провал — записка оказывается в имении Кривина. Не [[q-companions|спутник]]: места спутника не занимает, в бою не участвует. «Разряжается» — устаёт и до отдыха не летает.</td></tr><tr><td><b>Ключ от чего-то другого</b></td><td>ключи</td><td>10</td><td>Раз за сессию открывает любой замок, дверь или сундук. Что за дверью — решает ведущий. Даёт подготовку к странности Разбудить дверь.</td></tr><tr><td><b>Пакичи</b></td><td>рубли (бумажные)</td><td>1 пакич = 2 кукича</td><td>Деньги Зазеркалья. Меняются на кукичи у менял; Фантасмогор берёт только кукичи.</td></tr><tr><td><b>Кукичи</b></td><td>любые монеты (мешочек золота, мелочь)</td><td>1 монета = 1 кукич</td><td>Любые монеты за зеркалом становятся кукичами. Обратно кукичи превращаются только в шоколадные монеты.</td></tr><tr><td><b>Благородный пакет</b></td><td>органайзер для настольной игры</td><td>15</td><td>Оживает [[q-companions|спутником]] и занимает его место. «Хранение»: +3 строки пожитков; то, что лежит в пакете, нельзя украсть или выбить (Казимиру не достать). Подготовка к Сыворотке общества. Другие пакеты охотно в него запрыгивают.</td></tr><tr><td><b>Шапец-распределитель</b></td><td>распределяющая шляпа</td><td>50</td><td>Говорящий шапец: все свойства [[gear-shop|шапца]]. Раз за сессию распределяет: из двух вариантов (путей, ответов, дверей) честно называет, какой лучше, — как вопрос Истукануса, только с подсказкой. Не действует на дядю Егоню.</td></tr><tr><td><b>Банка сопения</b></td><td>повербанк</td><td>12</td><td>Заряжена сопением толстомясочки. Раз между отдыхами — снять 1 Разваристость.</td></tr><tr><td><b>Двенадцатикрапинчатые стёкла</b></td><td>очки</td><td>8</td><td>Видишь лишние крапинки: [[prep|подготовка]] к Чутью, чтобы распознать самозванца (осы под видом калачей, горный краб, синий ящер). Защищают от [[cond-ill|Пучи]].</td></tr><tr><td><b>Фляга влаги</b></td><td>вода</td><td>3 (в пустыне — 15)</td><td>Облиться — стать [[cond-weak|Влажным]]: громики отстают. Смывает портрет Алевтины. В запретной пустыне — лучший подарок Бутыльону: [[prep|подготовка]], чтобы он одолжил воду ([[q-desert]]).</td></tr><tr><td><b>Хрустящие огуски</b></td><td>чипсы</td><td>2</td><td>Съесть — снять [[cond-weak|Колосится]]. Ими можно задобрить толстомясочку и мелкую живность: подготовка к Бобылеведению.</td></tr><tr><td><b>Скип</b></td><td>шоколадка</td><td>30</td><td>Любимое лакомство синих ящеров, дозволенное только отличившимся. Синий ящер за него выполнит одну просьбу или выдаст одну шалость сородичей.</td></tr><tr><td><b>Писало летописца</b></td><td>карандаш</td><td>5</td><td>Написанное им не стирается. [[prep|Подготовка]] к Летописи при записях. Днём каждая надпись — бросок Прыти на 1 успех, иначе это сквернописьменность и метка Оно.</td></tr><tr><td><b>Жабец</b></td><td>фигурка лягушки</td><td>6</td><td>Оживает [[q-companions|спутником]] и занимает его место. Сторожит: персонажа нельзя застать врасплох. Квакнет по команде — Акакий и другие пугливые [[cond-bind|Напуганы]]. Подготовка к Чак-чаку.</td></tr><tr><td><b>Жабий шапец</b></td><td>панамка в виде лягушки</td><td>40</td><td>Символ статуса. На носителя не хочется замахиваться: первая атака по нему в сцене −1 кубик. Бутыльон одалживает воду без броска ([[q-desert]]), петухи поют серенады, Алевтина уважает. Раз за сцену — подготовка к проверке на Обаянии. Не действует на дядю Егоню.</td></tr><tr><td><b>Последняя ложка Понполомео</b></td><td>позолоченная фигурная ложка с кристалликом</td><td>100 (столько даст Понполомео)</td><td>Ей не хватает коллекции сеньора Понполомео — Казимир будет охотиться за ней. Раз за сессию ею можно зачерпнуть немного неосязаемого — эха, смеха, тени, сна — и унести с собой.</td></tr><tr><td><b>Копыта</b></td><td>кроссовки</td><td>10</td><td>Как у босых ведьм: не оставляешь следов. [[prep|Подготовка]] к Хождению в копытах.</td></tr><tr><td><b>Светлячок в коробке</b></td><td>зажигалка</td><td>6</td><td>Открыть коробку — до конца сцены ты [[cond-buff|Светишься]]. Выпущенный светлячок врезается в ближайшую деревяшку и отвлекает кого-то на ход. Пуст до отдыха.</td></tr></table></div>
+<p>Кокалка (расчёска), нож-многоножка (швейцарский нож) и тянучая петля (резинка для волос) — в [[gear-weapons|оружии]].</p>
+<p class="note">Список составлен по ответам игроков. Аналог наяву — что персонаж принёс; вещь [[wake|возвращается]] обратно, только если он держал её, засыпая.</p>`},
+
+{id:"gear-shop",sec:"gear",st:"ok",t:"Лавка Зазеркалья",lead:"Вещи, которые можно купить, выменять или найти в Зазеркалье. Аналог наяву — во что вещь превратится, если унести её домой.",b:`
+<div class="tbl"><table><tr><th>Предмет</th><th>Аналог наяву</th><th>Кукичи</th><th>Эффект</th></tr><tr><td><b>Бурлешка</b></td><td>шапка</td><td>5</td><td>Защищает от [[cond-ill|Простуды]] — «говорила мать надеть бурлешку». В осколке ещё того Зазеркалья носить не заставляют.</td></tr><tr><td><b>Войлочные катышки</b></td><td>катышки со свитера</td><td>2</td><td>Шаг первый против разъярённого коленыча: бросить ему — он, может быть, кинется тереться. Пакет охотно их хранит.</td></tr><tr><td><b>Сыр от Джо</b></td><td>сыр</td><td>2</td><td>Откупиться от ягодников, приманить кокшу, кинуть в небо (странность). Иногда сам убегает.</td></tr><tr><td><b>Мёд</b></td><td>мёд</td><td>3</td><td>Угостить подводного Гошу — поможет против многоликого Филиппа. Ингредиент [[q-brew|варева]].</td></tr><tr><td><b>Хамон</b></td><td>сыровяленая колбаса</td><td>6</td><td>Задобрить грязуна: [[prep|подготовка]] к Колупанию грязунов.</td></tr><tr><td><b>Свежий укроп</b></td><td>пучок укропа</td><td>1</td><td>Пропуск за третий поворот у колбасного стража.</td></tr><tr><td><b>Золотая открытка с розами</b></td><td>открытка</td><td>5</td><td>Откупиться от майонезной тётеньки — она не сочтёт тебя странным.</td></tr><tr><td><b>Морковные пятки</b></td><td>морковка</td><td>2</td><td>Классика высокой кухни. Подарок на приём у Кривина — [[prep|подготовка]] к Сыворотке общества. Ингредиент [[q-brew|варева]].</td></tr><tr><td><b>Хрычи</b></td><td>маленькая тыква</td><td>2</td><td>Зрелые хрычи с огорода бабы Жули; гремучее древо их любит. Ингредиент [[q-brew|варева]].</td></tr><tr><td><b>Зеленика</b></td><td>крыжовник</td><td>1</td><td>Ягода сумеречной рощи; Акакий варит из неё компот. Ингредиент [[q-brew|варева]].</td></tr><tr><td><b>Гриб</b></td><td>шампиньон</td><td>1</td><td>Обычный лесной гриб — смотри, чтобы Идибикс не увязался. Ингредиент [[q-brew|варева]].</td></tr><tr><td><b>Пыль с ног босой ведьмы</b></td><td>молотый перец</td><td>10</td><td>Душистая приправа: [[prep|подготовка]] к Варению.</td></tr><tr><td><b>Гыча</b></td><td>суп в термосе</td><td>8</td><td>Варево бабы Жули. Миска — снять 2 Разваристости.</td></tr><tr><td><b>Кашка для запоминания</b></td><td>глицин</td><td>8</td><td>Съесть — до конца сцены [[prep|подготовка]] к Летописи и проверкам на запоминание.</td></tr><tr><td><b>Склянка от босой ведьмы</b></td><td>пузырёк зелёнки</td><td>15</td><td>Целебная жидкость из логова под Кривой горой: восстановить 1 Лицо. Ведьмы продают её неохотно.</td></tr><tr><td><b>Перо совян</b></td><td>перо из подушки</td><td>30</td><td>Ценится в определённых кругах. Продать, подкупить, но совяне такого не простят.</td></tr><tr><td><b>Слюда</b></td><td>фольга от шоколадки</td><td>3</td><td>Её приносят приручённые кокши. Товар для обмена.</td></tr><tr><td><b>Скорлупка</b></td><td>фисташковая скорлупа</td><td>4</td><td>Мелочь для всех, сокровище для Эпикантуса и Михаила — их внимание обеспечено. Ингредиент [[q-brew|варева]].</td></tr><tr><td><b>Шапец</b></td><td>любой головной убор</td><td>40</td><td>Как жабий шапец: главное в нём — уверенность. Свойства те же.</td></tr></table></div>
+<p>Струны Сатора Арепыча и глазное молоко — в [[gear-weapons|оружии]].</p>`},
+
+{id:"gear-weapons",sec:"gear",st:"ok",t:"Оружие",lead:"Чем бьют, бросают и опутывают. У оружия нет бонуса к урону — у каждого своё свойство.",b:`
+<div class="rule"><p>Урон — лишние успехи во [[opposed|встречном броске]] ([[damage]]). Оружие даёт не урон, а свойство. Навык: рукопашное — Драка (в Зазеркалье Коканье), броски — Спорт (в Зазеркалье Чак-чак).</p></div>
+<div class="tbl"><table><tr><th>Оружие</th><th>Аналог наяву</th><th>Кукичи</th><th>Дистанция</th><th>Навык</th><th>Свойство</th></tr><tr><td><b>Кокалка</b></td><td>расчёска</td><td>8</td><td>ближняя</td><td>Драка / Коканье</td><td>Хорошая кокалка: [[prep|подготовка]] к Коканью. Можно щекотать (подготовка к Щекотке), но щекотка — проступок перед Её.</td></tr><tr><td><b>Нож-многоножка</b></td><td>швейцарский нож</td><td>20</td><td>ближняя</td><td>Драка / Коканье</td><td>Выкован в логове Вальтасара: [[prep|подготовка]] к Колупанию и Мастеровитости. Проворный: украденный или выбитый, к концу сцены сам возвращается к владельцу.</td></tr><tr><td><b>Тянучая петля</b></td><td>резинка для волос</td><td>4</td><td>ближняя</td><td>Спорт / Чак-чак</td><td>Вместо урона цель [[cond-bind|Опутана]] до конца раунда. Подготовка к странности Удлинить отросток.</td></tr><tr><td><b>Струны Сатора Арепыча</b></td><td>гитарные струны</td><td>25</td><td>ближняя</td><td>Драка / Коканье</td><td>Выдержат даже Михаила. Опутать: при попадании вместо урона цель [[cond-bind|Опутана]].</td></tr><tr><td><b>Перо Золотого Какаду</b></td><td>павлинье перо</td><td>не продаётся</td><td>ближняя</td><td>Соблазнение / Щекотка</td><td>Ритуальное перо босых ведьм: [[prep|подготовка]] к Щекотке. Владельца ищет орден.</td></tr><tr><td><b>Палка Мишеневых</b></td><td>трость</td><td>6</td><td>средняя</td><td>Драка / Коканье</td><td>Длинная: бьёт на средней дистанции. Братья Мишеневы готовят такие к приходу круглого Толика.</td></tr><tr><td><b>Мелкие камнюки</b></td><td>камушки</td><td>1 за горсть</td><td>средняя</td><td>Спорт / Чак-чак</td><td>Бросок. Горсть — три броска. Камнюки лавового озера обижаются, если узнают.</td></tr><tr><td><b>Глазное молоко</b></td><td>глазные капли</td><td>3</td><td>средняя</td><td>Спорт / Чак-чак</td><td>Обрызгать: гречневые калачи разбегаются без броска; остальных калачей раззадоривает.</td></tr><tr><td><b>Подводный Гоша</b></td><td>аквариумная рыбка</td><td>не продаётся — угости мёдом</td><td>средняя</td><td>Спорт / Чак-чак</td><td>Кинуть: многоликий Филипп или жадность на лайке отступают без броска. Гоша возвращается в ближайший резервуар; второй раз за сцену не полетит.</td></tr><tr><td><b>Сковородка</b></td><td>сковородка</td><td>10</td><td>ближняя</td><td>Драка / Коканье</td><td>Пробитие: урон сверх нуля Лица (наяву — Здоровья) переходит в Разваристость (наяву — Усталость).</td></tr><tr><td><b>Молот Алевтины</b></td><td>кувалда</td><td>не продаётся</td><td>ближняя</td><td>Драка / Коканье</td><td>Тяжёлый: попадание [[cond-bind|опрокидывает]] цель, но ты [[cond-weak|Неуклюж]], пока держишь его. Алевтина ищет свой молот.</td></tr></table></div>
+<p class="note">«Не продаётся» — добывается только в приключении. [[distance|Дистанции]] — ближняя, средняя, дальняя.</p>`},
+{id:"gear-potions",sec:"gear",st:"ok",t:"Зелья Вальтасара",lead:"Вальтасар варит зелья с разными эффектами. Каждое — на один раз.",b:`
+<div class="tbl"><table><tr><th>Зелье</th><th>Аналог наяву</th><th>Кукичи</th><th>Эффект</th></tr><tr><td><b>Зелье распознавания мигунов</b></td><td>газировка «Байкал»</td><td>12</td><td>До конца сцены отличаешь мигуна, замаскированного под бобыля.</td></tr><tr><td><b>Зелье дальнего коканья</b></td><td>энергетик</td><td>15</td><td>Один раз — Коканье на средней дистанции.</td></tr><tr><td><b>Зелье планов синих ящеров</b></td><td>растворимый кофе</td><td>20</td><td>Ведущий раскрывает одну ближайшую шалость синих ящеров.</td></tr><tr><td><b>Зелье бега</b></td><td>изотоник</td><td>10</td><td>До конца сцены ты бежишь быстрее глазастой пиццы: уйти от погони без броска.</td></tr><tr><td><b>Зелье от ангины ламантинов</b></td><td>леденцы от горла</td><td>15</td><td>До конца сессии иммунитет к [[cond-ill|Ангине ламантинов]].</td></tr><tr><td><b>Зелье парения над слизнями</b></td><td>конфеты «Птичье молоко»</td><td>5</td><td>Действует только на голубей. Вальтасар продаёт его охотно.</td></tr></table></div>
+<p class="note">Из абзацев 35 и 43 видео. Зелье парения над слизнями действует только на голубей — и Вальтасар об этом не предупреждает.</p>
+<p>Эти же зелья можно сварить самим, зная рецепт, — [[q-brew]].</p>`},
+
+{id:"roll",sec:"check",st:"ok",t:"Бросок",lead:"Бросаете столько к6, сколько очков в характеристике навыка, и считаете успехи.",b:`
+<div class="rule"><p>Пул = значение характеристики, на которую опирается навык в текущем мире. Каждый кубик не ниже порога [[levels|уровня навыка]] — один успех.</p></div>
+<p>Пример: Даня в Зазеркалье чинит бульдогзер. Механика опирается на Смекалку (4), уровень Техники/Механики 3. Бросает 4к6, успех на 4–6, шестёрки считаются дважды.</p>
+<p>Сколько успехов нужно, задаёт [[difficulty]]. Что получилось — [[outcome]]. Пул может уменьшить [[fatigue|Усталость]].</p>`},
+
+{id:"difficulty",sec:"check",st:"ok",t:"Сложность",lead:"Сложность — это число успехов, которое нужно набрать.",b:`
+<div class="tbl"><table><tr><th>Нужно успехов</th><th>Задача</th></tr><tr><td>1</td><td>обычное дело</td></tr><tr><td>2</td><td>трудное</td></tr><tr><td>3</td><td>почти невозможное</td></tr></table></div>
+<p>Большинство проверок требуют одного успеха. Насколько реальны трудные задачи для разных персонажей — [[odds]].</p>`},
+
+{id:"outcome",sec:"check",st:"ok",t:"Исход проверки",lead:"Набрал нужное число успехов — успех. Не набрал — провал.",b:`
+<div class="rule"><p>Промежуточных исходов («успех с ценой», «почти получилось») в базовых правилах нет.</p></div>
+<p>Если ситуации нужен особый результат — степень успеха, частичный успех, цена, — это прописывается в описании самой ситуации, а не общим правилом.</p>
+<p>«Вытянуть» неудачный бросок можно [[reroll|перебросом]] — он доступен всем. Кроме него — свой [[q-bitubis|битубисас]] раз за сессию и странность «Повторить шаг» ([[odd-special]]).</p>
+<p class="note">Почему так: обычные проверки требуют одного успеха. Если разрешить успех на один меньше, игроки будут проходить их автоматически, тратя Усталость, и ходить разваренными.</p>`},
+
+{id:"bare",sec:"check",st:"ok",t:"Голая характеристика",lead:"Когда навык не подходит — выдержать, увернуться, учуять — бросают одну характеристику.",b:`
+<div class="rule"><p>Пул = значение характеристики, успех на 5–6.</p></div>
+<p>По шансам это то же самое, что навык уровня 1. Примеры: Крепостью выдерживают беспощадный массаж тёти Вари, Прытью уходят от коленыча, Чутьём не дают себя заболтать говорящим холмам.</p>`},
+
+{id:"prep",sec:"check",st:"ok",t:"Подготовка",lead:"Подготовленный персонаж получает +1 к уровню навыка на эту проверку, но не выше 3.",b:`
+<div class="rule"><p>Подготовка — это подходящий предмет, сделанная заранее подготовка или нужная помощь другого игрока.</p></div>
+<p>Помощь другого игрока работает только через подготовку: отдельного правила «помочь кубиком» нет, и последствия провала не делятся.</p>
+<p><b>Помогающему не нужен навык</b> — нужна логичная заявка: держать фонарь, пока друг вскрывает замок, — да; «помогу ему песней» — нет. Решает ведущий.</p>
+<p>Сильнее всего подготовка помогает тем, у кого навыка нет:</p>
+<div class="tbl"><table><tr><th>Пул</th><th>0 → 1</th><th>1 → 2</th></tr><tr><td>1к6</td><td>17% → 33%</td><td>33% → 50%</td></tr><tr><td>2к6</td><td>31% → 56%</td><td>56% → 75%</td></tr><tr><td>3к6</td><td>42% → 70%</td><td>70% → 88%</td></tr></table></div>
+<h3>Ограничения</h3>
+<ul><li><b>Не складывается.</b> Сколько бы источников ни было (предмет, подготовка, помощь), бонус всегда +1.</li>
+<li><b>Мастер.</b> Если навык уже на уровне 3, подготовка вместо уровня даёт +1 кубик к пулу.</li></ul>`},
+
+{id:"opposed",sec:"check",st:"ok",t:"Встречный бросок",lead:"Когда против персонажа действует кто-то другой, бросают обе стороны.",b:`
+<div class="rule"><p>Побеждает тот, у кого больше успехов. При ничьей побеждает защищающийся.</p></div>
+<p>Примеры: украсть ложку у Казимира, переспорить болотного скрипача, спрятаться от Сатора Арепыча. Для противника достаточно пула и порога: «бобыль — 3к6 на 5+». Как устроены противники — [[q-foes]].</p>
+<p>Встречный бросок лежит в основе [[damage|урона]].</p>`},
+
+{id:"reroll",sec:"check",st:"ok",t:"Переброс за Усталость",lead:"После броска можно взять 1 Усталость и перебросить все неудачные кубики.",b:`
+<div class="rule"><p>Один раз за бросок. В Зазеркалье платят Разваристостью.</p></div>
+<p>Это общий способ исправить провал, доступный каждому; особые — [[q-bitubis|битубисас]] и «Повторить шаг» (см. [[outcome]]). Чем больше Усталость, тем меньше кубиков в следующих бросках — см. [[fatigue]].</p>`},
+
+{id:"odds",sec:"check",st:"ok",t:"Таблица шансов",lead:"Вероятность набрать 1 / 2 / 3 успеха в зависимости от пула и уровня.",b:`
+<div class="tbl nw"><table><tr><th>Пул</th><th>Уровень 0</th><th>Уровень 1</th><th>Уровень 2</th><th>Уровень 3</th></tr>
+<tr><td>1к6</td><td>17 / – / –</td><td>33 / – / –</td><td>50 / – / –</td><td>50 / 17 / –</td></tr>
+<tr><td>2к6</td><td>31 / 3 / –</td><td>56 / 11 / –</td><td>75 / 25 / –</td><td>75 / 42 / 14</td></tr>
+<tr><td>3к6</td><td>42 / 7 / –</td><td>70 / 26 / 4</td><td>88 / 50 / 12</td><td>88 / 62 / 33</td></tr>
+<tr><td>4к6</td><td>52 / 13 / 2</td><td>80 / 41 / 11</td><td>94 / 69 / 31</td><td>94 / 77 / 52</td></tr>
+<tr><td>5к6</td><td>60 / 20 / 4</td><td>87 / 54 / 21</td><td>97 / 81 / 50</td><td>97 / 86 / 67</td></tr></table></div>
+<p>Значения в процентах, без [[reroll|переброса]]. [[bare|Голая характеристика]] считается как уровень 1.</p>`},
+
+{id:"damage",sec:"fight",st:"ok",t:"Урон",lead:"Атака — это встречный бросок. Каждый лишний успех атакующего наносит 1 урон.",b:`
+<div class="rule"><p>Урон = успехи атакующего − успехи защищающегося (если больше нуля).</p></div>
+<p>Защищающийся бросает Прыть + [[act-defense|броню]]; защита — не действие, её бросают всегда.</p>
+<p>Урон в реальном мире идёт по [[health|Здоровью]], в Зазеркалье — по [[face|Лицу]]. Общего бонуса к урону у оружия нет — см. [[weapons]].</p>`},
+
+{id:"distance",sec:"fight",st:"ok",t:"Дистанции",lead:"Расстояния в игре — три дистанции: ближняя, средняя и дальняя. Без клеток и метров.",b:`
+<div class="tbl"><table><tr><th>Дистанция</th><th>Что это</th><th>Что достаёт</th></tr>
+<tr><td><b>Ближняя</b></td><td>рукой подать: можно коснуться, схватить, ударить</td><td>Драка, Коканье, касания</td></tr>
+<tr><td><b>Средняя</b></td><td>несколько шагов, через комнату или поляну; докинуть камень</td><td>броски, палка от круглого Толика, большинство [[odd-rules|странностей]]</td></tr>
+<tr><td><b>Дальняя</b></td><td>докуда видно и докричаться; пересечь — два-три движения</td><td>особые странности, стрельба, если найдётся чем</td></tr></table></div>
+<p>Атака или странность действует только на указанной дистанции и ближе, если в описании не сказано иное. Сменить дистанцию на одну ступень — это [[act-move|движение]].</p>
+<p>Используется в [[weapons|свойствах оружия]] и [[odd-fight|каталоге странностей]].</p>`},
+{id:"weapons",sec:"fight",st:"ok",t:"Оружие и его свойства",lead:"У каждого оружия своё свойство вместо общего бонуса к урону.",b:`
+<p>Свойство может быть любым: дальность, помощь в другом навыке, перенос лишнего урона и так далее. </p>
+<p>Все виды оружия с ценами и свойствами — [[gear-weapons]].</p>`},
+
+{id:"act-turn",sec:"act",st:"ok",t:"Ход и раунд",lead:"За ход у персонажа три действия: основное, движение и реакция — по одному каждого вида.",b:`
+<div class="tbl"><table><tr><th>Вид</th><th>Что это</th><th>Когда</th></tr>
+<tr><td><i class="atype at-main">основное</i></td><td>то, ради чего ход: атака, странность, помощь, предмет — [[act-main]]</td><td>в свой ход</td></tr>
+<tr><td><i class="atype at-move">движение</i></td><td>сменить дистанцию на ступень, встать, удрать — [[act-move]]</td><td>в свой ход, до или после основного</td></tr>
+<tr><td><i class="atype at-react">реакция</i></td><td>ответ на чужое действие — [[act-react]]</td><td>один раз до начала своего следующего хода</td></tr></table></div>
+<p><b>Раунд</b> — каждый участник делает по ходу. Первой ходит сторона, начавшая конфликт; внутри стороны — в любом порядке.</p>
+<p><b>Засада.</b> Подкрасться — встречный Хождение в копытах против Чутья. Удалось — в первом раунде ходят только нападающие, и их первая атака [[prep|подготовлена]].</p>
+<p>Неиспользованное не копится: нельзя взять два основных действия вместо основного и движения. Обменять основное на второе движение — можно.</p>
+<p>Реплика, жест, взгляд — бесплатно. Защита от атаки — не действие: её бросают всегда ([[act-defense]]).</p>`},
+
+{id:"act-main",sec:"act",st:"ok",t:"Основные действия",lead:"Одно за ход. Атака — встречный бросок, урон — лишние успехи.",b:`
+<div class="tbl"><table><tr><th>Действие</th><th>Бросок</th><th>Против</th><th>Итог</th></tr>
+<tr><td><b>Кокнуть</b> — ударить</td><td>Коканье (наяву Драка)</td><td>Прыть + броня</td><td>урон по Лицу (наяву по Здоровью); бобыля — кокает ([[kokanye]])</td></tr>
+<tr><td><b>Колупнуть</b> — схватить</td><td>Колупание (наяву Мастеровитость)</td><td>Прыть + броня</td><td>урона нет; одно на выбор: цель [[cond-bind|Опутана]], отобрать предмет, обшарить — см. [[act-kok]]</td></tr>
+<tr><td><b>Кинуть</b></td><td>Чак-чак (наяву Спорт)</td><td>Прыть + броня</td><td>урон или эффект брошенного, до средней дистанции</td></tr>
+<tr><td><b>Пощекотать</b></td><td>Щекотка (наяву Соблазнение)</td><td>Крепость</td><td>цель [[cond-weak|Колосится]]; в темноте — проступок перед Ею</td></tr>
+<tr><td><b>Странность</b></td><td>Странность</td><td>по описанию</td><td>если у странности тип «основное» — [[odd-rules]]</td></tr>
+<tr><td><b>Помочь</b></td><td>—</td><td>—</td><td>союзник [[prep|подготовлен]] к следующей проверке</td></tr>
+<tr><td><b>Глухая оборона</b></td><td>—</td><td>—</td><td>до своего следующего хода защищаешься с [[prep|подготовкой]]</td></tr>
+<tr><td><b>Предмет</b></td><td>—</td><td>—</td><td>выпить зелье, съесть гычу, применить вещь</td></tr>
+<tr><td><b>Вырваться</b></td><td>Крепость</td><td>Колупание держащего</td><td>снять Опутан</td></tr>
+<tr><td><b>Задобрить</b></td><td>Бобылеведение или Шепоток</td><td>сложность 1–2</td><td>дал то, что существо любит: оно не нападает до конца сцены</td></tr>
+<tr><td><b>Отпугнуть</b></td><td>чаще без броска</td><td>—</td><td>показал то, чего существо боится (строка «Боится» в карточке атласа)</td></tr>
+<tr><td><b>Заболтать</b></td><td>Лицедейство</td><td>Чутьё</td><td>цель поверила до конца сцены</td></tr>
+<tr><td><b>Спрятаться</b></td><td>Хождение в копытах</td><td>Чутьё</td><td>тебя не видят, пока не выдашь себя</td></tr></table></div>
+<p>Вне конфликта это просто [[roll|проверки]]: очерёдность нужна, только когда кто-то противится.</p>`},
+
+{id:"act-kok",sec:"act",st:"ok",t:"Кокнуть и колупнуть",lead:"Коканье бьёт, колупание держит. Первое ранит, второе — нет.",b:`
+<div class="tbl"><table><tr><th></th><th>Кокнуть</th><th>Колупнуть</th></tr>
+<tr><td><b>Суть</b></td><td>удар</td><td>взять в руки, держать, выковырять, разобрать</td></tr>
+<tr><td><b>Навык</b></td><td>Коканье (Крепость); наяву Драка</td><td>Колупание (Смекалка); наяву Мастеровитость</td></tr>
+<tr><td><b>Итог</b></td><td>урон — лишние успехи</td><td>без урона: Опутан, или отнял предмет, или обшарил</td></tr>
+<tr><td><b>Пока держишь</b></td><td>—</td><td>ты тоже без движения; отпустить — бесплатно</td></tr>
+<tr><td><b>Кого нельзя</b></td><td>Реутеня и прочих в непробиваемой скорлупе</td><td>бобылей — выскальзывают; мопсосвинов — только за брылю</td></tr>
+<tr><td><b>Кого легко</b></td><td>бобыля: любой урон кокает его</td><td>грязунов, особенно задобренных хамоном; кожника — если не выскользнет</td></tr>
+<tr><td><b>Вне боя</b></td><td>—</td><td>собрать лицо (как Епень), чинить руками, вскрыть, вытащить</td></tr></table></div>
+<p>Пустынный бобыль сначала пытается кокнуть, а если не вышло — колупает.</p>`},
+
+{id:"act-move",sec:"act",st:"ok",t:"Движение",lead:"Одно за ход: сменить дистанцию на ступень — или потратить движение на что-то из списка.",b:`
+<div class="tbl"><table><tr><th>Движение</th><th>Итог</th></tr>
+<tr><td><b>Сблизиться или отойти</b></td><td>на одну ступень [[distance|дистанции]]</td></tr>
+<tr><td><b>Встать</b></td><td>снять [[cond-bind|Опрокинут]]</td></tr>
+<tr><td><b>Удрать</b></td><td>начинается [[q-chase|погоня]]; если догонять некому — ты вне сцены без броска</td></tr>
+<tr><td><b>Достать или убрать вещь</b></td><td>вместо шага; выпить или применить — уже основное</td></tr>
+<tr><td><b>Странность-движение</b></td><td>Прыжки с кротами, Зависнуть в воздухе, Ходьба на руках, Сальто природы</td></tr></table></div>
+<p>Уходя с ближней дистанции от противника, ты даёшь ему [[act-react|удар вдогонку]].</p>
+<p>[[cond-bind|Опутанный]] не двигается.</p>`},
+
+{id:"q-chase",sec:"act",st:"ok",t:"Погоня",lead:"Догнать или убежать — раундами встречной Прыти. Кто первым наберёт 3 перевеса, тот оторвался или догнал.",b:`
+<p>Когда нужно: {{almazy|алмазы}} разбегаются, {{kazimir|Казимир}} уносит ложку, за вами {{glaz_pizza|глазастая пицца}}, от {{gleb|пыльного Глеба}} надо уйти к выходу ({{p228|абзац 228}}), {{mednyi_nozh|медный нож}} сбегает.</p>
+<ul><li><b>Раунд погони.</b> Каждая сторона бросает Прыть — или навык по обстановке — и сравнивает успехи.</li>
+<li><b>Шкала.</b> Перевес в раунде — +1 к шкале своей стороны, ничья — никому. Кто первым набрал 3, тот победил: беглец оторвался и ушёл из сцены — или преследователь догнал и в том же раунде может атаковать или колупнуть.</li>
+<li><b>Несколько бегущих.</b> Каждый ведёт свою шкалу против преследователя. Держаться вместе — бросает самый медленный за всех.</li>
+<li><b>Препятствия.</b> Ведущий может объявить препятствие на раунд — тогда обе стороны бросают другой навык: заросли и темнота — Хождение в копытах, прыжок и лазанье — Чак-чак, трубы — Трубоведение, толпа — Сыворотка общества.</li>
+<li><b>Странности и предметы.</b> Удачная [[odd-move|странность-движение]] или подходящий предмет — сразу +1 к шкале.</li>
+<li><b>Живые вещи.</b> Пойманную живую вещь — алмаз, нож, сбежавший сыр — удерживают [[act-kok|колупанием]]. Не удержал — она снова убегает, и шкалы обнуляются.</li>
+<li><b>Из боя.</b> Погоня начинается, когда кто-то тратит движение, чтобы [[act-move|удрать]].</li></ul>
+<p>См. также: [[distance]], [[q-morale]].</p>`},
+{id:"act-react",sec:"act",st:"ok",t:"Реакции",lead:"Одна реакция до начала твоего следующего хода — в ответ на чужое действие.",b:`
+<div class="tbl"><table><tr><th>Реакция</th><th>Когда</th><th>Итог</th></tr>
+<tr><td><b>Удар вдогонку</b></td><td>противник уходит с ближней дистанции от тебя</td><td>кокнуть или колупнуть его</td></tr>
+<tr><td><b>Прикрыть</b></td><td>атакуют союзника на ближней дистанции от тебя</td><td>атака приходится в тебя</td></tr>
+<tr><td><b>Странность-реакция</b></td><td>по описанию</td><td>Сократить вершины, Провалиться сквозь землю, Выворачивание, Окумекиться, Быть себе битубисасом, Повторить шаг</td></tr></table></div>
+<p>[[cond-bind|Ошарашенный]] теряет реакцию вместе с основным действием.</p>`},
+
+{id:"act-defense",sec:"act",st:"ok",t:"Защита и броня",lead:"От атаки защищаются Прытью + броня. Это не действие — защиту бросают всегда.",b:`
+<div class="rule"><p>Пул защиты = Прыть + броня. Порог — как у голой характеристики: 5–6.</p></div>
+<p>Броня — число кубиков. Не складывается: берётся лучшая. Максимум 3. Против [[act-main|щекотки]] и большинства странностей не помогает: там защищаются характеристикой из описания.</p>
+<div class="tbl"><table><tr><th>Броня</th><th>Что это</th><th>Аналог наяву</th><th>Кукичи</th><th>Минус</th></tr>
+<tr><td>1</td><td><b>Войлочный тулуп</b></td><td>пуховик, плотная куртка</td><td>8</td><td>—</td></tr>
+<tr><td>1</td><td><b>Сыпучесть</b>, толстая шкура</td><td>—</td><td>—</td><td>у существ</td></tr>
+<tr><td>2</td><td><b>Скорлупный панцирь</b></td><td>каска и наколенники</td><td>25</td><td>гремит: −1 кубик к Хождению в копытах</td></tr>
+<tr><td>2</td><td>[[cond-buff|В раковине]]</td><td>—</td><td>—</td><td>до конца сцены</td></tr>
+<tr><td>3</td><td><b>Скорлупа Реутеня</b></td><td>—</td><td>не продаётся</td><td>мечта Эпикантуса</td></tr></table></div>
+<p>[[prep|Подготовка]] к защите (глухая оборона, предмет) даёт порог 4–6. [[cond-weak|Неуклюжий]] теряет кубик Прыти — и в защите тоже.</p>`},
+
+{id:"health",sec:"state",st:"ok",t:"Здоровье",lead:"Трек урона в реальном мире. Максимум — 3 + Крепость.",b:`
+<p>Здоровье и [[face|Лицо]] — два отдельных трека: урон наяву не трогает Лицо, урон в Зазеркалье не трогает Здоровье.</p>
+<p>На нуле — [[ko]]. Восстанавливается [[rest|отдыхом]].</p>`},
+
+{id:"face",sec:"state",st:"ok",t:"Лицо",lead:"Трек урона в Зазеркалье. Максимум — 3 + Крепость.",b:`
+<p>Отдельный от [[health|Здоровья]] трек. На нуле персонаж теряет лицо — см. [[faceless]].</p>
+<p>Пока Лицо выше нуля, оно восстанавливается [[rest|отдыхом]]. Потерянное лицо отдых не возвращает.</p>`},
+
+{id:"fatigue",sec:"state",st:"ok",t:"Усталость и Разваристость",lead:"Шкала от 0 до 6. Наяву — Усталость, в Зазеркалье — Разваристость.",b:`
+<div class="tbl"><table><tr><th>Значение</th><th>Эффект</th></tr><tr><td>0–3</td><td>нет штрафа</td></tr><tr><td>4–5</td><td>на кубик меньше во всех бросках (не меньше одного)</td></tr><tr><td>6</td><td>бросаете только один кубик; [[reroll|переброс]] недоступен</td></tr></table></div>
+<p>Растёт от [[reroll|перебросов]] и по ситуации. Снимается [[rest|отдыхом]].</p>`},
+
+{id:"ko",sec:"state",st:"ok",t:"Без сознания",lead:"Ноль Здоровья в реальном мире — персонаж теряет сознание.",b:`
+<p>Смерти в реальном мире нет. Если без сознания вся группа, персонажи приходят в себя в больнице.</p>
+<p>Аналог для Зазеркалья — [[all-down]].</p>`},
+
+{id:"faceless",sec:"state",st:"ok",t:"Потеря лица",lead:"Ноль Лица в Зазеркалье — персонаж безлик, пока не найдёт новое лицо.",b:`
+<h3>Последствия</h3>
+<ol><li><b>Тебя не узнают.</b> Знакомые зазеркальцы забывают персонажа, договорённости и долги перед ним стираются. Навыки на Обаянии бросаются как уровень 0 — успех только на шестёрке, [[prep|подготовка]] не помогает.</li>
+<li><b>Не проснуться.</b> Сон безликого не отражает: он не может [[wake|вернуться]] в реальный мир — разве что через [[q-exit|выход]].</li>
+<li><b>Надзор слеп.</b> Оно и Она не узнают безликого: [[oversight|метки надзора]] ему не ставятся. Можно безнаказанно совершать [[misdeeds|проступки]] — но домой не попасть.</li></ol>
+<h3>Как найти лицо</h3>
+<div class="tbl"><table><tr><th>Способ</th><th>Что нужно</th><th>Что даёт</th><th>Чем плох</th></tr>
+<tr><td>Собрать самому, как Епень</td><td>три предмета под глаза, нос и рот; Колупание, 2 успеха</td><td>лицо сразу</td><td>[[face-quirks|странность из таблицы к6]]</td></tr>
+<tr><td>Маска с острова лавового озера</td><td>пройти мимо Лавана и камнюков</td><td>надёжна, проснуться можно</td><td>лицо чужое: знакомые по-прежнему не узнают (последствие 1 остаётся)</td></tr>
+<tr><td>Портрет от Алевтины</td><td>кукичи; не рассыпать её бисер</td><td>красивое: [[prep|подготовка]] к Сыворотке общества</td><td>смывается водой</td></tr>
+<tr><td>Лицо от Истукануса</td><td>предстать и ответить на его вопрос</td><td>надёжное</td><td>новое зазеркальное имя и +1 Странность (сумма характеристик станет 19)</td></tr>
+<tr><td>Отобрать своё у многоликого Филиппа</td><td>старый лабиринт; подводный Гоша или маска</td><td>родное лицо, все последствия сняты</td><td>—</td></tr></table></div>
+<h3>Лицо после находки</h3>
+<p>Любое новое лицо даёт 1 клетку [[face|Лица]], остальное восстанавливается [[rest|отдыхом]]. Родное лицо возвращается полностью.</p>`},
+
+{id:"face-quirks",sec:"state",st:"ok",t:"Странности самодельного лица",lead:"Бросьте к6, если лицо собрано из подручных средств.",b:`
+<div class="tbl"><table><tr><th>к6</th><th>Лицо</th></tr>
+<tr><td>1</td><td>Из скорлупок — Михаил смотрит голодными глазами</td></tr>
+<tr><td>2</td><td>Из бахромки — Идибикс ходит следом</td></tr>
+<tr><td>3</td><td>Из сыра — Оно раздражается, если ты на виду днём</td></tr>
+<tr><td>4</td><td>Перекошенное — майонезные тётеньки сразу считают тебя странным</td></tr>
+<tr><td>5</td><td>Перевёрнутое — говоришь задом наперёд, понимают не сразу</td></tr>
+<tr><td>6</td><td>Чужое — однажды хозяин придёт за ним</td></tr></table></div>
+<p>Относится к способу «собрать самому» из [[faceless]].</p>`},
+
+{id:"all-down",sec:"state",st:"ok",t:"Все легли в Зазеркалье",lead:"Если в Зазеркалье повержена вся группа, персонажи приходят в себя в сладком хлеву.",b:`
+<p>Сладкий хлев — место ссылки, куда Оно отправляет провинившихся. Он движется высоко в небе, рядом кожник, коровы и чан молока. Сбежать удалось только Птозному Эдгару: он спрыгнул над медными скалами. Выбраться оттуда — готовое приключение.</p>
+<p>Аналог для реального мира — [[ko]].</p><p>Как оттуда выйти — [[q-hlev]].</p>`},
+
+{id:"rest",sec:"state",st:"ok",t:"Отдых",lead:"Отдых полностью восстанавливает Здоровье, Лицо, Усталость и Разваристость. В безопасном месте — без броска, в остальных — под дозором.",b:`
+<div class="rule"><p>Отдых и сон-возвращение — разные вещи. В Зазеркалье можно отдохнуть и остаться там; чтобы вернуться, нужен отдельный [[wake|сон с намерением проснуться]].</p></div>
+<ul><li><b>Безопасное место</b> — отдых без броска: дом наяву, у Акакия Куролесова, у бабы Жули, в дупле Пахомия, в имении Кривина по приглашению.</li>
+<li><b>Остальные места</b> — нужен [[rest-watch|дозор]].</li>
+<li><b>Сколько раз</b> — сколько угодно. В безопасном месте отдых ничем не ограничен; в опасном каждый отдых — это дозор и риск события.</li>
+<li>Потерянное лицо отдых не возвращает — нужен один из способов из [[faceless]].</li></ul>`},
+
+{id:"rest-watch",sec:"state",st:"ok",t:"Дозор",lead:"Вне безопасного места часть группы стоит в дозоре. Дозорные бросают, остальные отдыхают.",b:`
+<ol><li><b>Кто в дозоре</b> — решают игроки. Дозорные не получают ничего из отдыха.</li>
+<li><b>Бросок:</b> каждый дозорный бросает Хождение в копытах (наяву — Скрытность): не только смотреть, но и не выдать стоянку. Успехи всех дозорных <b>складываются</b>.</li>
+<li><b>Набрали сложность</b> — для остальных всё как в безопасном месте.</li>
+<li><b>Не набрали</b> — случается событие из списка области. Когда с ним разобрались, не-дозорные всё равно отдыхают.</li></ol>
+<div class="tbl"><table><tr><th>Сложность</th><th>Где</th></tr>
+<tr><td>1</td><td>тихо: лабиринт у имения Кривина, грязевые угодья, сумеречная роща днём</td></tr>
+<tr><td>2</td><td>опасно: болото, запретная пустыня, подземные трубы, лавовое озеро</td></tr>
+<tr><td>3</td><td>очень опасно: осколок ещё того Зазеркалья, старый лабиринт</td></tr></table></div>
+<ul><li><b>Темнота</b> — сложность +1 ([[night]]).</li>
+<li><b>Ноль успехов</b> — событие застаёт врасплох: если это нападение, первый раунд у противника ([[act-turn]]).</li>
+<li><b>Хотя бы один успех</b> — дозор заметил вовремя, засады нет.</li></ul>
+<p><b>Какой список событий:</b> обширные области (роща, болото, пустыня, осколок) — 2к6, сумма от 2 до 12: 7 случается чаще всего, 2 и 12 — редко ([[sh-ev-wide]]). Узкие области (трубы, лабиринты, озеро, угодья) — к6 ([[sh-ev-narrow]]). Совсем конкретные места, например лаборатория Эпикантуса, получают свои события по ходу кампании.</p>`},
+
+{id:"sheet",sec:"char",st:"ok",t:"Лист путника",lead:"Двусторонний лист: сторона А — реальный мир, сторона Я — Зазеркалье.",b:`
+<p>Ведущий вписывает имя, [[stats|характеристики]] и [[levels|уровни навыков]]; пулы навыков на обеих сторонах считаются сами. Здоровье, Усталость, деньги и вещи игроки заполняют ручкой после печати.</p>
+<p>На стороне Я есть блок «Спутник» — кто, к какому навыку подготовка, особое свойство и его Лицо ([[q-companions]]). У каждой строки пожитков — клетка для отметки: битубисас использован в сессии, варево испорчено.</p>
+<p>Лист печатается PDF по две страницы А4 на персонажа: <a class="ref" href="https://claude.ai/artifact/3pfFpJ5XBXeQC9YmwMiw4u" target="_blank" rel="noopener">открыть Лист путника ↗</a>.</p>`},
+
+{id:"creation",sec:"char",st:"ok",t:"Создание персонажа",lead:"Игрок не распределяет очки сам: он проходит два теста и отдаёт ведущему коды результатов.",b:`
+<ol><li><b>[[test-stats|Абсолютно не подозрительный тест]]</b> — 20 бытовых ситуаций. Определяет [[stats|характеристики]].</li>
+<li><b>[[test-skills|Супер подозрительный тест]]</b> — 16 ситуаций. Определяет [[levels|уровни навыков]].</li></ol>
+<p>Навыки переносятся 1 к 1, характеристики переводятся по правилу [[statmap]]. Результат вписывается в [[sheet|Лист путника]]. Зазеркальное имя остаётся пустым до встречи с Истуканусом.</p>
+<p>Итог для всех персонажей одинаков по сумме: характеристики в сумме дают 18, уровни навыков — 16. Различается только распределение.</p>`},
+
+{id:"test-stats",sec:"char",st:"ok",t:"Тест характеристик",lead:"«Абсолютно не подозрительный тест»: 20 вопросов, в каждом три варианта, каждый вариант — одна из шести характеристик.",b:`
+<p>Тест сбалансирован: каждая характеристика встречается ровно в 10 вопросах, а каждая пара характеристик сталкивается в одном вопросе ровно 4 раза. Поэтому ни одна характеристика не получает преимущества от состава вопросов.</p>
+<div class="tbl"><table><tr><th>Что выдаёт тест</th><th>Что нужно на листе</th></tr><tr><td>шесть чисел от 0 до 10, в сумме 20</td><td>шесть чисел от 1 до 5, в сумме 18</td></tr></table></div>
+<p>Сырые результаты не переносятся в лист 1 к 1: их переводят по правилу [[statmap]].</p>
+<p>Порядок в коде: Крепость, Прыть, Смекалка, Чутьё, Обаяние, Странность. Код — JSON-массив в base64.</p>
+<p><a class="ref" href="https://claude.ai/artifact/LuRvpFgFFgWDr8cUcjThuF" target="_blank" rel="noopener">Открыть тест ↗</a></p>`},
+
+{id:"test-skills",sec:"char",st:"ok",t:"Тест навыков",lead:"«Супер подозрительный тест»: 16 вопросов, в каждом три варианта, каждый вариант — один навык.",b:`
+<p>Каждый навык встречается ровно в трёх вопросах. Число выборов навыка и есть его [[levels|уровень]] — от 0 до 3, перенос 1 к 1. Всего выборов 16, поэтому сумма уровней всегда 16.</p>
+<p>Варианты ответов описывают навыки в реальном мире; в Зазеркалье уровень переходит к парному навыку ([[skills]]).</p>
+<p>Порядок в коде совпадает с порядком в [[skills|таблице навыков]]: Драка, Мастеровитость, … Соблазнение. Код — JSON-массив в base64.</p>
+<p><a class="ref" href="https://claude.ai/artifact/35kvTHF2td82eAeYxc2ueK" target="_blank" rel="noopener">Открыть тест ↗</a></p>`},
+
+{id:"statmap",sec:"char",st:"ok",t:"Перевод теста в характеристики",lead:"Каждой характеристике по 1, остальные 12 очков делятся пропорционально результатам теста. Сумма всегда 18.",b:`
+<div class="rule"><p>Вход — шесть сырых чисел из [[test-stats|теста характеристик]] (0–10, в сумме 20). Выход — шесть [[stats|характеристик]] от 1 до 5, в сумме ровно 18.</p></div>
+<h3>Порядок перевода</h3>
+<ol><li>Каждая характеристика получает базовую 1.</li>
+<li>Доля каждой = 0,6 × сырое значение (12 очков на 20 выборов).</li>
+<li>Если доля больше 4, характеристика сразу получает 5, а её лишек делится между остальными пропорционально их сырым значениям. Повторять, пока ни одна доля не превышает 4.</li>
+<li>Каждая характеристика получает целую часть своей доли.</li>
+<li>Недостающие до 12 очки раздаются по одному — тем, у кого больше дробный остаток доли.</li>
+<li>При равных остатках очко получает тот, у кого больше сырое значение. Если равны и они, игрок сам выбирает, какая из равных характеристик получит очко.</li></ol>
+<h3>Пример</h3>
+<div class="tbl nw"><table><tr><th></th><th>КР</th><th>ПР</th><th>СМ</th><th>ЧУ</th><th>ОБ</th><th>СТ</th><th>Сумма</th></tr>
+<tr><td>Сырое</td><td>4</td><td>4</td><td>4</td><td>3</td><td>3</td><td>2</td><td>20</td></tr>
+<tr><td>Доля</td><td>2,4</td><td>2,4</td><td>2,4</td><td>1,8</td><td>1,8</td><td>1,2</td><td>12</td></tr>
+<tr><td>Целые</td><td>2</td><td>2</td><td>2</td><td>1</td><td>1</td><td>1</td><td>9</td></tr>
+<tr><td>Остатки</td><td colspan="7" style="white-space:normal">3 очка: ЧУ и ОБ (остаток 0,8), затем одна из КР / ПР / СМ (0,4) — на выбор игрока</td></tr>
+<tr><td>Итог</td><td>4</td><td>3</td><td>3</td><td>3</td><td>3</td><td>2</td><td>18</td></tr></table></div>
+<p>Пример с потолком: сырое 10, 5, 5, 0, 0, 0 → доля первой 6 > 4, она получает 5; оставшиеся 8 очков делятся поровну между двумя пятёрками → итог 5, 5, 5, 1, 1, 1.</p>
+<h3>Известные свойства</h3>
+<ul><li>Порядок сохраняется всегда: большее сырое значение никогда не даёт меньшую характеристику (проверено на всех 41 118 возможных результатах теста).</li>
+<li>Равные сырые значения могут дать разные характеристики — это цена точной суммы 18 (см. шаг 6).</li>
+<li>Всё, что выше 6–7 сырых выборов, упирается в 5.</li></ul>`},
+
+{id:"q-exit",sec:"mirror",st:"ok",t:"Выход из Зазеркалья",lead:"Путники уходят из Зазеркалья через сон. Всем остальным нужен выход — ключ от него хранит куб запретной пустыни.",b:`
+<p>Сон-[[wake|возвращение]] работает только для путников: их отражает сон. Через сон не могут уйти:</p>
+<ul><li><b>существа Зазеркалья</b> — в том числе [[q-companions|спутники]];</li>
+<li><b>безликие</b> — потерявшие лицо и не нашедшие нового ([[faceless]]);</li>
+<li><b>ставшие зазеркальцами</b> — как {{sator|Сатор Арепыч}}: в миру офицер Крукопацкий, он забыл прежнюю личность и остался здесь.</li></ul>
+<p>Для них нужен <b>выход</b>. Ключ от него хранит {{kub|куб запретной пустыни}}: проход в куб распечатывает только эссенция {{kolodec|спектрального колодца}}, а от пустынных бобылей куб охраняет {{rimma|Костяная Римма}}. Как устроен выход и чего он стоит — решает кампания.</p>`},
+{id:"q-pvz",sec:"mirror",st:"ok",t:"Подозрения работника ПВЗ",lead:"У группы на каждый ПВЗ своя шкала подозрения: 0–8 очков, ступень — каждые 2 очка.",b:`
+<div class="tbl"><table><tr><th>Очки</th><th>Что думает</th><th>Что делает</th></tr>
+<tr><td>0–1</td><td>ничего</td><td>обычная выдача заказов</td></tr>
+<tr><td>2–3</td><td>«показалось»</td><td>косится на примерочную, когда кто-то заходит</td></tr>
+<tr><td>4–5</td><td>«странные клиенты»</td><td>задаёт вопросы, просит оставить сумку у стойки</td></tr>
+<tr><td>6–7</td><td>«что-то нечисто»</td><td>заглядывает за ширму через минуту: войти незаметно — Скрытность, 1 успех</td></tr>
+<tr><td>8</td><td>«я их вычислил»</td><td>ведущий бросает к6 по таблице исходов</td></tr></table></div>
+<div class="tbl"><table><tr><th>Что меняет шкалу</th><th>Очки</th></tr>
+<tr><td>вечером кто-то ушёл в зеркало без отражения</td><td>+1</td></tr>
+<tr><td>утром кто-то вышел из примерочной, куда не входил</td><td>+1</td></tr>
+<tr><td>странность или другая чертовщина наяву на глазах работника</td><td>+1</td></tr>
+<tr><td>путник с [[q-reflection|отражением]] — визит не замечен</td><td>0</td></tr>
+<tr><td>Обман против Чутья работника («я переодевался») — успех</td><td>в этот раз 0</td></tr>
+<tr><td>днём зайти как нормальный клиент: Этикет, 1 успех, не чаще раза в день</td><td>−1</td></tr></table></div>
+<h3>Исход на 8 очках — к6</h3>
+<div class="tbl"><table><tr><th>к6</th><th>Исход</th><th>Потом</th></tr>
+<tr><td>1</td><td><b>Закрыл примерочную «на ремонт».</b> ПВЗ недоступен до конца следующей сессии</td><td>6 очков</td></tr>
+<tr><td>2</td><td><b>Повесил камеру над ширмой.</b> Войти — только с отражением или Скрытность на 2 успеха</td><td>8, исход держится</td></tr>
+<tr><td>3</td><td><b>Позвал охрану.</b> Сцена наяву: объясниться (Этикет или Обман, 2 успеха) или убегать</td><td>6 очков</td></tr>
+<tr><td>4</td><td><b>Написал в чат сотрудников.</b> Соседние ПВЗ этой сети тоже настороже</td><td>здесь 6, у соседних +2</td></tr>
+<tr><td>5</td><td><b>Сам полез в зеркало</b> — и Поленыч его пустил. Работник пропал в Зазеркалье: найти и вернуть — приключение</td><td>вернули — 0</td></tr>
+<tr><td>6</td><td><b>Хочет в долю.</b> Будет молчать за услугу: принести что-то «оттуда»</td><td>4, пока сделка соблюдается</td></tr></table></div>
+<p>Работник — сквозной персонаж реального мира: Чутьё 3 (3к6 на 5+), без навыков. У каждого ПВЗ свой, имя — на первой встрече. Зазеркальные вещи наяву становятся обычными, поэтому выдать группу могут только сами путники ([[items]]).</p>`},
+{id:"q-group",sec:"check",st:"ok",t:"Групповая проверка",lead:"Когда группа делает одно дело вместе, успехи всех складываются, а сложность умножается на число участников.",b:`
+<div class="rule"><p>Нужно успехов = сложность × число участников. Каждый бросает свой навык со своим порогом, успехи суммируются.</p></div>
+<p>Пример: трое крадутся мимо Смоломаза, сложность 1 — нужно 3 успеха на всех. Ловкий может вытянуть неуклюжего.</p>
+<ul><li>Кто не участвует — не бросает и не считается. Остаться позади — всегда вариант.</li>
+<li>[[prep|Подготовка]] и [[reroll|переброс]] работают у каждого отдельно.</li>
+<li>Встречный групповой бросок (группа против Чутья стража) — то же самое: сумма против его успехов × число участников.</li>
+<li>[[rest-watch|Дозор]] — особый случай: успехи складываются, но сложность не умножается.</li></ul>`},
+{id:"q-attitude",sec:"act",st:"ok",t:"Отношение зазеркальцев",lead:"Дружелюбность меняется надолго — поступками группы. Отношение общее для всей группы.",b:`
+<div class="tbl"><table><tr><th>Что сделали</th><th>Сдвиг</th></tr>
+<tr><td>Услуга, о которой просил; подарок из строки «Любит»; спасли от того, чего он «Боится»</td><td>+1 ступень</td></tr>
+<tr><td>Обманули, и он узнал; напали; сделали то, чего он «Боится»</td><td>−1 ступень</td></tr>
+<tr><td>Тяжёлая обида: украли, кокнули, выдали Оно или Ей</td><td>−2 ступени</td></tr></table></div>
+<ul><li><b>Не чаще раза за сцену</b> в каждую сторону.</li>
+<li><b>Ступени:</b> враждебен → насторожен → безразличен → доброжелателен → друг. Начальная — из карточки в атласе.</li>
+<li><b>Друг</b> помогает сам: подсказывает, прячет, даёт подготовку. <b>Доброжелательный</b> соглашается на просьбы. <b>Безразличный</b> — только за плату. <b>Насторожен</b> и <b>враждебен</b> — только [[act-main|задобрить]], до конца сцены.</li>
+<li><b>Виды и сообщества</b> — по решению ведущего: подружиться можно с конкретным бобылём, но не со всеми бобылями; с орденом ведьм как с целым — можно.</li>
+<li><b>Где отмечать</b> — лист [[pr-rel]] в «Распечатках».</li></ul>`},
+{id:"q-travel",sec:"order",st:"ok",t:"Переходы",lead:"Переход из одного места в другое — сцена. По тихим местам — без броска, по опасным — проверка Трубоведения; провал — заплутали.",b:`
+<ul><li><b>Сцена.</b> Переход между местами атласа занимает сцену. Ведущий описывает дорогу; по пути может случиться встреча.</li>
+<li><b>Бросок.</b> Ведёт один — проводник: он бросает Трубоведение (наяву — Ориентирование), остальные могут дать ему [[prep|подготовку]].</li></ul>
+<div class="tbl"><table><tr><th>Куда</th><th>Сложность</th></tr>
+<tr><td>тихие места: лабиринт у имения Кривина, грязевые угодья, роща днём, знакомая дорога</td><td>без броска</td></tr>
+<tr><td>опасные: болото, запретная пустыня, подземные трубы, лавовое озеро</td><td>1</td></tr>
+<tr><td>очень опасные: осколок ещё того Зазеркалья, старый лабиринт</td><td>2</td></tr></table></div>
+<ul><li><b>Темнота</b> — сложность +1 ([[night]]).</li>
+<li><b>Провал — заплутали:</b> +1 Разваристость всем, и случается событие из таблицы области — как при проваленном [[rest-watch|дозоре]] ([[sh-ev-wide]], [[sh-ev-narrow]]).</li>
+<li><b>Без броска:</b> с проводником — {{knyaz|желейный князь}} в трубах, {{lesnoy_kurbak|Курбак}} ночью в лесу, {{vilki|вилки}} к логову ведьм; с {{edgar|караваном Эдгара}} между рощей и пустыней (билет — проездной из дома); по подсказке из события («утром дорога без броска»); странностью «Вихрь».</li>
+<li><b>Запретная пустыня:</b> чтобы пройти через хрупкие пески, нужна вода Бутыльона — [[q-desert]].</li></ul>`},
+{id:"q-desert",sec:"order",st:"ok",t:"Проход через запретную пустыню",lead:"Вместо исключённого Подмыхана проход стережёт Бутыльон: хрупкие пески держат только смоченные его водой. Воду можно выпросить — или выпить самого Бутыльона.",b:`
+<p>По лору проход в {{pustynya|запретную пустыню}} охраняет {{podmyhan|Подмыхан}}, но он [[excluded|исключён]]. В кампании его место занимает {{butylon|Бутыльон}} — это обход исключённой ветки, в видео такого нет.</p>
+<p><b>Пески.</b> Вокруг входа в пустыню пески слишком хрупкие, чтобы выдержать путника. Держат только смоченные водой Бутыльона — своей фляги на это не хватит.</p>
+<p><b>Договориться</b> — Бутыльон одолжит воду.</p>
+<ul><li>Сыворотка общества или Шепоток на 2 успеха; можно [[q-group|группой]].</li>
+<li>Фляга влаги в подарок — [[prep|подготовка]]. Носителю жабьего шапца он одалживает воду без броска.</li>
+<li>Жажда в глазах пугает его: путник без воды — ни фляги, ни воды Бутыльона — бросает при нём на кубик меньше.</li>
+<li>Провал — Бутыльон пугается и уходит в песок до следующего дня.</li>
+<li>Успех — воды хватает на один переход туда и обратно, и в этот переход жара не страшна. О {{zhemchuzhiny|потерянных жемчужинах}} он по-прежнему может рассказать.</li></ul>
+<p><b>Выпить</b> — пройти силой.</p>
+<ul><li>Это бой: Бутыльон обычный, Лицо 3. Урон по нему — путники пьют; на нуле он осушен.</li>
+<li>Воды хватает на один переход, как и при договоре.</li>
+<li>Цена: знание о жемчужинах уходит в песок вместе с ним, а [[q-attitude|отношение]] обитателей пустыни к группе −2. Метки Оно или Её это не даёт: драка — не их дело ([[misdeeds]]).</li></ul>
+<p><b>Жажда и жара.</b> Жажда — это отсутствие воды: ни своей фляги влаги, ни воды Бутыльона. Каждая дневная сцена в пустыне с жаждой — +1 [[fatigue|Разваристость]].</p>`},
+{id:"q-chicken",sec:"order",st:"ok",t:"Цыплёнок у Видуса",lead:"Три метки Её — и путник становится цыплёнком в чак-чаке у Видуса. Нужно выбраться.",b:`
+<ol><li><b>Каждый раунд</b> — встречный бросок: Чак-чак цыплёнка против Чак-чака {{vidus|Видуса}} (5к6 на 4+, шестёрка — два).</li>
+<li><b>Выиграл раунд</b> — +1 к счёту побега. <b>Проиграл</b> — −1 Лицо.</li>
+<li><b>Три выигранных раунда</b> — выбрался: свободен, шкала Её обнуляется. Это печать «Стать цыплёнком у Видуса — и выбраться» ([[q-growth]]).</li>
+<li><b>Лицо упало до 1</b> — Видус отпускает сам, но «ощипанным»: до следующего отдыха путник [[cond-weak|Кислый]], а одну вещь из пожитков Видус оставляет себе как трофей.</li></ol>
+<p><b>Помощь:</b> друзья дают [[prep|подготовку]], если пришли в темноте и сами не боятся Её. Многократных победителей зовут курицами.</p>
+<p>Связано с [[oversight]].</p>`},
+{id:"q-hlev",sec:"order",st:"ok",t:"Сладкий хлев",lead:"Сюда попадают за три метки Оно и когда в Зазеркалье легла вся группа. Хлев плывёт по небу и отпускает сам.",b:`
+<ul><li><b>Срок:</b> ведущий бросает к6 — столько сцен длится заключение. Отпускает Оно в светлое время, высаживая там, откуда путник попал в хлев.</li>
+<li><b>Внутри:</b> отдых безопасный; каждую сцену сладковатый воздух снимает 1 Разваристость. {{kozhnik|Кожник}} играет в догонялки и за услугу учит Выворачиванию; коровы дают молоко — то самое, из чана которого вырос сырный Джо.</li>
+<li><b>Отработка:</b> каждая услуга хлеву — накормить коров, развеселить кожника, вычистить чан — снимает одну оставшуюся сцену.</li>
+<li><b>Побег, как у {{edgar|Птозного Эдгара}}:</b> в начале сцены к6; на 6 хлев над медными скалами. Прыгнуть — Прыть на 2 успеха; провал — падение, 2 урона по Лицу, но всё равно на свободе.</li>
+<li><b>После выхода</b> шкала Оно обнуляется. Сбежавшим — остаётся на 2.</li></ul>
+<p>Это печать «Побывать в сладком хлеву» ([[q-growth]]). Связано с [[oversight]] и [[all-down]].</p>`},
+{id:"q-brew",sec:"gear",st:"ok",t:"Варево",lead:"Шесть ингредиентов, три в котёл — двадцать вариантов. Варят по рецепту или наугад; провалил Варево — варево испорчено, и при питье бросают 2к6.",b:`
+<h3>Ингредиенты</h3>
+<div class="tbl"><table><tr><th>Ингредиент</th><th>Где взять</th><th>Кукичи</th></tr>
+<tr><td>{{zelenika|Зеленика}}</td><td>собрать в сумеречной роще — её собирает и Акакий</td><td>1</td></tr>
+<tr><td>{{griby|Гриб}}</td><td>собрать в роще; за грибами охотится {{idiks|Идибикс}}</td><td>1</td></tr>
+<tr><td>{{morkovnye|Морковные пятки}}</td><td>огород {{zhulya|бабы Жули}} — купить; воровать мешает {{tolstomyas|толстомясочка}}</td><td>2</td></tr>
+<tr><td>{{hrychi|Хрычи}}</td><td>огород бабы Жули; дикие хрычи опасны</td><td>2</td></tr>
+<tr><td>{{med|Мёд осов}}</td><td>только у {{osy|ос}} — это опасно; в воде мёда нет</td><td>3</td></tr>
+<tr><td>{{skorlupa|Скорлупа}}</td><td>дефицит: за ней охотятся {{epikantus|Эпикантус}} и {{mikhail|Михаил}}</td><td>4</td></tr></table></div>
+<p>Один ингредиент — одна строка [[q-inventory|пожитков]]; готовое варево — тоже строка.</p>
+<p><b>Сбор.</b> Сцена сбора в подходящем месте — проверка Знахарства на 1 успех: каждый успех — один ингредиент того, что там растёт. Провал — ничего не нашёл.</p>
+<ul><li><b>Зеленика, гриб</b> — сумеречная роща. Собирая грибы, бросьте к6: на 1 следом увязывается {{idiks|Идибикс}}.</li>
+<li><b>Пятки, хрычи</b> — огород бабы Жули: купить у неё или стащить — Хождение в копытах против Чутья {{tolstomyas|толстомясочки}}.</li>
+<li><b>Мёд</b> — только у ос: Хождение в копытах на 2 успеха; провал — осы нападают (событие 9 рощи).</li>
+<li><b>Скорлупа</b> — в {{skorl_yama|скорлупной яме}} Эпикантуса: Чутьё на 2 успеха, а рядом может быть Михаил; или купить.</li></ul>
+<h3>Как варить</h3>
+<ul><li><b>Где и когда.</b> Только в Зазеркалье и только на [[rest|отдыхе]] — но сколько угодно раз, пока хватает ингредиентов. Котёл не нужен; у бабы Жули или в {{krivaya_gora|логове ведьм}} варево [[prep|подготовлено]].</li>
+<li><b>Три разных ингредиента</b> — одно варево. Что получится, решает сочетание — таблица ниже.</li>
+<li><b>По рецепту.</b> Рецепт узнают у учителя за услугу — Жуля учит гыче, Акакий — компоту, Вальтасар — своим зельям — или находят, например обрывок рецепта гнома Радомира.</li>
+<li><b>Наугад.</b> Ведущий описывает, как выглядит варево — цвет, запах, бульканье. Что оно делает, путник узнаёт, только выпив.</li>
+<li><b>Проверка Варева</b> на сложность из таблицы. Успех — варево удалось. Провал — варево испорчено: отметьте клетку у его строки в пожитках. Основной эффект у него есть, но <b>при питье</b> бросьте 2к6 по таблице побочных действий.</li>
+<li><b>Выпить</b> — основное [[act-main|действие]]. Срок годности не ограничен.</li></ul>
+<h3>Рецепты</h3>
+<div class="tbl"><table><tr><th>№</th><th>Ингредиенты</th><th>Варево</th><th>Слож.</th><th>Эффект</th></tr><tr><td>1</td><td>{{zelenika|Зеленика}}, {{griby|Гриб}}, {{morkovnye|Пятки}}</td><td><b>Зелье парения над слизнями</b></td><td>1</td><td>Действует только на голубей — а значит, и на {{peskari|пескаря}}. Рецепт {{valtasar|Вальтасара}}.</td></tr><tr><td>2</td><td>{{zelenika|Зеленика}}, {{griby|Гриб}}, {{hrychi|Хрычи}}</td><td><b>Капли от пучи</b></td><td>2</td><td>Снимают [[cond-ill|Пучу]] вместо жимпажа.</td></tr><tr><td>3</td><td>{{zelenika|Зеленика}}, {{griby|Гриб}}, {{med|Мёд}}</td><td><b>Компот Куролесова</b></td><td>1</td><td>Снимает [[cond-bind|Напуган]] и [[cond-ill|Икоту]]; до конца сцены тебя не напугать. Рецепт {{akakiy|Акакия}}.</td></tr><tr><td>4</td><td>{{zelenika|Зеленика}}, {{griby|Гриб}}, {{skorlupa|Скорлупа}}</td><td><b>Светлячковая кашица</b></td><td>1</td><td>[[cond-buff|Светишься]] до конца сцены.</td></tr><tr><td>5</td><td>{{zelenika|Зеленика}}, {{morkovnye|Пятки}}, {{hrychi|Хрычи}}</td><td><b>Зелёный бальзам</b></td><td>3</td><td>+2 [[face|Лица]].</td></tr><tr><td>6</td><td>{{zelenika|Зеленика}}, {{morkovnye|Пятки}}, {{med|Мёд}}</td><td><b>Зелье бега</b></td><td>2</td><td>До конца сцены ты быстрее глазастой пиццы: уходишь от [[q-chase|погони]] без броска. Рецепт {{valtasar|Вальтасара}}.</td></tr><tr><td>7</td><td>{{zelenika|Зеленика}}, {{morkovnye|Пятки}}, {{skorlupa|Скорлупа}}</td><td><b>Кураж-настойка</b></td><td>2</td><td>[[cond-buff|Раскрепощён]] до конца сцены.</td></tr><tr><td>8</td><td>{{zelenika|Зеленика}}, {{hrychi|Хрычи}}, {{med|Мёд}}</td><td><b>Зелье от ангины ламантинов</b></td><td>2</td><td>До конца сессии иммунитет к [[cond-ill|Ангине ламантинов]]. Рецепт {{valtasar|Вальтасара}}.</td></tr><tr><td>9</td><td>{{zelenika|Зеленика}}, {{hrychi|Хрычи}}, {{skorlupa|Скорлупа}}</td><td><b>Кислый морс</b></td><td>1</td><td>[[cond-weak|Кислый]] до отдыха (<i>до следующего обеда</i>): тебя никто не съест, но −1 кубик к навыкам на Обаянии.</td></tr><tr><td>10</td><td>{{zelenika|Зеленика}}, {{med|Мёд}}, {{skorlupa|Скорлупа}}</td><td><b>Зелье распознавания мигунов</b></td><td>2</td><td>До конца сцены отличаешь мигуна, замаскированного под бобыля. Рецепт {{valtasar|Вальтасара}}.</td></tr><tr><td>11</td><td>{{griby|Гриб}}, {{morkovnye|Пятки}}, {{hrychi|Хрычи}}</td><td><b>Гуттаперчевая похлёбка</b></td><td>2</td><td>[[cond-buff|Гуттаперчив]] до конца сцены.</td></tr><tr><td>12</td><td>{{griby|Гриб}}, {{morkovnye|Пятки}}, {{med|Мёд}}</td><td><b>Сонный взвар</b></td><td>2</td><td>[[wake|Уснуть]] без броска — даже в опасном месте.</td></tr><tr><td>13</td><td>{{griby|Гриб}}, {{morkovnye|Пятки}}, {{skorlupa|Скорлупа}}</td><td><b>Бульон окумекивания</b></td><td>3</td><td>Один раз в эту сцену: когда Лицо падает до 0, встаёшь с 1.</td></tr><tr><td>14</td><td>{{griby|Гриб}}, {{hrychi|Хрычи}}, {{med|Мёд}}</td><td><b>Горячий хрычовник</b></td><td>2</td><td>Снимает [[cond-ill|Простуду]] — без бурлешки и отдыха.</td></tr><tr><td>15</td><td>{{griby|Гриб}}, {{hrychi|Хрычи}}, {{skorlupa|Скорлупа}}</td><td><b>Панцирный отвар</b></td><td>3</td><td>[[cond-buff|В раковине]] до конца сцены: броня 2, Коканье не действует.</td></tr><tr><td>16</td><td>{{griby|Гриб}}, {{med|Мёд}}, {{skorlupa|Скорлупа}}</td><td><b>Зелье планов синих ящеров</b></td><td>2</td><td>Ведущий раскрывает одну ближайшую шалость синих ящеров. Рецепт {{valtasar|Вальтасара}}.</td></tr><tr><td>17</td><td>{{morkovnye|Пятки}}, {{hrychi|Хрычи}}, {{med|Мёд}}</td><td><b>{{gycha|Гыча}}</b></td><td>1</td><td>Снимает 2 Разваристости. Рецепт {{zhulya|бабы Жули}}.</td></tr><tr><td>18</td><td>{{morkovnye|Пятки}}, {{hrychi|Хрычи}}, {{skorlupa|Скорлупа}}</td><td><b>Зелье дальнего коканья</b></td><td>2</td><td>Один раз — Коканье на средней дистанции. Рецепт {{valtasar|Вальтасара}}.</td></tr><tr><td>19</td><td>{{morkovnye|Пятки}}, {{med|Мёд}}, {{skorlupa|Скорлупа}}</td><td><b>Пятки в меду</b></td><td>1</td><td>[[cond-buff|Свой]] до конца сцены: подготовка к общению с зазеркальцами, майонезные не придираются.</td></tr><tr><td>20</td><td>{{hrychi|Хрычи}}, {{med|Мёд}}, {{skorlupa|Скорлупа}}</td><td><b>{{skip|Скип}}</b></td><td>2</td><td>Любимое лакомство синих ящеров: синий ящер за него выполнит одну просьбу или выдаст одну шалость сородичей.</td></tr></table></div>
+<h3>Испорченное варево — 2к6 при питье</h3>
+<div class="tbl"><table><tr><th>2к6</th><th>Побочное действие</th></tr><tr><td>2</td><td><b>Чужое лицо:</b> до конца сессии знакомые зазеркальцы тебя не узнают.</td></tr><tr><td>3</td><td>[[cond-ill|Ангина ламантинов]] — заразна.</td></tr><tr><td>4</td><td>Заговариваешься: до конца сцены [[cond-bind|Заполиплен]] — говоришь то, что велит ведущий.</td></tr><tr><td>5</td><td>[[cond-ill|Икота]].</td></tr><tr><td>6</td><td>[[cond-weak|Колосится]] до конца сцены.</td></tr><tr><td>7</td><td>+1 Разваристость.</td></tr><tr><td>8</td><td>[[cond-weak|Красные уши]] до конца сцены.</td></tr><tr><td>9</td><td>[[cond-weak|Неуклюж]] до отдыха.</td></tr><tr><td>10</td><td>Светишься зелёным: в темноте тебя видно с дальней дистанции, спрятаться нельзя.</td></tr><tr><td>11</td><td>[[cond-ill|Простуда]].</td></tr><tr><td>12</td><td><b>Желтеешь:</b> до конца сцены ты желтее сыра — днём Оно ставит [[oversight|метку надзора]].</td></tr></table></div>`},
+{id:"q-bitubis",sec:"gear",st:"ok",t:"Битубисас",lead:"Личный показатель надёжности. Создаётся квестом группы; раз за сессию превращает провал в успех.",b:`
+<p>Из лора: {{bitubis|битубисас}} — показатель надёжности; создавать его учит {{bolshoy_almaz|большой алмаз}} за кукичи; {{mikhail|Михаил}} копит на него каждый кукич; {{klaunec|Кловунец}} хочет быть сам себе битубисасом.</p>
+<ul><li><b>Создание</b> — квест группы: собрать материалы (и не принять грязуна под прикрытием за бобыля) → пройти мимо {{shnekishmyak|Шнеки-Шмяка}} в трубы ({{p220|абзац 220}}) → {{knyaz|желейный князь}} → {{zelyony_tuman|зелёный туман}} → {{vysokoe_duplo|высокое дупло}} ({{p229|абзац 229}}). Каждый шаг — сцена со своей проверкой по решению ведущего.</li>
+<li><b>Итог.</b> Квест проходят вместе, а битубисас — у каждого свой: его получает каждый участник. За создание ставится [[q-growth|общая печать конгресса]] — цель «Создать битубисас».</li>
+<li><b>Вещь.</b> Битубисас — личный, отнять или украсть его нельзя. Записывается строкой в пожитки; клетка у строки — отметка «использован в этой сессии».</li>
+<li><b>Надёжность.</b> Раз за сессию — превратить свой провал в успех с минимальным перевесом.</li>
+<li><b>Быть себе битубисасом.</b> С битубисасом эта [[odd-help|странность]] ничего не стоит — вместо 1 Разваристости.</li></ul>`},
+{id:"q-money",sec:"gear",st:"ok",t:"Заработок кукичей",lead:"Работа — на мелочи, поручения — на серьёзные покупки, добычу можно продать за полцены.",b:`
+<h3>Работа</h3>
+<p>Профессии из {{p142|абзаца 142}}. Одна сцена работы, проверка навыка на 1 успех: успех — плата, каждый лишний успех +1 кукич; провал — без оплаты, зато с историей. Не чаще раза за светлое время.</p>
+<div class="tbl"><table><tr><th>Работа</th><th>Навык</th><th>Кукичи</th></tr>
+<tr><td>сортировщик скорлупы (у Эпикантуса)</td><td>Колупание</td><td>4</td></tr>
+<tr><td>помощник выгульщика булыжников (у таинственного незнакомца — не спрашивай, как стать таким же)</td><td>Бобылеведение</td><td>3</td></tr>
+<tr><td>щекотатель в подпольном клубе — в темноте, проступок перед Ею</td><td>Щекотка</td><td>8</td></tr>
+<tr><td>управляющий совянами</td><td>Сыворотка общества</td><td>6</td></tr>
+<tr><td>дегустатор мясного хлеба (у крепышей)</td><td>Крепость</td><td>3</td></tr>
+<tr><td>наёмный едок</td><td>Крепость</td><td>3</td></tr>
+<tr><td>трубочист-зубочист</td><td>Трубоведение</td><td>5</td></tr>
+<tr><td>заместитель колбасного стража</td><td>Коканье</td><td>5</td></tr></table></div>
+<h3>Поручения</h3>
+<p>Основной источник: {{fantasmogor|Фантасмогор}} платит за доставку солений, {{panlomeo|Понполомео}} — за ложки, {{edgar|Птозный Эдгар}} — за письма. Плата 10–30 кукичей и часто +1 к [[q-attitude|отношению]].</p>
+<h3>Продажа добычи</h3>
+<p>Зазеркальцы покупают за половину цены каталога. Торг — встречное Кукичество: каждый лишний успех +10% цены в твою пользу, не дороже полной.</p>`},
+{id:"q-real",sec:"mirror",st:"ok",t:"Реальный мир",lead:"Сессия — это вечер наяву, ночь в Зазеркалье и утро наяву. Наяву коротко, бытово и без монстров.",b:`
+<h3>Вечер</h3>
+<ul><li><b>Покупки</b> за рубли — это подготовка к Зазеркалью: шапка станет бурлешкой, зелёнка — склянкой ведьмы ([[gear-home]], [[items]]).</li>
+<li><b>Дорога до ПВЗ</b> — по городу, иногда в другой ПВЗ, если в своём работник на взводе.</li>
+<li><b>Мимо работника</b> — срабатывает [[q-pvz|шкала подозрения]].</li></ul>
+<h3>Утро</h3>
+<ul><li><b>Выход из примерочной</b> — снова работник и шкала.</li>
+<li><b>Последствия ночи:</b> вернулось то, что держал, засыпая; остальное пропало и наяву; кукичи стали шоколадными монетами.</li>
+<li>Утренний выход — всегда полный отдых. Застрявший в Зазеркалье не выходит: утро для него не наступает ([[time]]).</li></ul>
+<h3>Вред наяву</h3>
+<ul><li><b>Усталость:</b> странности наяву (1 за попытку, сложность +1), [[reroll|переброс]], беготня от охраны, поиски другого ПВЗ через весь город, долгий день перед входом — если персонаж так заявил.</li>
+<li><b>Здоровье:</b> упал, подрался с охраной, простудился — [[cond-ill|простуда]] есть в обоих мирах. Натворившее [[q-reflection|отражение]] — к6 у ведущего.</li>
+<li>Странность на глазах у людей — ещё и очко [[q-pvz|подозрения]].</li></ul>
+<h3>Рубли и люди</h3>
+<ul><li>В начале каждой сессии у каждого 300 ₽ на вещи. Больше — за логичную заявку: «взял подработку», «занял у соседа».</li>
+<li><b>Сквозные персонажи:</b> работник ПВЗ, по желанию — соседи и знакомые. Через них Зазеркалье «просачивается»: кто-то тоже видел Поленыча в зеркале.</li></ul>`},
+{id:"q-reflection",sec:"mirror",st:"ok",t:"Призыв отражения",lead:"Отражение появляется, только если его призвать странностью. Учит Поленыч.",b:`
+<p>Без странности отражения нет: персонаж уходит в зеркало целиком, и работник ПВЗ видит пустую примерочную — см. [[enter]] и [[pvz-worker]].</p>
+<p>Странность [[odd-special|Призвать отражение]] — сложность 2, основное действие. Её творят уже в Зазеркалье.</p>
+<ul><li><b>Двойники для ПВЗ.</b> Наяву из примерочной того ПВЗ выходят двойники всех, кто вошёл через него вместе с тобой — не только твой. Они проживают за вас ночь; утром двойники заходят в примерочную, а выходите уже вы. Работник ничего не заподозрит.</li>
+<li><b>Альтернативное использование</b> — двойник на раунд: ты [[cond-buff|С двойником]], первая атака приходится в него.</li>
+<li><b>Отдача:</b> отражение что-то натворило — ведущий бросает к6 и решает, что именно.</li></ul>`},
+{id:"q-morale",sec:"act",st:"ok",t:"Храбрость и бегство",lead:"У каждого противника в карточке есть храбрость: храбрый, нормальный или трусливый. Она решает, когда он бежит и когда не нападает.",b:`
+<div class="tbl"><table><tr><th>Храбрость</th><th>Бежит</th><th>Не нападает</th></tr>
+<tr><td><b>Храбрый</b></td><td>не бежит — уходит только по своей воле</td><td>—</td></tr>
+<tr><td><b>Нормальный</b></td><td>если остался один из своих или его [[act-main|отпугнули]] тем, чего он «Боится»</td><td>в одиночку</td></tr>
+<tr><td><b>Трусливый</b></td><td>если повержена половина его стороны или больше</td><td>если их меньше трёх</td></tr></table></div>
+<ul><li><b>Бегущий</b> тратит ход на движение прочь. Догнать его — [[q-chase|погоня]].</li>
+<li><b>Бобыли</b> от коканья не бегут: кокнутый бобыль окумекивается ([[kokanye]]).</li>
+<li><b>Пощада.</b> Догнав беглеца, его можно не добивать, а пощадить — чтобы расспросить, договориться, взять с него услугу или обещание. Пощажённый до конца сцены не нападает.</li>
+<li><b>Добыча.</b> Убегая, противник ничего не роняет. «Добычу» из карточки получают, только если догнать и добить; пощажённый может отдать её сам — по договорённости.</li></ul>
+<p>См. также: [[q-foes]], [[distance]].</p>`},
+{id:"kokanye",sec:"act",st:"ok",t:"Коканье и окумекивание",lead:"Бобыль — мелочь: любой урон от Коканья кокает его. Но кокнутые окумекиваются.",b:`
+<p>Из лора: 68% кокнутых бобылей окумекиваются через полминуты и становятся «ещё бобылистей»; остальные 32% — через срок от 10 минут до часа, и чем дольше срок, тем они смирнее. Реутеня кокнуть нельзя.</p>
+<ul><li>Любой урон от Коканья кокает бобыля.</li>
+<li>После коканья к6: 3–6 — встаёт в следующем раунде с +1 кубиком (не больше +2); 1–2 — лежит до конца сцены, потом смирный.</li>
+<li>Пока кокнутый лежит, от него можно уйти без броска.</li></ul>
+<p>Так это правило записано в карточке бобылей в атласе. Общие правила атаки — [[act-kok]], [[damage]].</p>`},
+{id:"q-foes",sec:"act",st:"ok",t:"Противники",lead:"У противников те же характеристики и навыки, что у путников, и трек Лица. Карточки — в атласе.",b:`
+<p>Каждое существо из атласа — персонаж, вид, сообщество, сила — имеет карточку зазеркальца. У видов и сообществ карточка описывает обычного представителя.</p>
+<div class="tbl"><table><tr><th>Ранг</th><th>Лицо</th><th>Кто это</th></tr>
+<tr><td>мелочь</td><td>1</td><td>бобыль, кокша, пескарь: падает от первого успешного удара</td></tr>
+<tr><td>обычный</td><td>3</td><td>крепыш, майонезная тётенька, синий ящер</td></tr>
+<tr><td>сильный</td><td>5–6</td><td>Сатор Арепыч, многоликий Филипп, коленыч</td></tr>
+<tr><td>легендарный</td><td>8+</td><td>Оно, Она, Видус, братья Мишеневы — обычно не для драки</td></tr></table></div>
+<ul>
+<li><b>Характеристики</b> обычно 1–5, но предел 5 — только для путников: сильным и легендарным ведущий при необходимости даёт больше.</li>
+<li><b>Броски:</b> те же шесть характеристик и шестнадцать навыков; неуказанные навыки — уровень 0. Защита — Прыть + [[act-defense|броня]], броня указана в свойствах.</li>
+<li><b>Урон</b> идёт по Лицу. На нуле противник повержен: падает или теряет лицо — по смыслу сцены. Бежать он может и раньше — по своей [[q-morale|храбрости]].</li>
+<li><b>Разваристости нет:</b> [[cond-weak|Разварен]] даёт противнику −1 кубик, копится до −2.</li>
+<li><b>Темнота:</b> агрессивные бросают на кубик больше во встречных — [[night]].</li>
+<li><b>Без боя:</b> строки «Любит · задобрить» и «Боится · отпугнуть» — для действий [[act-main|Задобрить и Отпугнуть]]. Дружелюбность, разумность и общение подсказывают, как вести разговор.</li>
+<li><b>Приёмы</b> — особые действия существа; тип действия, если не сказано иное, — основное. Приём без навыка бросают как голую характеристику: успех на 5–6.</li></ul>
+<p>Бобыли — особый случай: [[kokanye]].</p>`},
+{id:"q-growth",sec:"char",st:"ok",t:"Рост персонажа",lead:"Опыт — это печати конгресса путешественников. Три печати — новый уровень, всего уровней семь.",b:`
+<p>Печать ставится за цель из ведомости — пережитое в Зазеркалье. Каждую печать путник получает один раз. Ведомость — общий лист на группу, с двух сторон: слева цели, сверху имена путников, клетки квадратные — под печать. Её печатают из «Распечаток»: [[pr-seals]].</p>
+<div class="tbl"><table><tr><th>Уровень</th><th>Звание</th><th>Награда</th></tr>
+<tr><td>1</td><td>Странник</td><td>+1 характеристика, +1 навык</td></tr>
+<tr><td>2</td><td>Путник</td><td>+2 навыка</td></tr>
+<tr><td>3</td><td>Бывалый</td><td>+1 характеристика, +2 навыка</td></tr>
+<tr><td>4</td><td>Землепроходец</td><td>+2 характеристики, +1 навык</td></tr>
+<tr><td>5</td><td>Первопроходец</td><td>+3 навыка</td></tr>
+<tr><td>6</td><td>Действительный член конгресса</td><td>+1 характеристика, +2 навыка</td></tr>
+<tr><td>7</td><td>Почётный член конгресса</td><td>+2 характеристики, +2 навыка</td></tr></table></div>
+<ul><li><b>Когда:</b> награда применяется на ближайшем [[rest|отдыхе]].</li>
+<li><b>Навык</b> за уровень поднимается не выше 2. Уровень 3 — мастерство — только у учителя за услугу, как и [[odd-learn|странности]].</li>
+<li><b>Характеристика</b> — не выше 5: если одна уже на пределе, поднимают другую. Крепость поднимает максимум Здоровья и Лица, Странность — число странностей.</li>
+<li><b>Общие цели</b> — те, что группа проходит вместе. На ведомости у них одна широкая клетка в рамке: туда ставят одну печать, и она засчитывается каждому путнику группы — даже тому, кто в тот раз отсутствовал. Новичок получает все общие печати, которые у группы уже есть, — и по их числу начальный уровень (3 печати — уровень, награды применяются при создании).</li>
+<li><b>Список целей открытый:</b> ведущий вписывает новые в пустые строки и решает, личная цель или общая. На ведомости личные цели и пустые строки — на лицевой стороне, общие — на обороте.</li></ul>
+<div class="tbl"><table><tr><th>№</th><th>Цель</th><th>Печать</th></tr>
+<tr><td>1</td><td>Побывать в сладком хлеву</td><td>личная</td></tr><tr><td>2</td><td>Стать цыплёнком у Видуса — и выбраться</td><td>личная</td></tr><tr><td>3</td><td>Предстать перед Истуканусом и ответить</td><td>личная</td></tr><tr><td>4</td><td>Увидеть Оно или Её воочию</td><td>личная</td></tr><tr><td>5</td><td>Потерять лицо и найти новое</td><td>личная</td></tr><tr><td>6</td><td>Дослушать историю говорящего холма</td><td>личная</td></tr><tr><td>7</td><td>Впечатлить Магогу</td><td>личная</td></tr><tr><td>8</td><td>Приручить кокшу</td><td>личная</td></tr><tr><td>9</td><td>Совершить шалость по заданию синих ящеров</td><td>личная</td></tr><tr><td>10</td><td>Отведать гычи бабы Жули</td><td>личная</td></tr><tr><td>11</td><td>Выиграть ставку на забеге</td><td>личная</td></tr><tr><td>12</td><td>Выбраться из старого лабиринта с лицом</td><td>личная</td></tr><tr><td>13</td><td>Выучить странность у учителя</td><td>личная</td></tr><tr><td>14</td><td><i>пустая строка</i></td><td></td></tr><tr><td>15</td><td><i>пустая строка</i></td><td></td></tr><tr><td>16</td><td>Пройти за третий поворот колбасного стража</td><td>общая</td></tr><tr><td>17</td><td>Добраться до острова Лавана</td><td>общая</td></tr><tr><td>18</td><td>Увидеть спектральный колодец</td><td>общая</td></tr><tr><td>19</td><td>Побывать в осколке ещё того Зазеркалья</td><td>общая</td></tr><tr><td>20</td><td>Войти в ворота медного града</td><td>общая</td></tr><tr><td>21</td><td>Пережить темноту в сумеречной роще</td><td>общая</td></tr><tr><td>22</td><td>Пройти подземные трубы насквозь</td><td>общая</td></tr><tr><td>23</td><td>Побывать на приёме у господина Кривина</td><td>общая</td></tr><tr><td>24</td><td>Вернуть ложку, украденную Казимиром</td><td>общая</td></tr><tr><td>25</td><td>Попасть в подпольный щекоточный клуб</td><td>общая</td></tr><tr><td>26</td><td>Найти Бутыльона и не осушить его</td><td>общая</td></tr><tr><td>27</td><td>Создать битубисас</td><td>общая</td></tr></table></div>`},
+{id:"q-companions",sec:"char",st:"ok",t:"Спутники",lead:"Путник может водить с собой одного спутника. Спутник всегда даёт подготовку к своему навыку и умеет что-то своё.",b:`
+<ul><li><b>Кто.</b> Основные спутники — кокши, бобыли и грибы. Другие мелкие существа — если постараться; сильные — исключение.</li>
+<li><b>Сколько.</b> Один спутник на путника — его вписывают в блок «Спутник» на стороне Я листа. Свой пескарь ([[gear-home]]) — не спутник: он носит записки и места не занимает.</li>
+<li><b>Как заполучить.</b> Кокшу приручают; остальных — отношение «доброжелателен» или «друг» ([[q-attitude]]) и услуга. Некоторые вещи из дома за зеркалом сами оживают спутниками: органайзер — благородным пакетом, фигурка лягушки — жабцем ([[gear-home]]).</li>
+<li><b>Подготовка — пассивная.</b> Пока спутник рядом, путник [[prep|подготовлен]] ко всем проверкам его навыка. С другой подготовкой не складывается.</li>
+<li><b>Особое свойство</b> у каждого своё — в таблице. Если это действие, путник тратит на него своё [[act-move|движение]].</li>
+<li><b>Лицо 1.</b> На нуле спутник сбегает и возвращается после [[rest|отдыха]]. Бобыли сначала окумекиваются.</li>
+<li><b>Договорённость</b> держится, пока путник не отпустит спутника или не провинится перед ним: ударил, бросил в беде, сделал то, чего тот «Боится». Провинился — спутник уходит домой, [[q-attitude|отношение]] −1.</li>
+<li><b>Между ночами</b> спутник ждёт там, где путник уснул. Можно отпустить его домой — тогда он ждёт в своём месте обитания (по карточке), и за ним надо зайти.</li>
+<li><b>Наяву спутников нет:</b> существа Зазеркалья не уходят через сон — только через [[q-exit|выход]].</li>
+<li><b>Не уживаются:</b> грязун и мигун; Кадаврик и бахромка; Вандух и Ёксель-Моксель; жабец и Акакий; грибы — рядом с Идибиксом.</li></ul>
+<div class="tbl"><table><tr><th>Спутник</th><th>Подготовка</th><th>Особое</th></tr><tr><td colspan="3"><b>Кокши</b> — приручают: невыдержанный сыр Джо и чесать за ухом 20 раз в минуту — цель «Приручить кокшу».</td></tr><tr><td>{{kokshi|Кокша}}</td><td>Хождение в копытах</td><td>Приносит слюду: раз за сессию — кусочек {{slyuda|слюды}}. Пуглива: спугнули — убегает без броска.</td></tr><tr><td>{{lyonya|Лёня-Мелкозуб}}</td><td>Хождение в копытах</td><td>«Разведка»: сходит туда, куда путнику не пройти, и вернётся со сведениями.</td></tr><tr><td>{{chertiliy|Чертилий}}</td><td>Колупание</td><td>«Стащить»: раз за сцену утащит у цели мелкий предмет. Не выносит тётю Варю.</td></tr><tr><td>{{shpendel|Шпендель}}</td><td>Лицедейство</td><td>Эхо: голос хозяина слышно до дальней дистанции — можно говорить «из другого места».</td></tr><tr><td>{{kadavrik|Лесной Кадаврик}}</td><td>Знахарство</td><td>«Каламбур»: цель Ошарашена. Съест бахромку, если та рядом.</td></tr><tr><td>{{gocheetka|Гычеедка}}</td><td>Варево</td><td>Чует гычу и съестное. Но её выдаёт жареный запах: прятаться рядом с ней — на кубик меньше.</td></tr><tr><td>{{manya|Маня Понич}}</td><td>Сыворотка общества</td><td>Вхожа к Алевтине: подготовка к разговору с ней и всё о ней. Больше ни о чём не говорит.</td></tr><tr><td colspan="3"><b>Бобыли</b> — общее свойство — окумекивание: на нуле Лица бобыль не сбегает, а бросает к6 — на 3–6 встаёт через раунд.</td></tr><tr><td>{{bobyli|Лесной бобыль}}</td><td>Бобылеведение</td><td>Только окумекивание.</td></tr><tr><td>{{vanduh|Вандух}}</td><td>Бобылеведение</td><td>Только окумекивание. Не уживается с Ёкселем-Мокселем.</td></tr><tr><td>{{tsupol_zvak|Цуполь-Звак}}</td><td>Бобылеведение</td><td>Только окумекивание.</td></tr><tr><td>{{svetogar|Светогар}}</td><td>Бобылеведение</td><td>Только окумекивание.</td></tr><tr><td>{{cherny_ekler|Чёрный эклер}}</td><td>Летопись</td><td>«История вперемешку»: собеседник не уйдёт до конца сцены. Донимает историями и хозяина.</td></tr><tr><td>{{gyzlik|Гузлик}}</td><td>Лицедейство</td><td>«Анекдот»: все, кто способен смеяться, Ошарашены. Фантасмогор недоволен, что увели звезду цирка.</td></tr><tr><td>{{artyom|Летописный Артём}}</td><td>Летопись</td><td>«Новая теория»: ответ на любой вопрос — но на 1–3 по к6 перепутал.</td></tr><tr><td>{{shnekishmyak|Шнеки-Шмяк}}</td><td>Трубоведение</td><td>Свой у входа в трубы: с ним пропускают без уловок.</td></tr><tr><td>{{yoksel|Ёксель-Моксель}}</td><td>Коканье</td><td>Желейный князь уважает тех, кто его не путает: подготовка к разговору с князем.</td></tr><tr><td>{{reuten|Реутень}}</td><td>Коканье</td><td>Только если очень постараться: броня 3, разгоняет осов без броска.</td></tr><tr><td colspan="3"><b>Грибы</b> — общий риск: на всё грибное зарится {{idiks|Идибикс}}.</td></tr><tr><td>{{grib_bytovik|Гриб-бытовик}}</td><td>Сыворотка общества</td><td>Любимец майонезных: к хозяину они не придираются.</td></tr><tr><td>{{bahromka|Бахромка}}</td><td>Знахарство</td><td>Лакомство Идибикса и Кадаврика — рядом с ними её надо стеречь.</td></tr><tr><td>{{sinyachok|Синячок}}</td><td>Хождение в копытах</td><td>Следует правилам Её: в темноте первая метка Её за ночь хозяину не ставится.</td></tr><tr><td>{{gruzd|Похомистый груздь}}</td><td>Щекотка</td><td>«Похомить»: цель Колосится.</td></tr><tr><td>{{pufik|Пуфик принцессы Пармезанны}}</td><td>Кукичество</td><td>«Присесть»: раз за сессию передышка — снять 1 Разваристость.</td></tr><tr><td>{{akakiy|Акакий Куролесов}}</td><td>Знахарство</td><td>«Приют»: с ним в роще отдыхают без дозора. Пуглив: от жабьего кваканья и громких звуков уходит.</td></tr><tr><td>{{arhivarius|Грибной архивариус}}</td><td>Летопись</td><td>Подготовка и к поиску дороги (Трубоведение) — но на 1–2 по к6 лево и право перепутаны.</td></tr><tr><td colspan="3"><b>Прочие мелкие</b> — если постараться.</td></tr><tr><td>{{gryazuny|Грязун}}</td><td>Колупание</td><td>«Под прикрытием»: выдаёт себя за бобыля. Нападает на мигунов и всё на них похожее — вплоть до Диода.</td></tr><tr><td>{{megune|Мигун}}</td><td>Механика</td><td>«Вспышка»: светит в темноте, цель Ошарашена. Грязуны на него охотятся, грязь его гасит.</td></tr><tr><td>{{gromiki|Громик}}</td><td>Коканье</td><td>Если сильно постараться. Будит спящих — ночью не нужен дозор; но уснуть, чтобы вернуться, можно только вдали от него.</td></tr><tr><td>{{rudlo|Рудло}}</td><td>Хождение в копытах</td><td>Подслушивает: раз за сцену — записка с подсказкой о ближайшей опасности.</td></tr><tr><td>{{fuks|Фукс}}</td><td>Летопись</td><td>Раз за сессию — «да» или «нет» на один вопрос.</td></tr><tr><td>{{lesnoy_kurbak|Лесной Курбак}}</td><td>Хождение в копытах</td><td>Ночная тропа: ночью в лесу ведёт короткой дорогой — переход без броска.</td></tr><tr><td>{{malysh|Малыш Провансаллы}}</td><td>Сыворотка общества</td><td>Ночью майонезные тётеньки не придираются.</td></tr><tr><td>{{nikolay|Попугай Николай}}</td><td>Шепоток</td><td>«Как нельзя кстати»: раз за сцену — подготовка к любой проверке. В конце сцены к6: на 1–3 его прогнали — вернётся после отдыха.</td></tr><tr><td>{{malchik_pedal|Мальчик-педаль}}</td><td>Хождение в копытах</td><td>«Подмога»: раз за сцену — подготовка ещё к одной проверке в дороге.</td></tr><tr><td>{{vilki|Вилка}}</td><td>Трубоведение</td><td>Знает вход в логово ведьм под Кривой горой. На вилок охотится Казимир.</td></tr><tr><td>{{svetlyachki|Светлячок}}</td><td>Трубоведение</td><td>Рядом с ним все Светятся: видно и вам, и вас.</td></tr><tr><td>{{petuhi|Петух}}</td><td>Сыворотка общества</td><td>Поёт серенады носителю шапца: тот Воодушевлён.</td></tr><tr><td>{{kukushki|Кукушка}}</td><td>Летопись</td><td>Знает все слухи — и всё доносит Эдгару.</td></tr><tr><td>{{pakety|Благородный пакет}}</td><td>Сыворотка общества</td><td>«Хранение»: +3 строки пожитков; то, что лежит в нём, нельзя украсть или выбить. Наяву — органайзер для настольной игры.</td></tr><tr><td>{{zhabcy|Жабец}}</td><td>Чак-чак</td><td>Сторожит: хозяина не застать врасплох. Квакнет по команде — пугливые Напуганы (Акакий тоже). Наяву — фигурка лягушки.</td></tr><tr><td>{{laika|Лайка}}</td><td>Бобылеведение</td><td>Сторож: дозор с ней — с подготовкой. Пока Лайка с путником, жадности на лайке не на чем подъехать.</td></tr></table></div>`},
+{id:"q-inventory",sec:"gear",st:"ok",t:"Лимит пожитков",lead:"Сколько строк пожитков на листе — столько вещей и несёт путник.",b:`
+<ul><li>На [[sheet|листе]] 12 строк пожитков: одна вещь — одна строка.</li>
+<li>Спутник — [[q-companions|благородный пакет]] — даёт ещё +3 строки.</li>
+<li>Деньги — пакичи и кукичи — и одна горсть мелочи (камнюки, катышки) строк не занимают.</li>
+<li>Не влезает — оставь, отдай пакету или неси в руках: тогда руки заняты.</li></ul>`},
+];
+
+const byId=Object.fromEntries(A.map(a=>[a.id,a]));
+const STL={ok:"принято",draft:"черновик",open:"открыто"};
+const SEC=Object.fromEntries(SECTIONS);
+const order=SECTIONS.flatMap(([k])=>A.filter(a=>a.sec===k));
+order.forEach((a,i)=>a.no=i+1);
+// разметка ссылок + обратные ссылки
+const linkRx=/\[\[([a-z0-9-]+)(?:\|([^\]]+))?\]\]/g;
+A.forEach(a=>a.out=new Set());
+const ATLAS="https://claude.ai/artifact/ThYN3MvgSKqpgR8yRx12sm";
+const atlRx=/\{\{([a-z_0-9]+)\|([^}]+)\}\}/g;
+const atl=s=>s.replace(atlRx,(m,id,txt)=>/^p\d+$/.test(id)?`<a class="atl" data-key="${id}" href="${ATLAS}?p=${id.slice(1)}#${id}" target="_blank" rel="noopener" title="Абзац выпусков">${txt}</a>`:`<a class="atl" data-key="${id}" href="${ATLAS}?card=${id}#${id}" target="_blank" rel="noopener" title="Карточка атласа">${txt}</a>`);
+const html=s=>atl(s).replace(linkRx,(m,id,txt)=>{const t=byId[id];if(!t)return txt||id;return `<a class="ref" href="#${id}" data-go="${id}">${txt||t.t}</a>`});
+A.forEach(a=>{for(const m of (a.lead+a.b).matchAll(linkRx))if(byId[m[1]]&&m[1]!==a.id)a.out.add(m[1])});
+A.forEach(a=>a.inc=A.filter(o=>o.out.has(a.id)).map(o=>o.id));
+const plain=s=>s.replace(atlRx,"$2").replace(linkRx,(m,id,txt)=>txt||(byId[id]?byId[id].t:id)).replace(/<[^>]+>/g," ").replace(/\$\{[^}]*\}/g,"");
+A.forEach(a=>a.text=(a.t+" "+plain(a.lead)+" "+plain(a.b)).toLowerCase().replace(/ё/g,"е"));
+
+const $=id=>document.getElementById(id);
+let cur=null;
+function renderNav(){
+  $("nav").innerHTML=SECTIONS.filter(([k])=>A.some(a=>a.sec===k)).map(([k,v])=>`<h2>${v}</h2><ol>${A.filter(a=>a.sec===k).map(a=>`<li><a href="#${a.id}" data-go="${a.id}" aria-current="${cur===a.id}"><span class="n">${a.no}</span><span>${a.t}</span></a></li>`).join("")}</ol>`).join("");
+}
+function sideHTML(a){
+  const lst=ids=>ids.length?`<ul>${ids.map(i=>`<li><a href="#${i}" data-go="${i}">${byId[i].t}</a></li>`).join("")}</ul>`:`<p class="empty">нет</p>`;
+  return `<h3>Ссылается на</h3>${lst([...a.out])}<h3>Ссылаются сюда</h3>${lst(a.inc)}`;
+}
+
+
+// ── выдвижная карточка атласа ──
+/*ATLASDATA*/
+const AT=typeof ATLAS_DATA!=="undefined"?ATLAS_DATA:null;
+let adStack=[];
+const T1={person:"персонаж",kind:"вид / народ",place:"место",thing:"предмет",force:"сила / явление",group:"сообщество / событие"};
+const SKST2={"Коканье":"КР","Колупание":"СМ","Механика":"СМ","Кукичество":"ЧУ","Сыворотка общества":"ОБ","Шепоток":"СТ","Лицедейство":"СТ","Хождение в копытах":"ЧУ","Знахарство":"ЧУ","Варево":"СТ","Бобылеведение":"ОБ","Трубоведение":"СМ","Летопись":"ОБ","Чак-чак":"ПР","Сноходчество":"СТ","Щекотка":"ПР"};
+const AB2=["КР","ПР","СМ","ЧУ","ОБ","СТ"];
+const BR=["трусливый","нормальный","храбрый"],FR=["враждебен","насторожен","безразличен","доброжелателен","друг"],RZ=["неразумен","простодушен","разумен","мудр"],TK=["не общается","звуками","письменно","говорит"];
+const e2=x=>String(x).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const aIn=(id,t)=>`<a class="ain" href="#" data-ad="${id}">${e2(t)}</a>`;
+function rich2(t){return e2(t).replace(/\[\[([^|\]]+)(?:\|([^\]]+))?\]\]/g,(m,id,tx)=>{const n=AT.byId[id];return n?aIn(id,tx||n.name):(tx||id)}).replace(/\{([^|}]+)(?:\|([^}]+))?\}/g,(m,k,f)=>`<span class="ad-st">${f||k}</span>`)}
+function adImg(id){const n=AT.byId[id];if(AT.imgs.has(id))return [`img/${id}.webp`,null];const c=AT.npc[id];if(c&&c.img&&AT.imgs.has(c.img[0]))return [`img/${c.img[0]}.webp`,c.img[1]||""];return null}
+function adCard(id){const n=AT.byId[id];if(!n)return "";const c=AT.npc[id],im=adImg(id);let h="";
+  if(im)h+=`<figure><img class="pt" src="${im[0]}" alt="" onerror="this.parentNode.remove()">${im[1]?`<figcaption>${e2(im[1])}</figcaption>`:""}</figure>`;
+  h+=`<div class="ad-type">${T1[n.type]||""}</div><h2>${e2(n.name)}</h2>${n.alias?`<div class="ad-alias">в расшифровке: ${e2(n.alias)}</div>`:""}`;
+  if(c&&c.x)h+=`<p>${e2(c.x)}</p>`;
+  else if(c){h+=`<div class="ad-chips">${c.rank!=="—"?`<span><b>ранг</b>${c.rank}</span>`:""}<span><b>Лицо</b>${c.face||"нет"}</span>${c.fr!=null?`<span><b>дружелюбность</b>${FR[c.fr]}</span>`:""}${c.rz!=null?`<span><b>разумность</b>${RZ[c.rz]}</span>`:""}${c.talk!=null?`<span><b>общение</b>${TK[c.talk]}${c.tn?" — "+e2(c.tn):""}</span>`:""}${c.br!=null?`<span><b>храбрость</b>${BR[c.br]}</span>`:""}</div>`;
+    if(c.stats){h+=`<div class="ad-stats">${c.stats.map((v,i)=>`<div><span>${AB2[i]}</span><b>${v}</b></div>`).join("")}</div>`;
+      if(c.skills.length)h+=`<h3>Навыки</h3><ul>${c.skills.map(([nm,l])=>{const v=c.stats[AB2.indexOf(SKST2[nm])];return `<li>${nm} ${l} — ${v}к6 на ${l===1?"5+":"4+"}${l===3?", 6 = два":""}</li>`}).join("")}</ul>`}
+    if(c.props.length)h+=`<h3>Свойства</h3><ul>${c.props.map(p=>`<li>${rich2(p)}</li>`).join("")}</ul>`;
+    if(c.moves.length)h+=`<h3>Приёмы</h3><ul>${c.moves.map(([t,x])=>`<li><b>${e2(t)}.</b> ${rich2(x)}</li>`).join("")}</ul>`;
+    const row=(l,v)=>v&&v!=="—"?`<li><span class="l">${l}:</span> ${rich2(v)}</li>`:"";
+    h+=`<h3>Без боя и добыча</h3><ul class="ad-rel">${row("любит · задобрить",c.likes)}${row("боится · отпугнуть",c.fears)}${row("учит",c.teach)}${row("торгует",c.trade)}${row("добыча",c.loot)}</ul>`;
+    if(c.q)h+=`<blockquote>«${e2(c.q[1])}»</blockquote>`}
+  h+=`<h3>Из атласа</h3><p>${e2(n.desc)}</p>`;
+  const out=AT.edges.filter(x=>x[0]===id),inc=AT.edges.filter(x=>x[2]===id);
+  if(out.length||inc.length)h+=`<h3>Связи</h3><ul class="ad-rel">${out.map(x=>`<li><span class="l">${e2(x[1])}</span> ${aIn(x[2],AT.byId[x[2]]?AT.byId[x[2]].name:x[2])}</li>`).join("")}${inc.map(x=>`<li>${aIn(x[0],AT.byId[x[0]]?AT.byId[x[0]].name:x[0])} <span class="l">${e2(x[1])}</span></li>`).join("")}</ul>`;
+  return h}
+function adPar(n){const t=AT.paras[n-1];return t?`<div class="ad-type">текст выпусков</div><h2>Абзац ${n}</h2><p class="ad-par">${e2(t)}</p>`:""}
+function adShow(key,push=true){if(!AT)return false;const isP=/^p\d+$/.test(key),id=isP?key:key;
+  const body=isP?adPar(+key.slice(1)):adCard(key);if(!body)return false;
+  if(push)adStack.push(key);
+  let el=document.getElementById("ad");if(!el){document.body.insertAdjacentHTML("beforeend",`<div class="ad-back" id="adb"></div><aside class="ad" id="ad" aria-label="Карточка атласа"><div class="ad-bar"><button type="button" id="adx">✕ закрыть</button><button type="button" id="adp">← назад</button><a id="ado" target="_blank" rel="noopener">в атласе ↗</a></div><div class="ad-body" id="adbody"></div></aside>`);el=document.getElementById("ad")}
+  document.getElementById("adbody").innerHTML=body;document.getElementById("adbody").scrollTop=0;
+  document.getElementById("adp").style.visibility=adStack.length>1?"visible":"hidden";
+  document.getElementById("ado").href=isP?`${ATLAS}?p=${key.slice(1)}#${key}`:`${ATLAS}?card=${key}#${key}`;return true}
+function adClose(){adStack=[];document.getElementById("ad")?.remove();document.getElementById("adb")?.remove()}
+document.addEventListener("click",e=>{
+  const at=e.target.closest("a.atl");if(at&&AT){const k=at.dataset.key;if(k&&adShow(k)){e.preventDefault();return}}
+  const ai=e.target.closest("[data-ad]");if(ai){e.preventDefault();adShow(ai.dataset.ad);return}
+  if(e.target.id==="adx"||e.target.id==="adb"){adClose();return}
+  if(e.target.id==="adp"){adStack.pop();adShow(adStack[adStack.length-1],false)}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")adClose()});
+
+// ── распечатки ──
+const SEALS=["Побывать в сладком хлеву", "Стать цыплёнком у Видуса — и выбраться", "Предстать перед Истуканусом и ответить", "Увидеть Оно или Её воочию", "Потерять лицо и найти новое", "Дослушать историю говорящего холма", "Впечатлить Магогу", "Приручить кокшу", "Совершить шалость по заданию синих ящеров", "Отведать гычи бабы Жули", "Выиграть ставку на забеге", "Выбраться из старого лабиринта с лицом", "Выучить странность у учителя"];
+const SEALS_GRP=["Пройти за третий поворот колбасного стража", "Добраться до острова Лавана", "Увидеть спектральный колодец", "Побывать в осколке ещё того Зазеркалья", "Войти в ворота медного града", "Пережить темноту в сумеречной роще", "Пройти подземные трубы насквозь", "Побывать на приёме у господина Кривина", "Вернуть ложку, украденную Казимиром", "Попасть в подпольный щекоточный клуб", "Найти Бутыльона и не осушить его", "Создать битубисас"];
+const LEVELS=[["1","Странник","+1 характеристика, +1 навык"],["2","Путник","+2 навыка"],["3","Бывалый","+1 характеристика, +2 навыка"],["4","Землепроходец","+2 характеристики, +1 навык"],["5","Первопроходец","+3 навыка"],["6","Действительный член","+1 характеристика, +2 навыка"],["7","Почётный член конгресса","+2 характеристики, +2 навыка"]];
+const ppStamp=(ring,center)=>{const ch=[...ring];return `<div class="pp-stamp">${ch.map((c,i)=>`<span style="transform:rotate(${(i*360/ch.length).toFixed(2)}deg)">${c}</span>`).join("")}<b>${center}</b></div>`};
+const PR={
+ seals:{file:"Ведомость печатей конгресса.pdf",html(){const cols=6,blank=2,front=SEALS.length+2,cell='<td class="c"></td>'.repeat(cols);
+  const grp=`<td class="gc" colspan="${cols}"><div class="gs"><i></i></div></td>`;
+  const rows=[...SEALS.map(g=>[g,""]),...Array.from({length:blank},()=>["","blank"]),...SEALS_GRP.map(g=>[g,"grp"])].map(([g,c],i)=>[i+1,g,c]);
+  const tbl=list=>`<table class="pp-tbl pp-sq"><colgroup><col style="width:7mm"><col style="width:85mm">${'<col style="width:15mm">'.repeat(cols)}</colgroup>
+  <thead><tr><th></th><th style="height:16mm">Цель · имена путников →</th>${'<th class="nm"></th>'.repeat(cols)}</tr></thead>
+  <tbody>${list.map(([n,g,c])=>`<tr class="${c}"><td class="n">${n}</td><td class="g">${g}${c==="grp"?"<em>общая цель</em>":""}</td>${c==="grp"?grp:cell}</tr>`).join("")}</tbody></table>`;
+  const head=(side,ring)=>`<div class="pp-head"><div><div class="pp-kick">Конгресс путешественников · ведомость печатей · ${side}</div><h2>Печати путников</h2></div>${ppStamp(ring,"КП")}</div>`;
+  const legend=`<span><i class="lg-c"></i> личная — печать каждому &nbsp;&nbsp; <i class="lg-g"></i> общая — одна на всех</span>`;
+  return `<div class="pp-set"><div class="pp">${head("лицевая сторона · личные цели","КОНГРЕСС ПУТЕШЕСТВЕННИКОВ • ЛИЦО • ")}${tbl(rows.slice(0,front))}<div class="pp-turn">${legend}<span>продолжение — на обороте ↻</span></div></div>
+  <div class="pp">${head("оборот · общие цели","КОНГРЕСС ПУТЕШЕСТВЕННИКОВ • ОБОРОТ • ")}${tbl(rows.slice(front))}
+  <div class="pp-foot"><table>${LEVELS.map(l=>`<tr><td><i>${l[0]}</i>${l[1]}</td><td>${l[2]}</td></tr>`).join("")}</table>
+  <div><p><b>3 печати — новый уровень.</b> Каждую печать путник получает один раз. Награда применяется на ближайшем отдыхе.</p><p><b>Общая цель</b> — широкая клетка в рамке: одна печать на всю группу. Она засчитывается каждому путнику группы, даже отсутствовавшему. Новичок получает все общие печати группы — и по ним начальный уровень.</p><p>Навык уровнем — до 2, мастерство — у учителя. Характеристика — не выше 5.</p><p>Пустые строки — на лицевой стороне, для новых целей ведущего; общую цель обведите рамкой. Имена путников впишите на обеих сторонах в том же порядке.</p></div></div></div></div>`}},
+ rel:{file:"Отношение зазеркальцев.pdf",html(){const rows=28,lv=["враж-<br>дебен","насто-<br>рожен","безраз-<br>личен","добро-<br>желателен","друг"];
+  return `<div class="pp"><div class="pp-head"><div><div class="pp-kick">Лист ведущего · отношение к группе</div><h2>Отношение зазеркальцев</h2></div>${ppStamp("ЛИСТ ВЕДУЩЕГО • КТО КАК К НАМ • ","?")}</div>
+  <table class="pp-tbl"><colgroup><col style="width:7mm"><col style="width:96mm">${"<col>".repeat(5)}</colgroup>
+  <thead><tr><th></th><th>Зазеркалец</th>${lv.map(x=>`<th class="v">${x}</th>`).join("")}</tr></thead>
+  <tbody>${Array.from({length:rows},(_,i)=>`<tr style="height:6.8mm"><td class="n">${i+1}</td><td></td>${'<td class="b"><i></i></td>'.repeat(5)}</tr>`).join("")}</tbody></table>
+  <div class="pp-foot"><table><tr><td>+1 ступень</td><td>услуга, о которой просил; подарок из «Любит»; спасли от того, чего «Боится»</td></tr><tr><td>−1 ступень</td><td>обман раскрылся; напали; сделали то, чего он «Боится»</td></tr><tr><td>−2 ступени</td><td>украли, кокнули, выдали Оно или Ей</td></tr><tr><td>не чаще</td><td>раза за сцену в каждую сторону</td></tr></table>
+  <div><p><b>Друг</b> помогает сам: подсказывает, прячет, даёт подготовку. <b>Доброжелательный</b> соглашается на просьбы. <b>Безразличный</b> — только за плату. <b>Насторожен</b> и <b>враждебен</b> — только задобрить, до конца сцены.</p><p>Отношение общее для всей группы. Отмечайте одну клетку карандашом.</p></div></div></div>`}}
+};
+// Скачивание: обычное браузерное; внутри claude.ai (песочница) — через Claude.
+let prDl=null;(async()=>{if(window.claude&&claude.use)prDl=await claude.use("downloads")})();
+async function saveFile(name,blob){
+  if(prDl){await prDl.save({filename:name,data:blob});return}
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.rel="noopener";document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000);
+}
+function fitPr(){document.querySelectorAll(".pr-box").forEach(b=>{const sc=b.querySelector(".pr-scaler"),pg=sc.firstElementChild;if(!pg)return;const k=Math.min(1,b.clientWidth/pg.offsetWidth);sc.style.transform=`scale(${k})`;b.style.height=(pg.offsetHeight*k)+"px"})}
+addEventListener("resize",fitPr);
+function mountPrint(){document.querySelectorAll("[data-print]").forEach(el=>{const k=el.dataset.print,d=PR[k];if(!d)return;
+  el.innerHTML=`<div class="pr-tools"><button class="pr-btn" type="button" data-pdf="${k}">Скачать PDF</button><span class="pr-note"></span></div><div class="pr-box"><div class="pr-scaler">${d.html()}</div></div>`});fitPr();
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fitPr)}
+document.addEventListener("click",async e=>{const b=e.target.closest("[data-pdf]");if(!b)return;const d=PR[b.dataset.pdf],note=b.nextElementSibling;
+  if(!window.html2canvas||!window.jspdf){note.textContent="Не загрузились библиотеки для PDF — обновите страницу.";return}
+  b.disabled=true;const lbl=b.textContent;b.textContent="Собираю PDF…";
+  try{if(document.fonts&&document.fonts.ready)await document.fonts.ready;
+    const off=$("pr-off");off.innerHTML=d.html();const pages=[...off.querySelectorAll(".pp")];
+    const pdf=new jspdf.jsPDF({unit:"mm",format:"a4",orientation:"portrait",compress:true});
+    for(let i=0;i<pages.length;i++){const pg=pages[i];pg.style.boxShadow="none";const cv=await html2canvas(pg,{scale:3,backgroundColor:"#ffffff",logging:false});if(i)pdf.addPage();pdf.addImage(cv.toDataURL("image/jpeg",.9),"JPEG",0,0,210,297)}
+    off.innerHTML="";
+    await saveFile(d.file,pdf.output("blob"));note.textContent="PDF готов.";
+  }catch(err){const c=err&&err.code;note.textContent=c==="declined"?"Сохранение отменено.":"Не получилось собрать PDF. Попробуйте ещё раз."}
+  finally{b.disabled=false;b.textContent=lbl}});
+function show(id,scroll=true){
+  const a=byId[id]||order[0];cur=a.id;
+  const i=order.indexOf(a),prev=order[i-1],next=order[i+1];
+  $("content").innerHTML=`<article>
+    <div class="crumbs"><span>${a.no}. ${SEC[a.sec]}</span></div>
+    <h1>${a.t}</h1><p class="lead">${html(a.lead)}</p>${html(a.b)}
+    <div class="side-inline">${sideHTML(a)}</div>
+    <div class="pager">${prev?`<a href="#${prev.id}" data-go="${prev.id}"><small>← назад</small>${prev.t}</a>`:"<span></span>"}${next?`<a href="#${next.id}" data-go="${next.id}" style="text-align:right"><small>дальше →</small>${next.t}</a>`:""}</div></article>`;
+  $("aside").innerHTML=sideHTML(a);
+  mountPrint();
+  renderNav();
+  if(scroll){$("content").scrollTop=0;if(innerWidth<=760)window.scrollTo(0,0)}
+  $("nav").classList.remove("open");$("navtoggle").setAttribute("aria-expanded","false");
+  try{history.replaceState(null,"","#"+a.id)}catch(e){}
+  try{localStorage.setItem("zz-rules-last",a.id)}catch(e){}
+}
+document.addEventListener("click",e=>{const l=e.target.closest("[data-go]");if(!l)return;e.preventDefault();$("sugg").hidden=true;show(l.dataset.go)});
+$("navtoggle").addEventListener("click",()=>{const o=$("nav").classList.toggle("open");$("navtoggle").setAttribute("aria-expanded",o)});
+
+// поиск
+const q=$("q"),sugg=$("sugg");let hits=[],hi=0;
+q.addEventListener("input",()=>{const v=q.value.trim().toLowerCase().replace(/ё/g,"е");
+  hits=v?A.map(a=>[a,a.t.toLowerCase().replace(/ё/g,"е").includes(v)?2:a.text.includes(v)?1:0]).filter(x=>x[1]).sort((x,y)=>y[1]-x[1]).map(x=>x[0]).slice(0,10):[];hi=0;
+  sugg.hidden=!hits.length;sugg.innerHTML=hits.map((a,i)=>`<a href="#${a.id}" data-go="${a.id}" class="${i?"":"on"}">${a.t}<small>${SEC[a.sec]}</small></a>`).join("")});
+q.addEventListener("keydown",e=>{if(!hits.length)return;
+  if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();hi=(hi+(e.key==="ArrowDown"?1:hits.length-1))%hits.length;[...sugg.children].forEach((x,i)=>x.classList.toggle("on",i===hi))}
+  if(e.key==="Enter"){show(hits[hi].id);sugg.hidden=true;q.blur()}
+  if(e.key==="Escape")sugg.hidden=true});
+document.addEventListener("click",e=>{if(!e.target.closest(".search"))sugg.hidden=true});
+
+let start=(location.hash||"").slice(1);
+if(!byId[start]){try{start=localStorage.getItem("zz-rules-last")||""}catch(e){start=""}}
+show(byId[start]?start:"worlds",false);
+</script>

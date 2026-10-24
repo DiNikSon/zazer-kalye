@@ -1,0 +1,128 @@
+<title>Супер подозрительный тест</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=PT+Mono&display=swap">
+<style>
+/* Layout: a typed sheet clipped into a manila case folder; one question per sheet, red-ink stamps, black redaction bars. Single deliberate look in both host themes. */
+:root{
+  --folder:#c9a96a; --folder-dk:#a8884c; --paper:#f4efe2; --ink:#1d1b16; --muted:#6e6553; --line:#d6ccb4; --red:#b0261c; --redact:#14130f; --hover:#ebe3cf;
+  --head:"Oswald","Arial Narrow",Impact,sans-serif; --mono:"PT Mono","Courier New",monospace;
+  color-scheme:light;
+}
+html,body{min-height:100%}
+body{background:var(--folder);background-image:repeating-linear-gradient(45deg,transparent 0 14px,rgba(0,0,0,.025) 14px 15px);color:var(--ink);font-family:var(--mono);font-size:16px;line-height:1.55}
+.wrap{max-width:640px;margin:0 auto;padding:40px 16px 56px}
+.tab{display:inline-block;background:var(--folder-dk);color:var(--ink);font-family:var(--head);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:13px;padding:6px 16px 4px;border-radius:6px 6px 0 0}
+.sheet{background:var(--paper);border:1px solid var(--line);box-shadow:0 2px 0 var(--folder-dk),0 18px 30px -18px rgba(40,25,0,.45);padding:30px 26px;position:relative;overflow:hidden}
+.sheet::before{content:"";position:absolute;top:-6px;left:28px;width:26px;height:58px;border:3px solid #8d8f93;border-radius:12px;border-bottom-color:transparent;opacity:.8}
+.meta{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);padding:0 0 12px 40px;margin-bottom:22px}
+h1{font-family:var(--head);font-weight:700;font-size:34px;line-height:1.05;letter-spacing:.02em;text-transform:uppercase;margin:0 0 16px;text-wrap:balance}
+h2{font-family:var(--mono);font-size:19px;line-height:1.4;margin:0 0 20px;font-weight:400;text-wrap:balance}
+p{margin:0 0 14px;max-width:62ch}
+.small{color:var(--muted);font-size:14px}
+.rd{background:var(--redact);color:var(--redact);padding:0 .2em;border-radius:1px;user-select:none}
+.bar{height:6px;background:repeating-linear-gradient(90deg,var(--line) 0 8px,transparent 8px 11px);margin-bottom:22px}
+.bar i{display:block;height:100%;background:repeating-linear-gradient(90deg,var(--ink) 0 8px,transparent 8px 11px);transition:width .25s}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;gap:14px;align-items:flex-start;text-align:left;width:100%;font:inherit;color:inherit;background:transparent;border:1px dashed var(--muted);padding:14px 16px;cursor:pointer}
+.opt:hover{background:var(--hover);border-style:solid}
+.opt:focus-visible,.btn:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.opt.sel{border:1px solid var(--ink);background:var(--hover)}
+.box{flex:none;width:18px;height:18px;border:1.5px solid var(--ink);margin-top:3px;font-size:16px;line-height:15px;text-align:center;color:var(--red);font-weight:700}
+.opt.sel .box::after{content:"✕"}
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:22px;gap:12px;flex-wrap:wrap}
+.btn{font-family:var(--head);font-weight:500;font-size:15px;letter-spacing:.1em;text-transform:uppercase;background:var(--ink);color:var(--paper);border:0;padding:11px 20px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--muted);padding:11px 0;font-family:var(--mono);font-size:13px;letter-spacing:.04em;text-transform:none}
+.btn[disabled]{visibility:hidden}
+.stamp{position:absolute;top:22px;right:18px;transform:rotate(-9deg);border:3px double var(--red);color:var(--red);font-family:var(--head);font-weight:700;font-size:15px;letter-spacing:.14em;text-transform:uppercase;padding:4px 10px;opacity:.85;mix-blend-mode:multiply}
+.code{font-size:15px;word-break:break-all;background:var(--hover);border:1px solid var(--line);padding:14px;margin:6px 0 14px;user-select:all}
+.note{font-size:13px;color:var(--muted);min-height:1.4em}
+@media (max-width:520px){.sheet{padding:26px 16px}.stamp{position:static;display:inline-block;margin:0 0 14px}h1{font-size:28px}}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+
+<div class="wrap">
+  <span class="tab">Дело № 0-0-1</span>
+  <div class="sheet" id="app"></div>
+</div>
+
+<script>
+// 0 Драка,1 Мастеровитость,2 Техника,3 Торговля,4 Этикет,5 Убеждение,6 Обман,7 Скрытность,8 Медицина,9 Кулинария,10 Животные,11 Ориентирование,12 Эрудиция,13 Спорт,14 Сновидения,15 Соблазнение
+const Q = [
+ ["Тебе нужно попасть в кабинет директора, а он закрыт.",[["Жду, пока все уйдут на обед, и проскальзываю внутрь.",7],["Записываюсь на приём по всем правилам, вежливо, через секретаря.",4],["Объясняю охраннику, почему мне правда туда нужно. Он сам меня провожает.",5]]],
+ ["На барахолке тебе продали сломанный велосипед и отказываются вернуть деньги.",[["Торгуюсь, пока мне не отдадут в придачу ещё и самокат.",3],["Объясняю продавцу на языке, который он понимает. Кулаками.",0],["Ладно. Починю сам за вечер, и будет лучше нового.",1]]],
+ ["В парке ты замечаешь раненую лису.",[["Говорю с ней тихим голосом, и она сама даёт взять себя на руки.",10],["Подбираюсь так тихо, что она замечает меня в последний момент.",7],["Осматриваю лапу и понимаю, как обработать рану.",8]]],
+ ["На вечеринке ты хочешь понравиться одному человеку.",[["Обыгрываю всех в пинг-понг у него на глазах.",13],["Один взгляд, одна улыбка, и его номер уже у меня.",15],["Рассказываю ему потрясающий факт про осьминогов.",12]]],
+ ["Ты продаёшь свой старый телефон.",[["Расписываю покупателю, как этот телефон изменит его жизнь.",5],["Чищу, перепрошиваю и продаю как восстановленный.",2],["Ставлю завышенную цену и мастерски сбиваю её до нужной.",3]]],
+ ["Ты проснулся в поезде и не понимаешь, где находишься.",[["Не уверен, что это не сон. Дважды смотрю на часы, чтобы проверить.",14],["Смотрю в окно и по пейзажу понимаю, где мы едем.",11],["По архитектуре вокзала определяю город и год постройки.",12]]],
+ ["Ночью захотелось есть, а в холодильнике только чужой торт.",[["Из двух яиц и остатков крупы делаю себе такое, что торт уже не нужен.",9],["Съедаю кусок и сваливаю всё на кота.",6],["Отрезаю так аккуратно, что никто никогда не заметит.",7]]],
+ ["Тебя позвали на ужин к родителям второй половинки. Как ты им понравишься?",[["Знаю, какой вилкой есть рыбу, и вовремя хвалю сервиз.",4],["Прямо во время ужина чиню отцу шатающийся стул.",1],["Настраиваю им роутер и телевизор. Теперь я любимый гость.",2]]],
+ ["Ты отстал от группы в горах.",[["Бегом догоняю своих, хоть и в гору.",13],["Иду за козами: они точно знают тропу.",10],["По солнцу и склонам понимаю, куда идти, и выхожу к своим.",11]]],
+ ["Тебя нет в списке гостей закрытого клуба.",[["Копирую QR-код приглашения с чужого телефона.",2],["Строю охраннику глазки. Пропускает.",15],["Охранник против? Это его проблемы.",0]]],
+ ["Друг отказывается идти к врачу с явно сломанным пальцем.",[["Сам осматриваю палец и накладываю шину из подручных средств.",8],["Спокойно уговариваю его поехать в травмпункт.",5],["Говорю, что в травмпункте сегодня раздают бесплатную пиццу.",6]]],
+ ["Тебя пустили на неделю пожить в чужой дом. Чем ты там запомнишься?",[["Прочитаю половину хозяйской библиотеки и смогу о ней поспорить.",12],["Буду готовить так, что соседи начнут заходить «просто поздороваться».",9],["Злой хозяйский пёс к вечеру будет спать у меня на коленях.",10]]],
+ ["Ты случайно попал на дорогой светский приём.",[["Представляюсь племянником хозяина. Мне верят.",6],["Через час я уже заключаю выгодную сделку с одним из гостей.",3],["Веду себя так безупречно, что никто не сомневается, что я здесь свой.",4]]],
+ ["Во сне за тобой гонится чудовище.",[["Разворачиваюсь и бью его в морду.",0],["Убегаю. Даже во сне я быстрый.",13],["Понимаю, что это сон, и превращаю чудовище в котёнка.",14]]],
+ ["В походе один из друзей отравился.",[["Кратчайшим путём вывожу всех к ближайшей деревне.",11],["Знаю, что ему дать и как помочь прямо сейчас.",8],["Варю ему рисовый отвар из того, что есть в рюкзаках.",9]]],
+ ["У тебя свободный вечер пятницы.",[["Мастерю что-нибудь на балконе.",1],["Ложусь пораньше: во сне у меня вторая жизнь.",14],["Иду на свидание. Опять.",15]]]
+];
+
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+let deck, answers, pos;
+function start(){
+  deck = shuffle(Q).map(([q,opts])=>({q,opts:shuffle(opts)}));
+  answers = new Array(deck.length).fill(null);
+  pos = -1; render();
+}
+
+const app = document.getElementById('app');
+const esc = s => s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function render(){
+  if(pos<0){
+    app.innerHTML = `
+      <div class="meta"><span>Совершенно секретно</span><span>Экз. единственный</span></div>
+      <span class="stamp">Под наблюдением</span>
+      <h1>Супер подозрительный тест</h1>
+      <p>Шестнадцать ситуаций, в каждой три варианта. Выбери тот, что ближе всего к тому, как ты поступил бы на самом деле. Если не подходит ни один, выбирай наименее чужой.</p>
+      <p class="small">Цель проверки: <span class="rd">████████████</span>. Результаты будут переданы <span class="rd">██████</span>. Отвечай честно, мы всё равно узнаем.</p>
+      <div class="nav"><span></span><button class="btn" id="go">Приступить</button></div>`;
+    document.getElementById('go').onclick=()=>{pos=0;render();};
+    return;
+  }
+  if(pos>=deck.length){ return finish(); }
+  const it = deck[pos];
+  app.innerHTML = `
+    <div class="meta"><span>Вопрос ${pos+1} из ${deck.length}</span><span>Ответ фиксируется</span></div>
+    <div class="bar"><i style="width:${(pos/deck.length)*100}%"></i></div>
+    <h2>${esc(it.q)}</h2>
+    <div class="opts">${it.opts.map((o,i)=>`<button class="opt${answers[pos]===i?' sel':''}" data-i="${i}"><span class="box"></span><span>${esc(o[0])}</span></button>`).join('')}</div>
+    <div class="nav"><button class="btn ghost" id="back" ${pos===0?'disabled':''}>← Назад</button><span></span></div>`;
+  app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+    answers[pos]=+b.dataset.i; b.classList.add('sel');
+    setTimeout(()=>{pos++;render();},180);
+  });
+  document.getElementById('back').onclick=()=>{pos--;render();};
+}
+
+function finish(){
+  const r=new Array(16).fill(0);
+  deck.forEach((it,i)=>{ r[it.opts[answers[i]][1]]++; });
+  const code = btoa(JSON.stringify(r));
+  app.innerHTML = `
+    <div class="meta"><span>Совершенно секретно</span><span>Дело закрыто</span></div>
+    <span class="stamp">Изъято</span>
+    <h1>Данные получены</h1>
+    <p>Передай этот код ведущему лично. Больше никому не показывай.</p>
+    <div class="code" id="code">${code}</div>
+    <div class="nav"><button class="btn ghost" id="again">Замести следы и пройти заново</button><button class="btn" id="copy">Скопировать код</button></div>
+    <div class="note" id="note" aria-live="polite"></div>`;
+  document.getElementById('copy').onclick=()=>{
+    const note=document.getElementById('note');
+    const sel=()=>{const rg=document.createRange();rg.selectNodeContents(document.getElementById('code'));const s=getSelection();s.removeAllRanges();s.addRange(rg);note.textContent='Код выделен, скопируй его вручную.';};
+    try{navigator.clipboard.writeText(code).then(()=>note.textContent='Скопировано.',sel);}catch(e){sel();}
+  };
+  document.getElementById('again').onclick=start;
+}
+start();
+</script>
+

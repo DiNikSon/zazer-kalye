@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Зазеркалье</title>
+<meta name="description" content="Атлас мира, свод правил, лист путника и тесты для настольной кампании по «Зазеркалью».">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1d1d25" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="%ICON%">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alice&family=PT+Sans:wght@400;700&family=PT+Mono&display=swap">
+<style>
+:root{--bg:#f3f3f6;--panel:#fff;--ink:#22212c;--muted:#686676;--line:#d9d8e2;--accent:#5b4bb7;--accent-soft:#ece9fb;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#15151b;--panel:#1d1d25;--ink:#e7e5f0;--muted:#9d9ab0;--line:#33333f;--accent:#a99bff;--accent-soft:#2a2645;color-scheme:dark}}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink)}
+body{display:flex;flex-direction:column;height:100vh;height:100dvh;font:15px/1.3 "PT Sans",system-ui,sans-serif;-webkit-text-size-adjust:100%}
+.bar{flex:none;display:flex;align-items:stretch;gap:22px;height:46px;padding:env(safe-area-inset-top,0) 16px 0;background:var(--panel);border-bottom:1px solid var(--line)}
+.brand{flex:none;display:flex;align-items:center;gap:8px;color:var(--ink);text-decoration:none;font:21px/1 "Alice",Georgia,serif;letter-spacing:.01em}
+.brand svg{width:20px;height:20px;flex:none}
+#tabs{display:flex;gap:2px;min-width:0;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+#tabs::-webkit-scrollbar{display:none}
+#tabs a{flex:none;display:flex;align-items:center;padding:0 11px;color:var(--muted);text-decoration:none;white-space:nowrap;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s,border-color .15s}
+#tabs a:hover{color:var(--ink)}
+#tabs a[aria-current=page]{color:var(--ink);border-bottom-color:var(--accent);font-weight:700}
+#tabs a:focus-visible,.brand:focus-visible{outline:2px solid var(--accent);outline-offset:-6px;border-radius:6px}
+main{position:relative;flex:1;min-height:0}
+main iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:var(--bg);visibility:hidden}
+main iframe.on{visibility:visible}
+.ld{position:absolute;inset:0;z-index:1;display:grid;place-items:center;padding:16px;text-align:center;background:var(--bg);color:var(--muted);font:14px "PT Mono",ui-monospace,monospace}
+.ld[hidden]{display:none}
+@media (max-width:640px){.bar{gap:6px;padding-left:12px;padding-right:0}.brand span{display:none}#tabs a{padding:0 9px}}
+</style>
+</head>
+<body>
+<header class="bar">
+  <a class="brand" href="./" aria-label="Зазеркалье — на главную">%MARK%<span>Зазеркалье</span></a>
+  <nav id="tabs" aria-label="Разделы">%TABS%</nav>
+</header>
+<main id="stage"><div class="ld" id="ld">Загрузка…</div></main>
+<noscript><p style="padding:16px">Для работы сайта нужен JavaScript.</p></noscript>
+<script>%LOADER%</script>
+</body>
+</html>

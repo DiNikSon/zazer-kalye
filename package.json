@@ -1,0 +1,14 @@
+{
+  "name": "zazer-kalye",
+  "private": true,
+  "description": "Зазеркалье: атлас, свод правил, лист путника и тесты — сборка сайта для GitHub Pages",
+  "type": "module",
+  "scripts": {
+    "build": "python3 tools/build.py && node tools/bundle.mjs",
+    "serve": "python3 -m http.server -d dist 8080"
+  },
+  "devDependencies": {
+    "html-minifier-terser": "^7.2.0",
+    "javascript-obfuscator": "^4.1.1"
+  }
+}

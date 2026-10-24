@@ -1,0 +1,493 @@
+<title>Лист путника</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alice&family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Мастерская ведущего: слева пульт с персонажами и характеристиками, справа две белые страницы А4 — лицо и оборот бланка */
+:root{
+  --bg:#e6e8eb; --panel:#ffffff; --ink:#1c2226; --muted:#5f6a70; --rule:#d3d8db; --accent:#c8501a; --accent-ink:#ffffff; --bad:#b4312b;
+  --f-disp:"Alice",Georgia,serif; --f-body:"Golos Text",system-ui,sans-serif; --f-mono:"JetBrains Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121518; --panel:#1b2024; --ink:#e6eaec; --muted:#9aa5ab; --rule:#323a40; --accent:#f07a3e; --accent-ink:#1b1206; --bad:#f07a72; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121518; --panel:#1b2024; --ink:#e6eaec; --muted:#9aa5ab; --rule:#323a40; --accent:#f07a3e; --accent-ink:#1b1206; --bad:#f07a72; color-scheme:dark}
+
+body{background:var(--bg);color:var(--ink);font:15px/1.45 var(--f-body);padding:20px 16px 48px}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.app{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:300px minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:900px){.app{grid-template-columns:minmax(0,1fr)}}
+
+/* пульт ведущего */
+.desk{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:18px;display:grid;gap:18px}
+@media (max-width:900px){.desk{position:static}}
+.desk h1{font:400 24px/1.1 var(--f-disp);margin:0}
+.desk .sub{font-size:13px;color:var(--muted);margin:2px 0 0}
+.lbl{font:600 11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.chars{display:grid;gap:4px}
+.chars button.ch{display:flex;justify-content:space-between;gap:8px;text-align:left;border:1px solid transparent;background:none;border-radius:6px;padding:7px 10px;cursor:pointer}
+.chars button.ch:hover{background:color-mix(in srgb,var(--ink) 6%,transparent)}
+.chars button.ch[aria-current="true"]{border-color:var(--ink);font-weight:600}
+.chars button.ch small{font:12px var(--f-mono);color:var(--muted);font-weight:400}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--rule);background:transparent;border-radius:6px;padding:7px 12px;cursor:pointer}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.btn.danger{color:var(--bad)}
+.field{display:grid;gap:4px}
+.field input{border:1px solid var(--rule);border-radius:6px;padding:8px 10px;background:transparent;min-width:0;width:100%;box-sizing:border-box}
+.steppers{display:grid;gap:6px}
+.stp{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;gap:6px;align-items:center}
+.stp span{font-size:14px}
+.stp b{font:600 16px var(--f-mono);width:1.6em;text-align:center}
+.stp button{width:30px;height:30px;border:1px solid var(--rule);border-radius:6px;background:transparent;cursor:pointer;font:16px var(--f-mono)}
+.stp button:disabled{opacity:.35;cursor:default}
+.sum{font:12px var(--f-mono);color:var(--muted)}
+.status{font:12px var(--f-mono);color:var(--muted)}
+.confirm{border:1px solid var(--bad);border-radius:8px;padding:10px;display:grid;gap:8px;font-size:13px}
+.printbox{display:grid;gap:6px;border-top:1px solid var(--rule);padding-top:16px}
+.printbox .note{font-size:12px;color:var(--muted)}
+
+/* страницы */
+.pages{display:grid;gap:22px;min-width:0}
+.pagebox{position:relative;min-width:0}
+.pagebox .cap{font:12px var(--f-mono);color:var(--muted);margin:0 0 6px}
+.scaler{transform-origin:0 0}
+.page{width:210mm;height:297mm;box-sizing:border-box;background:#fff;color:#16191b;padding:13mm 14mm 11mm;display:flex;flex-direction:column;gap:5.5mm;
+  font-family:var(--f-body);font-size:10pt;line-height:1.35;box-shadow:0 1px 2px rgba(0,0,0,.08),0 14px 34px -18px rgba(0,0,0,.4);overflow:hidden;position:relative}
+.page *{box-sizing:border-box}
+.p-head{display:grid;grid-template-columns:1fr auto;gap:1mm 6mm;align-items:end;border-bottom:.6mm solid #16191b;padding-bottom:3mm}
+.p-kick{grid-column:1/-1;font:600 7.5pt var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:#7a3a16}
+.p-namelbl{font-size:7.5pt;letter-spacing:.06em;text-transform:uppercase;color:#5c666b}
+.p-name{font:400 22pt/1.15 var(--f-disp);min-height:11mm;border-bottom:.25mm dashed #9aa3a7;padding-bottom:1mm}
+.p-name.blank{color:#b3babd;font-size:11pt;display:flex;align-items:flex-end}
+.p-form{font:7.5pt var(--f-mono);color:#5c666b;text-align:right;line-height:1.5}
+.p-h{font:600 7.5pt var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:#5c666b;margin:0 0 2mm;display:flex;justify-content:space-between}
+.p-stats{display:grid;grid-template-columns:repeat(6,1fr);gap:2.4mm}
+.p-stat{border:.3mm solid #16191b;border-radius:1.6mm;padding:2mm 1mm 2.2mm;display:grid;justify-items:center;gap:1mm;text-align:center}
+.p-stat .n{font-size:8.5pt;font-weight:600}
+.p-stat .v{font:600 18pt/1 var(--f-mono)}
+.p-stat .d{display:flex;gap:1mm}
+.p-stat .d i{width:2.4mm;height:2.4mm;border-radius:50%;border:.3mm solid #16191b}
+.p-stat .d i.on{background:#16191b}
+.p-body{display:grid;grid-template-columns:1.32fr 1fr;gap:7mm;flex:1;min-height:0}
+.p-skills{width:100%;border-collapse:collapse;font-size:9.5pt}
+.p-skills th{font:600 6.5pt var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:#5c666b;text-align:left;padding:0 0 1.2mm;border-bottom:.3mm solid #16191b}
+.p-skills td{padding:2.55mm 0;border-bottom:.2mm solid #cfd5d8;vertical-align:middle}
+.p-skills td.ab{font:7.5pt var(--f-mono);color:#5c666b;width:9mm}
+.p-skills td.pool{font:600 9pt var(--f-mono);width:12mm}
+.p-skills td.lv{width:15mm;white-space:nowrap}
+.dia{display:inline-block;width:2.8mm;height:2.8mm;border:.3mm solid #16191b;transform:rotate(45deg);margin:0 .9mm}
+.p-side{display:flex;flex-direction:column;gap:5mm;min-height:0}
+.boxes{display:flex;flex-wrap:wrap;gap:1.5mm}
+.boxes i{width:6mm;height:6mm;border:.35mm solid #16191b;border-radius:.8mm;display:grid;place-items:center;font:normal 6pt var(--f-mono);color:#a7afb3}
+.p-note{font-size:7.5pt;color:#5c666b;margin-top:1.2mm}
+.money{display:flex;align-items:flex-end;gap:2mm;height:10mm}
+.money .line{flex:1;border-bottom:.3mm solid #16191b;height:100%}
+.money span{font:10pt var(--f-mono);color:#5c666b}
+.lines{display:flex;flex-direction:column;flex:1;min-height:0}
+.lines div{border-bottom:.2mm solid #b9c0c4;flex:1;max-height:8mm;min-height:6.5mm;font:6.5pt var(--f-mono);color:#b3babd;display:flex;align-items:flex-end;padding-bottom:.6mm}
+.p-inv{display:flex;flex-direction:column;flex:1;min-height:0}
+.p-foot{border-top:.3mm solid #16191b;padding-top:2.5mm;display:grid;grid-template-columns:auto 1fr;gap:1mm 6mm;font-size:7.5pt;color:#3d4549}
+.p-foot table{border-collapse:collapse;font-size:7.5pt}
+.p-foot td{padding:0 3mm .4mm 0}
+.p-foot td:first-child{font-family:var(--f-mono)}
+.p-foot p{margin:0 0 .8mm}
+
+/* оборот: тот же бланк, но увиденный во сне — всё плывёт, но читается */
+.page.dream{padding:12mm 13mm 10mm 17mm;gap:5mm;color:#1e1838}
+.dream .halo{position:absolute;inset:0;pointer-events:none}
+.dream .edge{position:absolute;left:5.5mm;top:50%;transform:translate(-50%,-50%) rotate(-90deg);white-space:nowrap;font:400 8pt var(--f-disp);letter-spacing:.32em;color:#b9b1d6}
+.dream .jit{display:inline-block}
+.dream .d-kick{font:600 7.5pt var(--f-mono);letter-spacing:.2em;text-transform:uppercase;color:#4b3a8f}
+.dream .d-head{display:grid;grid-template-columns:1fr 30mm;gap:4mm;align-items:center;position:relative}
+.dream .d-namelbl{font:400 10pt var(--f-disp);color:#5a4f86;margin-top:2mm}
+.dream .d-name{display:flex;flex-direction:column;justify-content:flex-end;height:13mm;margin-right:4mm}
+.dream .d-name i{display:block;border-bottom:.3mm solid #2a2350;transform-origin:0 50%}
+.dream .d-name .l1{transform:rotate(-.5deg);margin-top:1.5mm}
+.dream .d-name .l2{border-bottom:.2mm dashed #9a90c4;transform:rotate(.6deg);margin:1.2mm 6mm 0 9mm}
+.dream .d-name span{display:block;padding-left:3mm;font:400 10pt var(--f-disp);color:#b6aed3;transform:rotate(-1.2deg)}
+.dream .stamp{width:27mm;height:27mm;border-radius:50%;border:.8mm double #4b3a8f;display:grid;place-items:center;text-align:center;transform:rotate(-14deg);
+  font:600 6.5pt/1.25 var(--f-mono);letter-spacing:.12em;color:#4b3a8f;padding:2mm}
+.dream .stamp b{display:block;font:400 9pt/1.1 var(--f-disp);letter-spacing:0;text-transform:none;margin-top:1mm;color:#1e1838}
+.dream .d-h{font:400 15pt/1 var(--f-disp);color:#2a2350;margin:0 0 2.5mm;display:flex;align-items:baseline;gap:3mm}
+.dream .d-h small{font:400 7.5pt var(--f-mono);color:#7a70a3;letter-spacing:.06em}
+.dream .d-stats{display:grid;grid-template-columns:repeat(6,1fr);gap:3mm;padding:2mm 0 3mm}
+.dream .blob{border:.35mm solid #2a2350;display:grid;justify-items:center;gap:.8mm;padding:2.6mm 1mm 3mm;text-align:center}
+.dream .blob .n{font:400 9.5pt var(--f-disp)}
+.dream .blob .v{font:400 22pt/1 var(--f-disp)}
+.dream .blob .d{display:flex;gap:1mm}
+.dream .blob .d i{width:2.3mm;height:2.3mm;border-radius:50%;border:.3mm solid #2a2350}
+.dream .blob .d i.on{background:#2a2350}
+.dream .d-body{display:grid;grid-template-columns:1fr 1.3fr;gap:8mm;flex:1;min-height:0}
+.dream .d-side{display:flex;flex-direction:column;gap:3.6mm;min-height:0;overflow:hidden}
+.dream .moons{display:flex;align-items:flex-end;gap:1.6mm;flex-wrap:wrap}
+.dream .moons i{border:.35mm solid #2a2350;border-radius:50%;display:grid;place-items:center;font:normal 5.5pt var(--f-mono);color:#b6aed3}
+.dream .melt{display:flex;align-items:flex-start;gap:1.8mm;height:11mm}
+.dream .watch{display:grid;gap:2mm}
+.dream .wrow{display:flex;align-items:center;gap:2.5mm}
+.dream .wrow .who{font:400 11pt var(--f-disp);width:10mm}
+.dream .eyes{display:flex;gap:2mm}
+.dream .eyes i{width:7.5mm;height:4.2mm;border:.35mm solid #2a2350;border-radius:50%;display:block}
+.dream .wrow em{font:400 8pt var(--f-disp);color:#6a5f95;font-style:italic}
+.dream .melt i{width:6.2mm;height:6.2mm;border:.35mm solid #2a2350;display:grid;place-items:center;font:normal 5.5pt var(--f-mono);color:#b6aed3}
+.dream .d-note{font:400 8pt/1.3 var(--f-disp);color:#6a5f95;margin-top:1.4mm}
+.dream .coin{display:flex;align-items:flex-end;gap:3mm;height:10mm}
+.dream .coin .ov{width:11mm;height:7mm;border:.35mm solid #2a2350;border-radius:50%;transform:rotate(-18deg);flex:none}
+.dream .coin svg{flex:1;height:6mm}
+.dream .coin span{font:400 9pt var(--f-disp);color:#5a4f86}
+.dream .drift{display:flex;flex-direction:column;flex:1;min-height:0;padding-bottom:1.6mm}
+.dream .drift .ln i.ck{width:3mm;height:3mm;border:.3mm solid #2a2350;border-radius:.6mm;flex:none;margin-bottom:.2mm}
+.dream .comp{margin-top:4mm}
+.dream .c-row{display:flex;align-items:flex-end;gap:2.5mm;height:6.6mm}
+.dream .c-row span{font:400 9pt/1 var(--f-disp);color:#5a4f86;padding-bottom:.6mm;white-space:nowrap}
+.dream .c-row i{flex:1;border-bottom:.22mm solid #a9a0cc;height:100%}
+.dream .c-row b{width:5mm;height:5mm;border:.35mm solid #2a2350;border-radius:50%;flex:none;margin-bottom:.3mm}
+.dream .drift .ln{justify-content:space-between;border-bottom:.22mm solid #a9a0cc;flex:1;max-height:8.5mm;min-height:4.8mm;font:normal 6pt var(--f-mono);color:#c2bbdd;display:flex;align-items:flex-end;padding-bottom:.6mm;transform-origin:0 100%}
+.dream .d-skills{display:flex;flex-direction:column}
+.dream .sk{display:flex;align-items:baseline;gap:1.6mm;padding:2.05mm 0 1.3mm;border-bottom:.2mm dashed #c9c2e2;transform-origin:0 50%}
+.dream .sk .nm{font-size:9.5pt;white-space:nowrap}
+.dream .sk .dots{flex:1;border-bottom:.3mm dotted #9a90c4;transform:translateY(-1mm);min-width:3mm}
+.dream .sk .ab{font:7pt var(--f-mono);color:#7a70a3}
+.dream .sk .pool{font:400 11pt var(--f-disp);width:9mm;text-align:right}
+.dream .sk .lv{white-space:nowrap;padding-left:1mm}
+.dream .dia{border-color:#2a2350;border-radius:.6mm}
+.dia.on{background:#16191b}
+.dream .dia.on{background:#2a2350}
+.pages .lv{cursor:pointer}
+.pages .lv .dia{position:relative}
+.pages .lv .dia::after{content:"";position:absolute;inset:-1.6mm}
+.pages .lv:hover .dia{box-shadow:0 0 0 .5mm rgba(200,80,26,.25)}
+.dream .d-foot{border:.3mm dashed #4b3a8f;border-radius:9mm 3mm 11mm 4mm;padding:3mm 6mm;display:grid;grid-template-columns:auto 1fr;gap:1mm 6mm;font-size:7.5pt;color:#3a3358;transform:rotate(-.7deg)}
+.dream .d-foot table{border-collapse:collapse;font-size:7.5pt}
+.dream .d-foot td{padding:0 3mm .4mm 0}
+.dream .d-foot td:first-child{font-family:var(--f-mono)}
+.dream .d-foot p{margin:0 0 .8mm}
+
+
+/* ведомость печатей конгресса */
+.page.seals{gap:4mm}
+.s-head{display:grid;grid-template-columns:1fr auto;align-items:end;border-bottom:.6mm solid #16191b;padding-bottom:2.5mm}
+.s-head h2{font:400 19pt/1.05 var(--f-disp);margin:0}
+.s-head .p-kick{margin-bottom:1mm}
+.s-seal{width:20mm;height:20mm;border:.5mm solid #7a3a16;border-radius:50%;display:grid;place-items:center;text-align:center;font:600 5.5pt/1.2 var(--f-mono);letter-spacing:.08em;color:#7a3a16;transform:rotate(-8deg)}
+.s-tbl{width:100%;border-collapse:collapse;table-layout:fixed;font-size:8.3pt;line-height:1.15}
+.s-tbl th,.s-tbl td{border:.25mm solid #b9c0c4;padding:0 1.5mm}
+.s-tbl thead th{height:15mm;vertical-align:bottom;font:600 6.5pt var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:#5c666b;text-align:left;padding-bottom:1mm}
+.s-tbl thead th.pl{border-bottom:.45mm solid #16191b;text-align:center}
+.s-tbl tbody td{height:7.1mm}
+.s-tbl td.n{width:7mm;text-align:right;font:600 7pt var(--f-mono);color:#7a3a16}
+.s-tbl td.g{width:92mm}
+.s-tbl td.c{position:relative}
+.s-tbl td.c::after{content:"";position:absolute;inset:1mm;margin:auto;width:4.6mm;height:4.6mm;border:.2mm dashed #cfd5d8;border-radius:50%}
+.s-tbl tr.blank td.g{color:#b9c0c4}
+.s-foot{display:grid;grid-template-columns:1.25fr 1fr;gap:5mm;font-size:7.8pt;line-height:1.3}
+.s-foot table{width:100%;border-collapse:collapse}
+.s-foot td{border-bottom:.2mm solid #d3d8db;padding:.7mm 1mm;vertical-align:top}
+.s-foot td:first-child{font:600 7pt var(--f-mono);color:#7a3a16;white-space:nowrap}
+.s-foot p{margin:0 0 1.5mm}
+.s-foot b{font-weight:600}
+.hidden-render{position:fixed;left:-10000px;top:0;pointer-events:none}
+</style>
+
+<div class="app">
+  <aside class="desk" aria-label="Пульт ведущего">
+    <div><h1>Лист путника</h1><p class="sub">Заполните имя и характеристики. Уровни навыков — кликом по ромбикам на любой из страниц.</p></div>
+    <div style="display:grid;gap:8px">
+      <div class="lbl">Персонажи</div>
+      <div class="chars" id="chars"></div>
+      <div class="row"><button class="btn" id="newBtn" type="button">+ Новый персонаж</button></div>
+      <div class="status" id="status">хранится только в этом браузере — для переноса и бэкапа используйте экспорт</div>
+    </div>
+    <div class="field"><label class="lbl" for="nameIn">Имя наяву</label><input id="nameIn" autocomplete="off" placeholder="Например, Ирина Лаптева"></div>
+    <div style="display:grid;gap:8px">
+      <div class="lbl" style="display:flex;justify-content:space-between"><span>Характеристики</span><span class="sum" id="sum"></span></div>
+      <div class="steppers" id="steppers"></div>
+    </div>
+    <div id="delZone"><button class="btn danger" id="delBtn" type="button">Удалить персонажа</button></div>
+    <div class="printbox" id="backupBox">
+      <div class="lbl">Резервная копия</div>
+      <div class="row"><button class="btn" id="exportBtn" type="button" style="flex:1">Экспорт</button><button class="btn" id="importBtn" type="button" style="flex:1">Импорт</button></div>
+      <input type="file" id="importFile" accept=".json,application/json" hidden>
+      <div class="note" id="backupNote">«Экспорт» сохраняет всех персонажей в файл .json. «Импорт» добавляет персонажей из такого файла; с тем же персонажем — заменяет его.</div>
+    </div>
+    <div class="printbox">
+      <div class="row"><button class="btn primary" id="printBtn" type="button" style="flex:1">Печать</button><button class="btn" id="printAllBtn" type="button" style="flex:1">Печать всех</button></div>
+      <div class="note" id="printNote">«Печать» — PDF текущего персонажа, «Печать всех» — один PDF со всеми, по две страницы А4 на каждого. Для двусторонней печати переворачивайте по длинному краю.</div>
+    </div>
+  </aside>
+  <main class="pages" id="pages"></main>
+</div>
+<div class="hidden-render" id="offscreen" aria-hidden="true"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+const STATS=[
+  {k:"kr",nm:"Крепость",ab:"КР"},{k:"pr",nm:"Прыть",ab:"ПР"},{k:"sm",nm:"Смекалка",ab:"СМ"},
+  {k:"ch",nm:"Чутьё",ab:"ЧУ"},{k:"ob",nm:"Обаяние",ab:"ОБ"},{k:"st",nm:"Странность",ab:"СТ"}];
+const AB=Object.fromEntries(STATS.map(s=>[s.k,s.ab]));
+// [название наяву, характеристика наяву, название в Зазеркалье, характеристика там]
+const SKILLS=[
+  ["Драка","kr","Коканье","kr"],
+  ["Мастеровитость","pr","Колупание","sm"],
+  ["Техника","sm","Механика","sm"],
+  ["Торговля","sm","Кукичество","ch"],
+  ["Этикет","ob","Сыворотка общества","ob"],
+  ["Убеждение","ob","Шепоток","st"],
+  ["Обман","ob","Лицедейство","st"],
+  ["Скрытность","pr","Хождение в копытах","ch"],
+  ["Медицина","sm","Знахарство","ch"],
+  ["Кулинария","ch","Варево","st"],
+  ["Обращение с животными","ch","Бобылеведение","ob"],
+  ["Ориентирование","ch","Трубоведение","sm"],
+  ["Эрудиция","sm","Летопись","ob"],
+  ["Спорт","kr","Чак-чак","pr"],
+  ["Сновидения","st","Сноходчество","st"],
+  ["Соблазнение","ob","Щекотка","pr"],
+];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const $=id=>document.getElementById(id);
+const newChar=()=>({id:"c"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),name:"",stats:{kr:2,pr:2,sm:2,ch:2,ob:2,st:2},skills:SKILLS.map(()=>0),created:Date.now()});
+function norm(o,id){const b=newChar();o=o&&typeof o==="object"?o:{};
+  const s={id:id||o.id||b.id,name:String(o.name||""),stats:{...b.stats},skills:SKILLS.map((_,i)=>{const v=Number((Array.isArray(o.skills)?o.skills:[])[i]);return v>=0&&v<=3?Math.round(v):0}),created:Number(o.created)||Date.now()};
+  for(const k in s.stats){const v=Number((o.stats||{})[k]);if(v>=1&&v<=5)s.stats[k]=Math.round(v)}return s}
+
+let chars={}, curId=null, confirmDel=false;
+try{const raw=JSON.parse(localStorage.getItem("zz-chars")||"null");if(raw&&typeof raw==="object")for(const k in raw)chars[k]=norm(raw[k],k)}catch(e){}
+if(!Object.keys(chars).length){const c=newChar();c.name="Ирина Лаптева";c.stats={kr:2,pr:4,sm:3,ch:2,ob:3,st:1};chars[c.id]=c;c.example=true}
+curId=Object.values(chars).sort((a,b)=>a.created-b.created)[0].id;
+const cur=()=>chars[curId];
+
+// ── страницы ──
+function statsHTML(c){return `<div class="p-stats">${STATS.map(s=>`<div class="p-stat"><span class="n">${s.nm}</span><span class="v">${c.stats[s.k]}</span><span class="d">${[1,2,3,4,5].map(i=>`<i class="${c.stats[s.k]>=i?"on":""}"></i>`).join("")}</span></div>`).join("")}</div>`}
+function skillsHTML(c,mir){
+  return `<table class="p-skills"><thead><tr><th>${mir?"Умение":"Навык"}</th><th>Хар.</th><th>Кубики</th><th>Уровень</th></tr></thead><tbody>${
+    SKILLS.map((r,i)=>{const nm=mir?r[2]:r[0],st=mir?r[3]:r[1];return `<tr><td>${nm}</td><td class="ab">${AB[st]}</td><td class="pool">${c.stats[st]}к6</td><td class="lv" data-sk="${i}" title="Уровень навыка">${dias(c,i)}</td></tr>`}).join("")}</tbody></table>`}
+function trackHTML(title,n,note){return `<div><div class="p-h"><span>${title}</span><span>макс. ${n}</span></div><div class="boxes">${Array.from({length:n},(_,i)=>`<i>${i+1}</i>`).join("")}</div>${note?`<div class="p-note">${note}</div>`:""}</div>`}
+function footHTML(mir){const f=mir?"Разваристость":"Усталость";return `<div class="p-foot">
+  <table><tr><td>Уровень 0</td><td>успех на 6</td></tr><tr><td>Уровень 1</td><td>успех на 5–6</td></tr><tr><td>Уровень 2</td><td>успех на 4–6</td></tr><tr><td>Уровень 3</td><td>4–6, шестёрка = 2 успеха</td></tr></table>
+  <div><p>Бросайте столько к6, сколько указано в «Кубиках». Нужно успехов: 1 — обычное дело, 2 — трудное, 3 — почти невозможное. Голая характеристика без навыка — успех на 5–6.</p>
+  <p>+1 ${f}: один раз за бросок перебросить все неудачные кубики. ${f} 4–5 — на кубик меньше, 6 — бросаете один кубик.</p></div></div>`}
+
+function dias(c,i){const lv=c.skills[i]||0;return [1,2,3].map(j=>`<span class="dia${lv>=j?" on":""}" data-lv="${j}"></span>`).join("")}
+// оборот: детерминированный «сон» — одинаков на экране и в PDF
+function rnd(seed){let x=seed*9301+49297;return()=>{x=(x*9301+49297)%233280;return x/233280}}
+function jitter(text,amp,seed){const r=rnd(seed);return "<span>"+[...text].map(ch=>ch===" "?" ":`<span class="jit" style="transform:translateY(${((r()-.5)*amp).toFixed(2)}mm) rotate(${((r()-.5)*amp*3).toFixed(1)}deg)">${esc(ch)}</span>`).join("")+"</span>"}
+function wave(w,h,amp,seed){const r=rnd(seed);let d=`M0 ${h/2}`;const n=8;for(let i=1;i<=n;i++){const x=w*i/n,y=h/2+(r()-.5)*amp*2;d+=` Q ${x-w/n/2} ${h/2+(i%2?-amp:amp)} ${x} ${y.toFixed(1)}`}
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><path d="${d}" fill="none" stroke="#2a2350" stroke-width="1.1"/></svg>`}
+function dreamPageHTML(c){
+  const hp=3+c.stats.kr, f="Разваристость";
+  const blobR=["58% 42% 61% 39% / 47% 55% 45% 53%","41% 59% 44% 56% / 60% 38% 62% 40%","63% 37% 52% 48% / 42% 61% 39% 58%","46% 54% 38% 62% / 55% 45% 57% 43%","55% 45% 64% 36% / 38% 58% 42% 62%","39% 61% 50% 50% / 62% 40% 60% 38%"];
+  const blobY=[0,-3.2,1.8,-1.4,3,-2.4], blobRot=[-3,2.5,-1.5,4,-2.5,1.5];
+  const stats=STATS.map((s,i)=>`<div class="blob" style="border-radius:${blobR[i]};transform:translateY(${blobY[i]}mm) rotate(${blobRot[i]}deg)"><span class="n">${s.nm}</span><span class="v">${c.stats[s.k]}</span><span class="d">${[1,2,3,4,5].map(j=>`<i class="${c.stats[s.k]>=j?"on":""}"></i>`).join("")}</span></div>`).join("");
+  const skills=SKILLS.map((r,i)=>{const off=(Math.sin(i*.62)*3.2+3.2).toFixed(1),rot=(Math.sin(i*1.7)*.55).toFixed(2);
+    return `<div class="sk" style="margin-left:${off}mm;transform:rotate(${rot}deg)"><span class="nm">${r[2]}</span><span class="dots"></span><span class="ab">${AB[r[3]]}</span><span class="pool">${c.stats[r[3]]}к6</span><span class="lv" data-sk="${i}" title="Уровень умения">${dias(c,i)}</span></div>`}).join("");
+  const moons=Array.from({length:hp},(_,i)=>{const sz=(7.2-i*.32).toFixed(2);return `<i style="width:${sz}mm;height:${sz}mm;transform:translateY(${(Math.sin(i*1.3)*1.6).toFixed(2)}mm)">${i+1}</i>`}).join("");
+  const melt=[1,2,3,4,5,6].map(i=>`<i style="border-radius:${(i-1)*.9}mm ${(i-1)*1.3}mm ${(i-1)*1.1}mm ${(i-1)*.6}mm;transform:translateY(${((i-1)*(i-1)*.17).toFixed(2)}mm) rotate(${((i-1)*(i%2?4:-5))}deg)">${i}</i>`).join("");
+  const drift=Array.from({length:12},(_,i)=>`<div class="ln" style="margin-left:${(Math.sin(i*.9+1)*2.4+2.4).toFixed(1)}mm;margin-right:${(Math.cos(i*.7)*2+2).toFixed(1)}mm;transform:rotate(${(Math.sin(i*1.9)*.7).toFixed(2)}deg)"><span>${i+1}</span><i class="ck"></i></div>`).join("");
+  return `<div class="page dream">
+    <svg class="halo" viewBox="0 0 210 297" preserveAspectRatio="none">
+      <ellipse cx="176" cy="36" rx="46" ry="38" fill="none" stroke="#ebe7f6" stroke-width=".5"/>
+      <ellipse cx="179" cy="33" rx="58" ry="51" fill="none" stroke="#f1eef9" stroke-width=".4"/>
+      <ellipse cx="22" cy="268" rx="40" ry="26" fill="none" stroke="#efecf8" stroke-width=".5"/>
+      
+    </svg>
+    <div class="edge">брунявая Чуня или чунявая Бруня?</div>
+    <div class="d-head">
+      <div>
+        <div class="d-kick">${jitter("Оборот · сторона Я · Зазеркалье",1.4,7)}</div>
+        <div class="d-name"><span>Зазеркальное имя</span><i class="l1"></i><i class="l2"></i></div>
+      </div>
+      <div class="stamp"><div>Виза<br>Поленоча<b>${c.name?esc(c.name):"&nbsp;"}</b></div></div>
+    </div>
+    <div><div class="d-h">${jitter("Свойства",1.6,5)}<small>те же, что наяву</small></div><div class="d-stats">${stats}</div></div>
+    <div class="d-body">
+      <div class="d-side">
+        <div><div class="d-h">${jitter("Лицо",1.6,13)}<small>макс. ${hp}</small></div><div class="moons">${moons}</div><div class="d-note">3 + Крепость. Пустые луны — утраченное лицо.</div></div>
+        <div><div class="d-h">${jitter("Разваристость",1.6,17)}<small>до 6</small></div><div class="melt">${melt}</div></div>
+        <div><div class="d-h">${jitter("Надзор",1.6,31)}<small>3 метки — кара</small></div>
+          <div class="watch"><div class="wrow"><span class="who">Оно</span><span class="eyes"><i></i><i></i><i></i></span><em>→ сладкий хлев</em></div>
+          <div class="wrow" style="margin-left:5mm"><span class="who">Она</span><span class="eyes"><i></i><i></i><i></i></span><em>→ к Видусу цыплёнком</em></div></div></div>
+        <div><div class="d-h">${jitter("Кукичи",1.6,19)}</div><div class="coin"><div class="ov"></div>${wave(300,24,4,9)}<span>кук.</span></div></div>
+        <div class="drift"><div class="d-h">${jitter("Пожитки",1.6,23)}<small style="white-space:nowrap">□ битубисас · испорчено</small></div>${drift}</div>
+      </div>
+      <div><div class="d-h">${jitter("Умения",1.6,29)}<small>кубики · уровень</small></div><div class="d-skills">${skills}</div>
+        <div class="comp"><div class="d-h">${jitter("Спутник",1.6,37)}<small>один · подготовка всегда</small></div>
+          <div class="c-row"><span>кто</span><i></i><span>Лицо</span><b></b></div>
+          <div class="c-row"><span>подготовка к</span><i></i></div>
+          <div class="c-row"><span>особое</span><i></i></div></div></div>
+    </div>
+    <div class="d-foot">
+      <table><tr><td>Уровень 0</td><td>успех на 6</td></tr><tr><td>Уровень 1</td><td>успех на 5–6</td></tr><tr><td>Уровень 2</td><td>успех на 4–6</td></tr><tr><td>Уровень 3</td><td>4–6, шестёрка = 2 успеха</td></tr></table>
+      <div><p>Бросайте столько к6, сколько указано у умения. Нужно успехов: 1 — обычное дело, 2 — трудное, 3 — почти невозможное. Голое свойство без умения — успех на 5–6.</p>
+      <p>+1 ${f}: один раз за бросок перебросить все неудачные кубики. ${f} 4–5 — на кубик меньше, 6 — бросаете один кубик.</p></div>
+    </div>
+  </div>`;
+}
+function pageHTML(c,mir){if(mir)return dreamPageHTML(c);
+  const hp=3+c.stats.kr;
+  const nameBlock=mir
+    ?`<div><div class="p-name blank">Зазеркальное имя</div></div>`
+    :`<div><div class="p-name${c.name?"":" blank"}">${c.name?esc(c.name):"—"}</div></div>`;
+  const side=`<div class="p-side">
+      ${trackHTML(mir?"Лицо":"Здоровье",hp,mir?"3 + Крепость. Пустые клетки — утраченное лицо.":"3 + Крепость. Зачёркивайте полученный урон.")}
+      ${trackHTML(mir?"Разваристость":"Усталость",6,"")}
+      <div><div class="p-h"><span>${mir?"Кукичи":"Деньги"}</span><span></span></div><div class="money"><div class="line"></div><span>${mir?"кук.":"₽"}</span></div></div>
+      <div class="p-inv"><div class="p-h"><span>${mir?"Пожитки":"Инвентарь"}</span><span></span></div><div class="lines">${Array.from({length:12},(_,i)=>`<div>${i+1}</div>`).join("")}</div></div>
+    </div>`;
+  return `<div class="page${mir?" mirror":""}">
+    ${mir?`<div class="ghost">ЬЕЛАКРЕЗАЗ</div>`:""}
+    <div class="p-head"><div class="p-kick">${mir?"Оборот · сторона Я · Зазеркалье":"Бланк путника · сторона А · реальный мир"}</div>${nameBlock}
+      <div class="p-form">${mir?"виза Поленоча":"форма ПВЗ-1"}<br>${c.name&&mir?esc(c.name):""}</div></div>
+    <div><div class="p-h"><span>${mir?"Свойства":"Характеристики"}</span><span></span></div>${statsHTML(c)}</div>
+    <div class="p-body"><div>${skillsHTML(c,mir)}</div>${side}</div>
+    ${footHTML(mir)}
+  </div>`;
+}
+
+// ── ведомость печатей конгресса ──
+const SEALS=["Побывать в сладком хлеву","Стать цыплёнком у Видуса — и выбраться","Предстать перед Истуканусом и ответить","Увидеть Оно или Её воочию","Потерять лицо и найти новое","Дослушать историю говорящего холма","Пройти за третий поворот колбасного стража","Добраться до острова Лавана","Увидеть спектральный колодец","Побывать в осколке ещё того Зазеркалья","Войти в ворота медного града","Впечатлить Магогу","Приручить кокшу","Совершить шалость по заданию синих ящеров","Отведать гычи бабы Жули","Пережить темноту в сумеречной роще","Пройти подземные трубы насквозь","Побывать на приёме у господина Кривина","Вернуть ложку, украденную Казимиром","Выиграть ставку на забеге","Попасть в подпольный щекоточный клуб","Найти Бутыльона и не осушить его","Выбраться из старого лабиринта с лицом","Выучить странность у учителя"];
+const LEVELS=[["1","Странник","+1 характеристика, +1 навык"],["2","Путник","+2 навыка"],["3","Бывалый","+1 характеристика, +2 навыка"],["4","Землепроходец","+2 характеристики, +1 навык"],["5","Первопроходец","+3 навыка"],["6","Действительный член","+1 характеристика, +2 навыка"],["7","Почётный член конгресса","+2 характеристики, +2 навыка"]];
+function sealsPageHTML(){
+  const cols=6,blank=3;
+  const rows=SEALS.map((g,i)=>`<tr><td class="n">${i+1}</td><td class="g">${esc(g)}</td>${"<td class=\"c\"></td>".repeat(cols)}</tr>`).join("")
+    +Array.from({length:blank},(_,i)=>`<tr class="blank"><td class="n">${SEALS.length+i+1}</td><td class="g"></td>${"<td class=\"c\"></td>".repeat(cols)}</tr>`).join("");
+  return `<div class="page seals">
+    <div class="s-head"><div><div class="p-kick">Конгресс путешественников · ведомость печатей</div><h2>Печати путников</h2></div><div class="s-seal">КОНГРЕСС<br>ПУТЕШЕСТВЕН-<br>НИКОВ</div></div>
+    <table class="s-tbl"><colgroup><col style="width:7mm"><col style="width:86mm">${"<col>".repeat(cols)}</colgroup><thead><tr><th class="n"></th><th class="g">Цель · имена путников →</th>${"<th class=\"pl\"></th>".repeat(cols)}</tr></thead><tbody>${rows}</tbody></table>
+    <div class="s-foot">
+      <table>${LEVELS.map(l=>`<tr><td>${l[0]} · ${l[1]}</td><td>${l[2]}</td></tr>`).join("")}</table>
+      <div><p><b>3 печати — новый уровень.</b> Каждую печать путник получает один раз. Награда применяется на ближайшем отдыхе.</p>
+      <p>Навык уровнем поднимается до 2. Уровень 3 — мастерство — только у учителя за услугу.</p>
+      <p>Характеристика — не выше 5: если одна на пределе, поднимают другую.</p>
+      <p>Пустые строки — для новых целей, которые вписывает ведущий.</p></div>
+    </div>
+  </div>`}
+function renderPages(){
+  const c=cur();
+  $("pages").innerHTML=[["Страница 1 · реальный мир",false],["Страница 2 · Зазеркалье",true]].map(([cap,m])=>
+    `<div class="pagebox"><p class="cap">${cap}</p><div class="scaler">${pageHTML(c,m)}</div></div>`).join("");
+  fit();
+}
+function fit(){
+  document.querySelectorAll(".pagebox").forEach(b=>{
+    const sc=b.querySelector(".scaler"),pg=sc.firstElementChild;if(!pg)return;
+    const w=pg.offsetWidth,h=pg.offsetHeight,k=Math.min(1,b.clientWidth/w);
+    sc.style.transform=k<1?`scale(${k})`:"";sc.style.height=(h*k)+"px";sc.style.width=(w*k)+"px";
+  });
+}
+addEventListener("resize",fit);
+$("pages").addEventListener("click",e=>{
+  const cell=e.target.closest("[data-sk]");if(!cell)return;
+  const c=cur(),i=+cell.dataset.sk,d=e.target.closest(".dia");
+  let lv;if(d){const j=+d.dataset.lv;lv=c.skills[i]===j?j-1:j}else lv=(c.skills[i]+1)%4;
+  c.skills[i]=lv;delete c.example;save(c);renderPages();
+});
+
+// ── пульт ──
+function renderDesk(){
+  const list=Object.values(chars).sort((a,b)=>a.created-b.created);
+  $("chars").innerHTML=list.map(c=>`<button type="button" class="ch" data-id="${c.id}" aria-current="${c.id===curId}"><span>${esc(c.name||"Без имени")}${c.example?" <small>пример</small>":""}</span><small>${Object.values(c.stats).join("·")}</small></button>`).join("");
+  const c=cur();
+  if(document.activeElement!==$("nameIn"))$("nameIn").value=c.name;
+  $("steppers").innerHTML=STATS.map(s=>`<div class="stp"><span>${s.nm}</span><button type="button" data-k="${s.k}" data-d="-1" aria-label="${s.nm} меньше" ${c.stats[s.k]<=1?"disabled":""}>−</button><b>${c.stats[s.k]}</b><button type="button" data-k="${s.k}" data-d="1" aria-label="${s.nm} больше" ${c.stats[s.k]>=5?"disabled":""}>+</button></div>`).join("");
+  $("sum").textContent="сумма "+Object.values(c.stats).reduce((a,b)=>a+b,0);
+  $("delZone").innerHTML=confirmDel
+    ?`<div class="confirm">Удалить «${esc(c.name||"Без имени")}» насовсем?<div class="row"><button class="btn danger" id="delYes" type="button">Удалить</button><button class="btn" id="delNo" type="button">Отмена</button></div></div>`
+    :`<button class="btn danger" id="delBtn" type="button" ${list.length<2?"disabled":""}>Удалить персонажа</button>`;
+}
+function renderAll(){renderDesk();renderPages()}
+
+$("chars").addEventListener("click",e=>{const b=e.target.closest("[data-id]");if(!b)return;curId=b.dataset.id;confirmDel=false;renderAll()});
+$("newBtn").addEventListener("click",()=>{const c=newChar();chars[c.id]=c;curId=c.id;confirmDel=false;save(c);renderAll();$("nameIn").focus()});
+$("nameIn").addEventListener("input",e=>{const c=cur();c.name=e.target.value;delete c.example;save(c);renderDesk();renderPages()});
+$("steppers").addEventListener("click",e=>{const b=e.target.closest("button[data-k]");if(!b)return;const c=cur();
+  c.stats[b.dataset.k]=Math.max(1,Math.min(5,c.stats[b.dataset.k]+Number(b.dataset.d)));delete c.example;save(c);renderAll()});
+$("delZone").addEventListener("click",e=>{
+  if(e.target.id==="delBtn"){confirmDel=true;renderDesk()}
+  else if(e.target.id==="delNo"){confirmDel=false;renderDesk()}
+  else if(e.target.id==="delYes"){const id=curId;delete chars[id];confirmDel=false;
+    curId=Object.values(chars).sort((a,b)=>a.created-b.created)[0].id;persistLocal();renderAll()}
+});
+
+// ── хранение: только в этом браузере (localStorage) ──
+function persistLocal(){try{localStorage.setItem("zz-chars",JSON.stringify(chars));return true}catch(e){return false}}
+function save(c){if(!persistLocal())$("status").textContent="браузер не даёт сохранять — делайте экспорт"}
+
+// ── печать: PDF из двух страниц ──
+// Скачивание: обычное браузерное. Внутри claude.ai страница живёт в песочнице, где оно может быть закрыто, — там файл отдаёт Claude.
+let dl=null;(async()=>{if(window.claude&&claude.use)dl=await claude.use("downloads")})();
+async function saveFile(name,blob){
+  name=String(name).replace(/[\\/:*?"<>|]/g,"");
+  if(dl){await dl.save({filename:name,data:blob});return}
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.rel="noopener";document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000);
+}
+async function makePdf(list,btn,label,fname){
+  const note=$("printNote");
+  if(!window.html2canvas||!window.jspdf){note.textContent="Не загрузились библиотеки для PDF. Обновите страницу.";return}
+  document.querySelectorAll(".printbox .btn").forEach(x=>x.disabled=true);
+  try{
+    if(document.fonts&&document.fonts.ready)await document.fonts.ready;
+    const off=$("offscreen");
+    const pdf=new jspdf.jsPDF({unit:"mm",format:"a4",orientation:"portrait",compress:true});
+    let first=true;
+    const htmls=list.map(x=>typeof x==="string"?[x]:[pageHTML(x,false),pageHTML(x,true)]);
+    for(let n=0;n<htmls.length;n++){
+      btn.textContent=htmls.length>1?`Собираю ${n+1} из ${htmls.length}…`:"Собираю PDF…";
+      for(const h of htmls[n]){
+        off.innerHTML=h;
+        const pg=off.querySelector(".page");pg.style.boxShadow="none";
+        const cv=await html2canvas(pg,{scale:3,backgroundColor:"#ffffff",useCORS:true,logging:false});
+        if(!first)pdf.addPage();first=false;
+        pdf.addImage(cv.toDataURL("image/jpeg",0.9),"JPEG",0,0,210,297);
+      }
+    }
+    off.innerHTML="";
+    await saveFile(fname,pdf.output("blob"));
+    note.textContent=typeof list[0]==="string"?"PDF готов: ведомость печатей на одной странице А4.":list.length>1
+      ?`PDF готов: ${list.length*2} страниц, по две на персонажа. Двусторонняя печать — переворот по длинному краю.`
+      :"PDF готов: откройте его и печатайте. Двусторонняя печать — переворот по длинному краю.";
+  }catch(e){
+    const code=e&&e.code;
+    note.textContent=code==="declined"?"Сохранение отменено.":code==="rate_limited"?"Окно сохранения уже открыто.":"Не получилось собрать PDF. Попробуйте ещё раз.";
+  }finally{
+    document.querySelectorAll(".printbox .btn").forEach(x=>x.disabled=false);
+    btn.textContent=label;
+  }
+}
+
+// ── резервная копия: экспорт и импорт списка ──
+function exportData(){
+  const list=Object.values(chars).sort((a,b)=>a.created-b.created).map(c=>({id:c.id,name:c.name,stats:{...c.stats},skills:[...c.skills],created:c.created}));
+  return {format:"zazerkalye-sheet",version:1,exported:new Date().toISOString(),chars:list};
+}
+$("exportBtn").addEventListener("click",async()=>{
+  const note=$("backupNote"),data=exportData(),d=new Date();
+  const stamp=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+  try{await saveFile(`Листы путников — копия ${stamp}.json`,new Blob([JSON.stringify(data,null,2)],{type:"application/json"}));
+    note.textContent=`Сохранено персонажей: ${data.chars.length}. Храните файл — им можно восстановить список.`}
+  catch(e){const code=e&&e.code;note.textContent=code==="declined"?"Сохранение отменено.":"Не получилось сохранить файл. Попробуйте ещё раз."}
+});
+$("importBtn").addEventListener("click",()=>{$("importFile").value="";$("importFile").click()});
+$("importFile").addEventListener("change",async e=>{
+  const f=e.target.files&&e.target.files[0],note=$("backupNote");if(!f)return;
+  try{
+    const raw=JSON.parse(await f.text());
+    const arr=Array.isArray(raw)?raw:Array.isArray(raw&&raw.chars)?raw.chars:(raw&&typeof raw==="object"?Object.values(raw):[]);
+    const got=arr.filter(o=>o&&typeof o==="object"&&o.stats&&Array.isArray(o.skills)).map(o=>norm(o,o.id));
+    if(!got.length){note.textContent="В файле нет персонажей — это точно копия листа путника?";return}
+    let added=0,replaced=0;
+    Object.values(chars).forEach(c=>{if(c.example)delete chars[c.id]});
+    got.forEach(c=>{if(chars[c.id])replaced++;else added++;chars[c.id]=c;save(c)});
+    persistLocal();curId=got[0].id;confirmDel=false;renderAll();
+    note.textContent=`Импорт готов: добавлено ${added}, заменено ${replaced}.`;
+  }catch(err){note.textContent="Не получилось прочитать файл: нужен .json, сохранённый «Экспортом»."}
+});
+const sorted=()=>Object.values(chars).sort((a,b)=>a.created-b.created);
+$("printBtn").addEventListener("click",()=>{const c=cur();makePdf([c],$("printBtn"),"Печать",`Лист путника — ${c.name||"без имени"}.pdf`)});
+$("printAllBtn").addEventListener("click",()=>{const l=sorted();makePdf(l,$("printAllBtn"),"Печать всех",`Листы путников — ${l.length} шт.pdf`)});
+
+renderAll();
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fit);
+</script>
