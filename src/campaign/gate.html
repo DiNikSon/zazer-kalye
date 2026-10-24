@@ -10,6 +10,37 @@
 .gate-btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
 .gate-btns a,.gate-btns button{font:15px var(--f-body);border-radius:8px;padding:9px 16px;cursor:pointer;text-decoration:none;border:1px solid var(--line);background:transparent;color:var(--ink)}
 .gate-btns .primary{background:var(--accent);border-color:var(--accent);color:var(--panel)}
+/* разметка эпизодов: рамки «читать вслух», врезки, эпиграфы, записки игрокам */
+.read{position:relative;margin:16px 0 18px;padding:16px 18px 14px;border:1.5px solid var(--ink);border-radius:3px;background:var(--panel);font:17px/1.55 "Kurale",var(--f-body);box-shadow:4px 4px 0 color-mix(in srgb,var(--ink) 10%,transparent)}
+.read::before{content:"читать вслух · Зазеркалье";position:absolute;top:-9px;left:12px;padding:0 6px;background:var(--bg);font:11px/18px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.read p{margin:0 0 8px;max-width:none}.read p:last-child{margin:0}
+.read.real{font:16px/1.55 var(--f-body);border-width:1px;box-shadow:none}
+.read.real::before{content:"читать вслух · наяву"}
+.side{background:color-mix(in srgb,var(--muted) 13%,var(--panel));border-radius:8px;padding:12px 16px;margin:10px 0 16px;font-size:15px}
+.side h4{margin:0 0 6px;font:600 12px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink)}
+.side p{margin:0 0 8px}.side p:last-child,.side ul:last-child{margin-bottom:0}
+.side .tbl{margin:8px 0 0}
+.epi{margin:0 0 20px auto;max-width:44ch;text-align:right;font:italic 15px/1.45 var(--f-body);color:var(--muted)}
+.epi cite{display:block;font-style:normal;font-size:12px;margin-top:4px}
+.teaser{font:italic 17px/1.55 "Kurale",var(--f-body);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:12px 0;margin:4px 0 18px}
+.slip{margin:8px 0 12px;padding:10px 14px 12px;border:1px dashed color-mix(in srgb,var(--ink) 40%,transparent);border-radius:3px;background:color-mix(in srgb,#ffe38a 28%,var(--panel));font:19px/1.35 "Neucha","Kurale",cursive}
+.slip::before{content:"передать игроку";display:block;margin-bottom:4px;font:11px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.grade{list-style:none;padding-left:0}.grade li{margin:0 0 6px}
+/* раздатки (печатный лист А4) */
+.ho .pp-head{margin-bottom:1mm}
+.ho-top{display:grid;grid-template-columns:76mm 1fr;gap:9mm;align-items:start;margin-top:2mm}
+.ho-rc{font:9pt/1.4 "PT Mono",monospace;color:#222;border:1px solid #bbb;padding:5mm 5mm 4mm;background:#fff}
+.ho-rc-h{text-align:center;font-weight:700;letter-spacing:.1em;margin-bottom:3mm}
+.ho-rc-l{display:flex;justify-content:space-between;gap:4mm;margin:1mm 0}
+.ho-rc-l b{text-align:right}
+.ho-rc-d{border-top:1px dashed #999;margin:2mm 0}
+.ho-rc-f{text-align:center;margin-top:3mm;color:#555}
+.ho-note{font:15pt/1.35 "Neucha",cursive;color:#1d2a4a;background:#fffdf5;border:1px solid #d8d2c0;padding:6mm 7mm 7mm;transform:rotate(1.2deg);min-height:62mm}
+.ho-note-n{font:8pt "PT Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:#8a8170;margin-bottom:2mm}
+.ho-sign{text-align:right;margin-top:3mm}
+.ho-cut{margin-top:7mm;font:8pt "PT Mono",monospace;color:#777;border-top:1px dashed #999;padding-top:2mm}
+.ho-slips{display:grid;grid-template-columns:1fr 1fr}
+.ho-slip{font:14pt/1.3 "Neucha",cursive;color:#1c1b24;padding:7mm 7mm;border:1px dashed #aaa;margin:0 -1px -1px 0;min-height:32mm;display:flex;align-items:center}
 .todo{border-left:3px solid var(--draft);background:var(--draft-soft);padding:10px 14px;border-radius:0 8px 8px 0;margin:6px 0 16px}
 .todo p{margin:0}
 p.todo::before,.todo>p:first-child::before{content:"Не решено · ";font:12px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--draft)}

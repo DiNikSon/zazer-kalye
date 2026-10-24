@@ -1184,6 +1184,7 @@ async function saveFile(name,blob){
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.rel="noopener";document.body.appendChild(a);a.click();
   setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000);
 }
+/*CAMP_EXTRA*/
 function fitPr(){document.querySelectorAll(".pr-box").forEach(b=>{const sc=b.querySelector(".pr-scaler"),pg=sc.firstElementChild;if(!pg)return;const k=Math.min(1,b.clientWidth/pg.offsetWidth);sc.style.transform=`scale(${k})`;b.style.height=(pg.offsetHeight*k)+"px"})}
 addEventListener("resize",fitPr);
 function mountPrint(){document.querySelectorAll("[data-print]").forEach(el=>{const k=el.dataset.print,d=PR[k];if(!d)return;

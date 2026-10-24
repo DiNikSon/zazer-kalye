@@ -98,7 +98,8 @@ chk = subprocess.run(['node', '-e', 'const s=require("fs").readFileSync(process.
 if chk.returncode:
     sys.exit('campaign.js: ' + (chk.stderr.strip().splitlines() or ['ошибка'])[-1])
 c_sec = cjs[cjs.index('const SECTIONS=['):cjs.index('];', cjs.index('const SECTIONS=[')) + 2]
-c_art = cjs[cjs.index('const A=['):cjs.rindex('];') + 2]
+c_art = cjs[cjs.index('const A=['):cjs.index('\n];\n', cjs.index('const A=[')) + 3]
+c_print = cjs[cjs.index('/*PRINT*/'):cjs.index('/*/PRINT*/')] if '/*PRINT*/' in cjs else ''
 camp = swap(camp, 'const SECTIONS=[', '];', c_sec, 'SECTIONS')
 # ((id)) без текста — подставляем название статьи свода
 rules_titles = dict(re.findall(r'\{id:"([a-z0-9-]+)",sec:"[a-z]+",st:"[a-z]+",t:"([^"]+)"', rules))
@@ -109,7 +110,9 @@ for a, b in [('<title>Свод правил Зазеркалья</title>', '<tit
              ('placeholder="Найти правило: подготовка, лицо, отдых…"', 'placeholder="Найти в кампании: друг, куб, улики…"'),
              ('aria-label="Поиск по своду"', 'aria-label="Поиск по кампании"'),
              ('show(byId[start]?start:"worlds",false);', 'show(byId[start]?start:order[0].id,false);'),
-             ('<header>', rd(SRC, 'campaign', 'gate.html') + '\n<header>')]:
+             ('<header>', rd(SRC, 'campaign', 'gate.html') + '\n<header>'),
+             ('&family=Yeseva+One&display=swap', '&family=Yeseva+One&family=Neucha&display=swap'),
+             ('/*CAMP_EXTRA*/', c_print + '\nif(typeof CAMP_PR!=="undefined")Object.assign(PR,CAMP_PR);')]:
     assert camp.count(a) == 1, a
     camp = camp.replace(a, b)
 assert camp.count('zz-rules-last') == 2
