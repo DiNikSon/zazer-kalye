@@ -41,6 +41,68 @@
 .ho-cut{margin-top:7mm;font:8pt "PT Mono",monospace;color:#777;border-top:1px dashed #999;padding-top:2mm}
 .ho-slips{display:grid;grid-template-columns:1fr 1fr}
 .ho-slip{font:14pt/1.3 "Neucha",cursive;color:#1c1b24;padding:7mm 7mm;border:1px dashed #aaa;margin:0 -1px -1px 0;min-height:32mm;display:flex;align-items:center}
+.ho-sec{font:8pt/1.4 "PT Mono",monospace;color:#777;margin:1mm 0 0}
+.ho-two{display:grid;grid-template-columns:1fr 1fr;gap:8mm;align-items:start;margin-top:2mm}
+/* эп. 2: сводка Артёма, приглашение, записки */
+.ho-strips{display:grid;grid-template-columns:9mm 1fr;border-top:1px dashed #999}
+.ho-strip-n{font:8pt "PT Mono",monospace;color:#aaa;border-right:1px dashed #999;border-bottom:1px dashed #999;display:flex;align-items:center;justify-content:center}
+.ho-strip{font:13pt/1.3 "Kurale",serif;color:#2a2238;background:#fbf8f0;padding:3.4mm 5mm;border-bottom:1px dashed #999}
+.ho-inv{margin:3mm auto 0;width:128mm;text-align:center;font:12pt/1.4 "Kurale",serif;color:#3a2a14;border:3px double #8a6b2e;padding:7mm 8mm 6mm;background:#fffaf0}
+.ho-inv-k{font:8pt "PT Mono",monospace;letter-spacing:.2em;text-transform:uppercase;color:#8a6b2e}
+.ho-inv-h{font:22pt/1.2 "Yeseva One",serif;margin:2mm 0 3mm}
+.ho-inv p{margin:0 0 2.5mm}.ho-inv-m{font-style:italic}.ho-inv-s{font-size:10pt;color:#6b5634}
+.ho-notes{display:flex;flex-direction:column;gap:5mm;margin-top:2mm}
+.ho-notes .ho-note{min-height:0;width:150mm;padding:5mm 7mm 5mm}
+.ho-note-1{align-self:flex-end;transform:rotate(-1.4deg)}.ho-note-2{transform:rotate(.6deg);margin-left:12mm}
+.ho-note-wide{min-height:0;margin-top:3mm}
+/* эп. 3: загадка, клубная карточка */
+.ho-riddle{font:italic 15pt/1.45 "Kurale",serif;color:#2a2238;border-left:1.2mm solid #5b4bb7;padding:3mm 0 3mm 6mm}
+.ho-riddle-k{font:normal 8pt "PT Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:#8a8170;margin-bottom:3mm}
+.ho-club{margin:3mm 0 0;width:96mm;border:1.2px solid #6b2a4a;border-radius:3mm;padding:5mm 6mm;background:#fdf4f7;font:10pt/1.4 "PT Sans",sans-serif;color:#3a1a2a;position:relative}
+.ho-club-h{font:15pt/1.15 "Yeseva One",serif;color:#6b2a4a}
+.ho-club-k{font:8pt "PT Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:#8a5a70;margin:1.5mm 0 3mm}
+.ho-club-l{display:flex;justify-content:space-between;border-bottom:1px dotted #c9a3b5;padding:1mm 0}
+.ho-club-f{margin-top:3mm;font-style:italic}
+.ho-club-s{position:absolute;right:7mm;bottom:4mm;font:16pt "Neucha",cursive;color:#2a2a8a;transform:rotate(-8deg)}
+/* эп. 4: пропуска, памятка, отчёт */
+.ho-passes{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm;margin-top:3mm}
+.ho-pass{border:1.2px solid #8a4b22;border-radius:2mm;padding:3mm 4mm;font:9pt/1.35 "PT Mono",monospace;color:#3a2010;background:#fbf1e8}
+.ho-pass-st{background:#fff;border-style:dashed}
+.ho-pass-h{font:13pt "Forum",serif;letter-spacing:.2em;text-transform:uppercase;color:#8a4b22}
+.ho-pass-k{font-size:8pt;letter-spacing:.1em;text-transform:uppercase;margin-bottom:2mm}
+.ho-pass-l{display:flex;justify-content:space-between;gap:2mm;margin:1mm 0}
+.ho-pass-f{margin-top:2mm;color:#8a4b22}
+.ho-memo{border:1.2px solid #8a4b22;padding:5mm 6mm;font:10.5pt/1.4 "PT Sans",sans-serif;color:#2a1a10;background:#fbf1e8}
+.ho-memo-h{font:17pt/1.15 "Forum",serif;letter-spacing:.08em;text-transform:uppercase;color:#8a4b22}
+.ho-memo-k{font:8pt "PT Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:#9a6a4a;margin:1mm 0 3mm}
+.ho-memo ol{margin:0;padding-left:5mm}.ho-memo li{margin:0 0 2mm}
+.ho-memo-f{margin-top:3mm;font:8pt "PT Mono",monospace;color:#9a6a4a}
+.ho-form{position:relative;border:1px solid #999;padding:5mm 6mm 6mm;font:9.5pt/1.4 "PT Mono",monospace;color:#222;background:#fff}
+.ho-form-h{font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:3mm}
+.ho-form-l{display:flex;justify-content:space-between;gap:3mm;border-bottom:1px solid #ddd;padding:.8mm 0}
+.ho-form-l b{text-align:right}
+.ho-form-d{height:3mm}
+.ho-form-t{margin-top:2mm}
+.ho-form-hand{font:14pt/1.3 "Neucha",cursive;color:#1d2a4a;margin:1mm 0 2mm}
+.ho-form-sig{display:flex;align-items:flex-end;gap:3mm;margin-top:6mm}.ho-form-sig i{flex:1;border-bottom:1px solid #222;height:5mm}
+.ho-form-tiny{position:absolute;right:2mm;bottom:12mm;font:8pt "Neucha",cursive;color:#555;transform:rotate(-90deg);transform-origin:right bottom}
+/* эп. 5: бирка, билет, увольнительная */
+.ho-tag{position:relative;border:1.4px solid #6b5a2a;border-radius:4mm 14mm 14mm 4mm;padding:6mm 16mm 6mm 7mm;font:11pt/1.4 "Kurale",serif;color:#2a2210;background:#f8f1dc}
+.ho-tag::after{content:"";position:absolute;right:6mm;top:50%;width:6mm;height:6mm;margin-top:-3mm;border-radius:50%;border:1.4px solid #6b5a2a;background:#fff}
+.ho-tag-k{font:8pt "PT Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:#8a7a4a}
+.ho-tag-h{font:18pt/1.2 "Yeseva One",serif;margin:1.5mm 0 3mm}
+.ho-tag p{margin:0 0 1.5mm}.ho-tag-s{font-style:italic;color:#6b5a2a}
+.ho-ticket{border:1.2px dashed #2a5a6b;border-radius:2mm;padding:5mm 6mm;font:9.5pt/1.4 "PT Mono",monospace;color:#123;background:#eef6f8}
+.ho-ticket-h{font:16pt "Forum",serif;letter-spacing:.1em;text-transform:uppercase;color:#2a5a6b}
+.ho-ticket-k{font-size:8pt;letter-spacing:.1em;text-transform:uppercase;margin:1mm 0 3mm}
+.ho-ticket-l{display:flex;justify-content:space-between;gap:3mm;border-bottom:1px solid #cfe0e6;padding:.8mm 0}.ho-ticket-l b{text-align:right}
+.ho-ticket-f{margin-top:3mm;color:#2a5a6b}
+.ho-dism{position:relative;margin-top:3mm;border:1px solid #999;padding:7mm 9mm 9mm;font:11pt/1.5 "PT Sans",sans-serif;color:#222;background:#fff}
+.ho-dism-h{font:8pt "PT Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:#8a4b22}
+.ho-dism-t{font:18pt/1.2 "Forum",serif;letter-spacing:.06em;text-transform:uppercase;margin:2mm 0 4mm}
+.ho-dism p{margin:0 0 2mm;max-width:122mm}.ho-dism-s{font-style:italic}
+.ho-stamp{position:absolute;right:10mm;bottom:9mm;width:30mm;height:30mm;border:2px solid #b0482a;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;font:700 10pt/1.1 "PT Mono",monospace;letter-spacing:.1em;color:#b0482a;transform:rotate(-14deg);opacity:.85;text-align:center}
+.ho-stamp small{font-size:7pt;font-weight:400;margin-top:1mm}
 .todo{border-left:3px solid var(--draft);background:var(--draft-soft);padding:10px 14px;border-radius:0 8px 8px 0;margin:6px 0 16px}
 .todo p{margin:0}
 p.todo::before,.todo>p:first-child::before{content:"Не решено · ";font:12px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--draft)}
