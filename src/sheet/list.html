@@ -46,6 +46,16 @@ button,input,select{font:inherit;color:inherit}
 .confirm{border:1px solid var(--bad);border-radius:8px;padding:10px;display:grid;gap:8px;font-size:13px}
 .printbox{display:grid;gap:6px;border-top:1px solid var(--rule);padding-top:16px}
 .printbox .note{font-size:12px;color:var(--muted)}
+.code-row{display:flex;gap:8px}
+.code-row input{flex:1;font:13px var(--f-mono)}
+.cnote{display:grid;gap:6px;font-size:12px;color:var(--muted)}
+.cnote:empty{display:none}
+.cnote.bad{color:var(--bad)}
+.cnote .ties{display:flex;flex-wrap:wrap;gap:6px}
+.cnote .tie{border:1px solid var(--rule);border-radius:999px;padding:3px 10px;background:transparent;cursor:pointer;font-size:12px}
+.cnote .tie:hover{border-color:var(--ink)}
+.cnote .tie[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.cnote .undo{justify-self:start;border:0;background:none;padding:0;color:var(--ink);text-decoration:underline;text-underline-offset:2px;cursor:pointer;font-size:12px}
 
 /* страницы */
 .pages{display:grid;gap:22px;min-width:0}
@@ -203,6 +213,11 @@ button,input,select{font:inherit;color:inherit}
       <div class="lbl" style="display:flex;justify-content:space-between"><span>Характеристики</span><span class="sum" id="sum"></span></div>
       <div class="steppers" id="steppers"></div>
     </div>
+    <div class="field">
+      <label class="lbl" for="codeIn">Код из теста</label>
+      <div class="code-row"><input id="codeIn" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Вставьте код"><button class="btn" id="codeBtn" type="button">Вписать</button></div>
+      <div class="cnote" id="codeNote" aria-live="polite"></div>
+    </div>
     <div id="delZone"><button class="btn danger" id="delBtn" type="button">Удалить персонажа</button></div>
     <div class="printbox" id="backupBox">
       <div class="lbl">Резервная копия</div>
@@ -253,6 +268,7 @@ function norm(o,id){const b=newChar();o=o&&typeof o==="object"?o:{};
   for(const k in s.stats){const v=Number((o.stats||{})[k]);if(v>=1&&v<=5)s.stats[k]=Math.round(v)}return s}
 
 let chars={}, curId=null, confirmDel=false;
+let codeSt=null,codeFor=null; // заметка под полем «Код из теста»
 try{const raw=JSON.parse(localStorage.getItem("zz-chars")||"null");if(raw&&typeof raw==="object")for(const k in raw)chars[k]=norm(raw[k],k)}catch(e){}
 if(!Object.keys(chars).length){const c=newChar();c.name="Ирина Лаптева";c.stats={kr:2,pr:4,sm:3,ch:2,ob:3,st:1};chars[c.id]=c;c.example=true}
 curId=Object.values(chars).sort((a,b)=>a.created-b.created)[0].id;
@@ -392,6 +408,7 @@ function renderDesk(){
   if(document.activeElement!==$("nameIn"))$("nameIn").value=c.name;
   $("steppers").innerHTML=STATS.map(s=>`<div class="stp"><span>${s.nm}</span><button type="button" data-k="${s.k}" data-d="-1" aria-label="${s.nm} меньше" ${c.stats[s.k]<=1?"disabled":""}>−</button><b>${c.stats[s.k]}</b><button type="button" data-k="${s.k}" data-d="1" aria-label="${s.nm} больше" ${c.stats[s.k]>=5?"disabled":""}>+</button></div>`).join("");
   $("sum").textContent="сумма "+Object.values(c.stats).reduce((a,b)=>a+b,0);
+  if(codeFor&&codeFor!==curId){codeSt=null;codeFor=null;$("codeNote").textContent="";$("codeNote").classList.remove("bad")}
   $("delZone").innerHTML=confirmDel
     ?`<div class="confirm">Удалить «${esc(c.name||"Без имени")}» насовсем?<div class="row"><button class="btn danger" id="delYes" type="button">Удалить</button><button class="btn" id="delNo" type="button">Отмена</button></div></div>`
     :`<button class="btn danger" id="delBtn" type="button" ${list.length<2?"disabled":""}>Удалить персонажа</button>`;
@@ -402,7 +419,59 @@ $("chars").addEventListener("click",e=>{const b=e.target.closest("[data-id]");if
 $("newBtn").addEventListener("click",()=>{const c=newChar();chars[c.id]=c;curId=c.id;confirmDel=false;save(c);renderAll();$("nameIn").focus()});
 $("nameIn").addEventListener("input",e=>{const c=cur();c.name=e.target.value;delete c.example;save(c);renderDesk();renderPages()});
 $("steppers").addEventListener("click",e=>{const b=e.target.closest("button[data-k]");if(!b)return;const c=cur();
-  c.stats[b.dataset.k]=Math.max(1,Math.min(5,c.stats[b.dataset.k]+Number(b.dataset.d)));delete c.example;save(c);renderAll()});
+  c.stats[b.dataset.k]=Math.max(1,Math.min(5,c.stats[b.dataset.k]+Number(b.dataset.d)));delete c.example;save(c);
+  if(codeSt&&codeSt.kind==="stats")codeClear();renderAll()});
+
+// ── код из теста ──
+// Тест характеристик: 6 чисел (КР ПР СМ ЧУ ОБ СТ), каждое 0–10, сумма 20 — переводятся по правилу
+// «Перевод теста в характеристики». Тест навыков: 16 чисел в порядке SKILLS, каждое 0–3, сумма 16 — 1 к 1.
+function statMap(raw){
+  const n=raw.length,E=1e-9,sh=raw.map(r=>.6*r),fixed=raw.map(()=>false),idx=raw.map((_,k)=>k);
+  for(;;){ // доля больше 4 → характеристика 5, лишек остальным пропорционально сырым значениям
+    let i=-1;sh.forEach((v,k)=>{if(!fixed[k]&&v>4+E&&(i<0||v>sh[i]))i=k});if(i<0)break;
+    fixed[i]=true;const ex=sh[i]-4;sh[i]=4;
+    const rest=idx.filter(k=>!fixed[k]),tot=rest.reduce((a,k)=>a+raw[k],0);
+    rest.forEach(k=>{sh[k]+=tot?ex*raw[k]/tot:ex/rest.length})}
+  const fl=sh.map(v=>Math.floor(v+E)),rem=sh.map((v,k)=>v-fl[k]),left=12-fl.reduce((a,b)=>a+b,0);
+  const same=(a,b)=>Math.abs(rem[a]-rem[b])<1e-6&&raw[a]===raw[b];
+  const ord=idx.slice().sort((a,b)=>Math.abs(rem[b]-rem[a])>1e-6?rem[b]-rem[a]:(raw[b]-raw[a]||a-b));
+  const got=ord.slice(0,left),base=fl.map(v=>1+v);let tie=null;
+  if(left>0&&left<n&&same(ord[left-1],ord[left])){ // равные остатки и сырые — выбор за игроком
+    const g=ord.filter(k=>same(k,ord[left-1])).sort((a,b)=>a-b),sel=g.filter(k=>got.includes(k));
+    tie={g,p:sel.length,sel};got.filter(k=>!g.includes(k)).forEach(k=>base[k]++)}
+  else got.forEach(k=>base[k]++);
+  return {base,tie}}
+function readCode(str){
+  const s=String(str).replace(/\s+/g,"").replace(/-/g,"+").replace(/_/g,"/");if(!s)return null;
+  let a;try{a=JSON.parse(atob(s))}catch(e){a=null}
+  if(!Array.isArray(a)||!a.length||!a.every(Number.isInteger))return {err:"Это не код теста. Скопируйте его целиком кнопкой «Скопировать код»."};
+  const sum=a.reduce((x,y)=>x+y,0);
+  if(a.length===6)return a.every(v=>v>=0&&v<=10)&&sum===20?{kind:"stats",a}:{err:"Код характеристик повреждён: числа не сходятся с тестом. Скопируйте его заново."};
+  if(a.length===16)return a.every(v=>v>=0&&v<=3)&&sum===16?{kind:"skills",a}:{err:"Код навыков повреждён: числа не сходятся с тестом. Скопируйте его заново."};
+  return {err:"Это не код наших тестов: в нём должно быть 6 чисел (характеристики) или 16 (навыки)."}}
+function codeStats(c){const v=codeSt.base.slice();if(codeSt.tie)codeSt.tie.sel.forEach(k=>v[k]++);STATS.forEach((s,i)=>{c.stats[s.k]=v[i]})}
+function codeMsg(text,bad){const el=$("codeNote");el.textContent=text;el.classList.toggle("bad",!!bad);codeFor=curId}
+function codeClear(){codeSt=null;codeMsg("")}
+function codeDraw(){
+  if(!codeSt)return;const c=cur(),t=codeSt.tie,el=$("codeNote");el.classList.remove("bad");codeFor=curId;
+  let h=codeSt.kind==="skills"?`<span>Навыки вписаны: ${c.skills.join("·")}.</span>`:`<span>Характеристики вписаны: ${STATS.map(s=>c.stats[s.k]).join("·")}.</span>`;
+  if(t)h+=`<span>У этих характеристик равные остатки — ${["","одно очко","два очка","три очка","четыре очка"][t.p]||t.p+" очка"} на выбор игрока:</span><span class="ties">${t.g.map(k=>`<button type="button" class="tie" data-tie="${k}" aria-pressed="${t.sel.includes(k)}">${STATS[k].nm}</button>`).join("")}</span>`;
+  el.innerHTML=h+`<button type="button" class="undo" id="codeUndo">Вернуть как было</button>`}
+function codeApply(){
+  const inp=$("codeIn"),r=readCode(inp.value),c=cur();if(!r)return;
+  if(r.err){codeSt=null;codeMsg(r.err,true);return}
+  const prev={stats:{...c.stats},skills:c.skills.slice()};
+  if(r.kind==="skills"){c.skills=r.a.slice();codeSt={kind:"skills",prev}}
+  else{codeSt={kind:"stats",prev,...statMap(r.a)};codeStats(c)}
+  delete c.example;save(c);inp.value="";renderAll();codeDraw()}
+$("codeBtn").addEventListener("click",codeApply);
+$("codeIn").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();codeApply()}});
+$("codeIn").addEventListener("paste",()=>setTimeout(codeApply,0));
+$("codeNote").addEventListener("click",e=>{if(!codeSt)return;const c=cur();
+  const b=e.target.closest("[data-tie]");
+  if(b&&codeSt.tie){const k=+b.dataset.tie,s=codeSt.tie.sel;if(s.includes(k))return;s.push(k);if(s.length>codeSt.tie.p)s.shift();
+    codeStats(c);save(c);renderAll();codeDraw();return}
+  if(e.target.id==="codeUndo"){c.stats={...codeSt.prev.stats};c.skills=codeSt.prev.skills.slice();save(c);codeSt=null;renderAll();codeMsg("Вернул как было.")}});
 $("delZone").addEventListener("click",e=>{
   if(e.target.id==="delBtn"){confirmDel=true;renderDesk()}
   else if(e.target.id==="delNo"){confirmDel=false;renderDesk()}
