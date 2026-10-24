@@ -17,6 +17,7 @@ src/
   atlas/data.js        узлы NODES и связи EDGES
   atlas/npc.txt        карточки зазеркальцев (свой формат, см. начало файла и tools/npc_parse.py)
   atlas/img/           картинки узлов (.webp, имя = id узла)
+  atlas/map/           карта Артёма (karta.webp) и spots.txt — кликабельные места на ней
   texts/               текст выпусков по абзацам: paras.json (как в видео), paras_clean.json (выправленный)
   rules/rules.html     свод правил (данные атласа подставляются на место /*ATLASDATA*/)
   sheet/list.html      лист путника

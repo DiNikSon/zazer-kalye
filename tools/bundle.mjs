@@ -173,6 +173,9 @@ async function main() {
   fs.writeFileSync(path.join(DIST, 'index.html'), index);
 
   fs.cpSync(path.join(ROOT, 'src', 'atlas', 'img'), path.join(DIST, 'img'), { recursive: true });
+  fs.mkdirSync(path.join(DIST, 'map'), { recursive: true });
+  for (const f of fs.readdirSync(path.join(ROOT, 'src', 'atlas', 'map')))
+    if (!f.endsWith('.txt')) fs.copyFileSync(path.join(ROOT, 'src', 'atlas', 'map', f), path.join(DIST, 'map', f));
   fs.writeFileSync(path.join(DIST, '.nojekyll'), '');
   console.log(`index   ${(index.length / 1024).toFixed(0).padStart(5)} КБ;  картинок: ${fs.readdirSync(path.join(DIST, 'img')).length}  → ${path.relative(ROOT, DIST)}/`);
 }

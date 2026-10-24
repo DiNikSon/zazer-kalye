@@ -43,10 +43,31 @@ img_dir = os.path.join(SRC, 'atlas', 'img')
 imgs = sorted(f[:-5] for f in os.listdir(img_dir) if f.endswith('.webp'))
 
 # 2. Атлас
+# карта Артёма: map/spots.txt — кликабельные места (id | x0 y0 x1 y1 | подпись)
+node_ids = set(json.loads(subprocess.check_output(['node', '-e',
+    'eval(require("fs").readFileSync(process.argv[1],"utf8").replace(/const /g,"global."));'
+    'console.log(JSON.stringify(NODES.map(n=>n[0])))', os.path.join(SRC, 'atlas', 'data.js')])))
+mp = {'img': 'map/karta.webp', 'w': 0, 'h': 0, 'spots': []}
+bad = []
+for ln in rd(SRC, 'atlas', 'map', 'spots.txt').splitlines():
+    ln = ln.strip()
+    if not ln or ln.startswith('#'):
+        continue
+    if ln.startswith('@img '):
+        mp['img'] = ln[5:].strip(); continue
+    if ln.startswith('@size '):
+        mp['w'], mp['h'] = map(int, ln[6:].split()); continue
+    parts = [x.strip() for x in ln.split('|')]
+    x0, y0, x1, y1 = map(int, parts[1].split())
+    if parts[0] not in node_ids or not (0 <= x0 < x1 <= mp['w'] and 0 <= y0 < y1 <= mp['h']):
+        bad.append(ln)
+    mp['spots'].append([parts[0], x0, y0, x1, y1] + ([parts[2]] if len(parts) > 2 and parts[2] else []))
+if bad:
+    sys.exit('spots.txt: неизвестный id или рамка вне карты:\n' + '\n'.join(bad))
 shell = rd(SRC, 'atlas', 'shell.html')
 assert '/*DATA*/' in shell
 data = (data_js + '\n// Расшифровка, по абзацу на эпизод\nconst PARAS=' + paras + ';\nconst IMGS=' + json.dumps(imgs)
-        + ';\nconst CLEAN=' + clean + ';\nconst NPC=' + npc + ';\n')
+        + ';\nconst CLEAN=' + clean + ';\nconst NPC=' + npc + ';\nconst MAP=' + json.dumps(mp, ensure_ascii=False) + ';\n')
 wr('atlas.html', shell.replace('/*DATA*/', data))
 
 # 3. Свод правил (данные атласа для всплывающих карточек)
@@ -67,8 +88,9 @@ shutil.copyfile(os.path.join(SRC, 'tests', 'stats.html'), os.path.join(OUT, 'sta
 shutil.copyfile(os.path.join(SRC, 'tests', 'skills.html'), os.path.join(OUT, 'skills.html'))
 
 # 5. картинки рядом со страницами (для локального просмотра build/)
-dst = os.path.join(OUT, 'img')
-shutil.rmtree(dst, ignore_errors=True)
-shutil.copytree(img_dir, dst)
+for sub in ('img', 'map'):
+    dst = os.path.join(OUT, sub)
+    shutil.rmtree(dst, ignore_errors=True)
+    shutil.copytree(os.path.join(SRC, 'atlas', sub), dst, ignore=shutil.ignore_patterns('*.txt'))
 
-print('build: ok —', len(nodes), 'узлов,', len(imgs), 'картинок')
+print('build: ok —', len(nodes), 'узлов,', len(imgs), 'картинок,', len(mp['spots']), 'мест на карте')
