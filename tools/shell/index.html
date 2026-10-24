@@ -8,6 +8,7 @@
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1d1d25" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="%ICON%">
+<script>if(/[?&]solo(?:[=&]|$)/.test(location.search))document.documentElement.className="solo"</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alice&family=PT+Sans:wght@400;700&family=PT+Mono&display=swap">
@@ -30,13 +31,18 @@ main iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background
 main iframe.on{visibility:visible}
 .ld{position:absolute;inset:0;z-index:1;display:grid;place-items:center;padding:16px;text-align:center;background:var(--bg);color:var(--muted);font:14px "PT Mono",ui-monospace,monospace}
 .ld[hidden]{display:none}
-@media (max-width:640px){.bar{gap:6px;padding-left:12px;padding-right:0}.brand span{display:none}#tabs a{padding:0 9px}}
+.solo-btn{flex:none;align-self:center;margin-left:auto;border:1px solid var(--line);border-radius:6px;background:transparent;color:var(--muted);padding:5px 10px;font:13px "PT Sans",system-ui,sans-serif;white-space:nowrap;cursor:pointer}
+.solo-btn:hover{color:var(--ink);border-color:var(--ink)}
+.solo-btn[hidden]{display:none}
+html.solo .bar{display:none}
+@media (max-width:640px){.bar{gap:6px;padding-left:12px;padding-right:0}.brand span{display:none}#tabs a{padding:0 9px}.solo-btn{margin-right:10px;padding:5px 8px}}
 </style>
 </head>
 <body>
 <header class="bar">
   <a class="brand" href="./" aria-label="Зазеркалье — на главную">%MARK%<span>Зазеркалье</span></a>
   <nav id="tabs" aria-label="Разделы">%TABS%</nav>
+  <button class="solo-btn" id="soloBtn" type="button" hidden title="Ссылку из адресной строки можно отправить игроку: шапки с вкладками у него не будет">Скрыть шапку</button>
 </header>
 <main id="stage"><div class="ld" id="ld">Загрузка…</div></main>
 <noscript><p style="padding:16px">Для работы сайта нужен JavaScript.</p></noscript>

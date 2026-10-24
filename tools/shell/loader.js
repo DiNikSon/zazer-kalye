@@ -1,13 +1,16 @@
 // Оболочка сайта: вкладки, ленивая загрузка приложений в iframe, адреса вида #app/key.
 // Манифест приложений и ключ маскировки подставляет сборка (tools/bundle.mjs).
 (function () {
-  var M = %MANIFEST%;          // {app: {f: 'a/….bin', t: 'Заголовок'}}
+  var M = %MANIFEST%;          // {app: {f: 'a/….bin', t: 'Заголовок', s: 1 — можно скрыть шапку}}
   var K = %KEY%;               // байты для снятия маскировки
   var ORDER = Object.keys(M);
   var DEF = ORDER[0];
   var stage = document.getElementById('stage');
   var ld = document.getElementById('ld');
   var tabs = document.querySelectorAll('#tabs a[data-app]');
+  var soloBtn = document.getElementById('soloBtn');
+  // ?solo в адресе — без шапки: ссылка для игрока, чтобы не было вкладок
+  var SOLO = /[?&]solo(?:[=&]|$)/.test(location.search);
   var frames = {}, pend = {}, last = {}, data = {}, cur = null;
 
   function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
@@ -56,6 +59,7 @@
     cur = app;
     var f = mount(app);
     for (var k in frames) frames[k].el.classList.toggle('on', k === app);
+    soloBtn.hidden = SOLO || !M[app].s; // до прокрутки вкладок: кнопка сужает их полосу
     for (var i = 0; i < tabs.length; i++) {
       var on = tabs[i].getAttribute('data-app') === app;
       if (on) { tabs[i].setAttribute('aria-current', 'page'); tabs[i].scrollIntoView({ block: 'nearest', inline: 'nearest' }); }
@@ -63,6 +67,7 @@
     }
     document.title = M[app].t;
     busy(f.win ? '' : 'Загрузка…');
+    if (SOLO) return;
     store('zz-tab', app);
     // пока пользователь смотрит одно, тихо подтягиваем остальное
     setTimeout(function () { ORDER.forEach(function (a) { fetchApp(a).catch(function () {}); }); }, 1500);
@@ -116,6 +121,13 @@
     if (e.button || e.ctrlKey || e.metaKey || e.shiftKey) return;
     e.preventDefault();
     go(DEF, '', true);
+  });
+  soloBtn.addEventListener('click', function () {
+    SOLO = true;
+    var q = location.search ? location.search + '&solo' : '?solo';
+    history.replaceState(null, '', location.pathname + q + location.hash);
+    document.documentElement.classList.add('solo');
+    soloBtn.hidden = true;
   });
   addEventListener('popstate', route);
   addEventListener('hashchange', route);

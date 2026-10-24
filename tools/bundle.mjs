@@ -45,8 +45,9 @@ const APPS = [
     css: '.ext{display:none!important}',
   },
   { id: 'sheet', file: 'sheet.html', tab: 'Лист путника', title: 'Лист путника' },
-  { id: 'stats', file: 'stats.html', tab: 'Тест характеристик', title: 'Тест характеристик' },
-  { id: 'skills', file: 'skills.html', tab: 'Тест навыков', title: 'Тест навыков' },
+  // solo: на вкладке есть кнопка «Скрыть шапку» (ссылка ?solo для игроков)
+  { id: 'stats', file: 'stats.html', tab: 'Тест характеристик', title: 'Тест характеристик', solo: true },
+  { id: 'skills', file: 'skills.html', tab: 'Тест навыков', title: 'Тест навыков', solo: true },
 ];
 
 // Каркас, в который Claude оборачивает артефакты, — чтобы страницы выглядели так же.
@@ -151,7 +152,7 @@ async function main() {
     const bin = mask(gz, key);
     const name = `a/${crypto.createHash('sha256').update(bin).digest('hex').slice(0, 12)}.bin`;
     fs.writeFileSync(path.join(DIST, name), bin);
-    manifest[app.id] = { f: name, t: app.title };
+    manifest[app.id] = { f: name, t: app.title, ...(app.solo ? { s: 1 } : {}) };
     console.log(`${app.id.padEnd(7)} ${(page.length / 1024).toFixed(0).padStart(5)} КБ → ${(bin.length / 1024).toFixed(0).padStart(4)} КБ  ${name}  ${Date.now() - t0} мс`);
   }
 
