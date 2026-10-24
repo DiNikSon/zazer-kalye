@@ -85,7 +85,15 @@
     else pend[app] = key;
   }
 
+  // режим без шапки следует за адресом: «назад» с ?solo на адрес без него возвращает шапку
+  function syncSolo() {
+    SOLO = /[?&]solo(?:[=&]|$)/.test(location.search);
+    document.documentElement.classList.toggle('solo', SOLO);
+    if (cur) soloBtn.hidden = SOLO || !M[cur].s;
+  }
+
   function route() {
+    syncSolo();
     var h = location.hash.slice(1), i = h.indexOf('/');
     var app = i < 0 ? h : h.slice(0, i), key = i < 0 ? '' : decodeURIComponent(h.slice(i + 1));
     if (!M[app]) { app = store('zz-tab'); if (!M[app]) app = DEF; key = ''; }
@@ -123,11 +131,9 @@
     go(DEF, '', true);
   });
   soloBtn.addEventListener('click', function () {
-    SOLO = true;
     var q = location.search ? location.search + '&solo' : '?solo';
-    history.replaceState(null, '', location.pathname + q + location.hash);
-    document.documentElement.classList.add('solo');
-    soloBtn.hidden = true;
+    history.pushState(null, '', location.pathname + q + location.hash); // «назад» вернёт шапку
+    syncSolo();
   });
   addEventListener('popstate', route);
   addEventListener('hashchange', route);
