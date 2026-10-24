@@ -124,6 +124,7 @@ article{max-width:68ch}
 .ad-rel .l{color:var(--muted);font-size:13px}
 .ad a.ain{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--accent)}
 .ad-par{font-size:15px;line-height:1.55}
+.rul{color:var(--accent);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--accent) 35%,transparent)}.rul::after{content:"§";font-size:.72em;margin-left:2px;opacity:.75}
 .atl{color:inherit;text-decoration:none;border-bottom:1px dotted currentColor}.atl::after{content:"↗";font-size:.7em;margin-left:1px;opacity:.6}
 .badge{font:11px var(--f-mono);padding:2px 8px;border-radius:99px;letter-spacing:.04em}
 .badge.ok{background:var(--ok-soft);color:var(--ok)}.badge.draft{background:var(--draft-soft);color:var(--draft)}.badge.open{background:var(--open-soft);color:var(--open)}
@@ -1085,10 +1086,14 @@ A.forEach(a=>a.out=new Set());
 const ATLAS="https://claude.ai/artifact/ThYN3MvgSKqpgR8yRx12sm";
 const atlRx=/\{\{([a-z_0-9]+)\|([^}]+)\}\}/g;
 const atl=s=>s.replace(atlRx,(m,id,txt)=>/^p\d+$/.test(id)?`<a class="atl" data-key="${id}" href="${ATLAS}?p=${id.slice(1)}#${id}" target="_blank" rel="noopener" title="Абзац выпусков">${txt}</a>`:`<a class="atl" data-key="${id}" href="${ATLAS}?card=${id}#${id}" target="_blank" rel="noopener" title="Карточка атласа">${txt}</a>`);
-const html=s=>atl(s).replace(linkRx,(m,id,txt)=>{const t=byId[id];if(!t)return txt||id;return `<a class="ref" href="#${id}" data-go="${id}">${txt||t.t}</a>`});
+// ((id|текст)) — ссылка на статью свода правил из другого приложения (кампании)
+const RULES_URL="https://claude.ai/artifact/AmASUy51PbjhvngTJCasdg";
+const rulRx=/\(\(([a-z0-9-]+)\|([^)]+)\)\)/g;
+const rul=s=>s.replace(rulRx,(m,id,txt)=>`<a class="rul" href="${RULES_URL}#${id}" target="_blank" rel="noopener" title="Свод правил">${txt}</a>`);
+const html=s=>rul(atl(s)).replace(linkRx,(m,id,txt)=>{const t=byId[id];if(!t)return txt||id;return `<a class="ref" href="#${id}" data-go="${id}">${txt||t.t}</a>`});
 A.forEach(a=>{for(const m of (a.lead+a.b).matchAll(linkRx))if(byId[m[1]]&&m[1]!==a.id)a.out.add(m[1])});
 A.forEach(a=>a.inc=A.filter(o=>o.out.has(a.id)).map(o=>o.id));
-const plain=s=>s.replace(atlRx,"$2").replace(linkRx,(m,id,txt)=>txt||(byId[id]?byId[id].t:id)).replace(/<[^>]+>/g," ").replace(/\$\{[^}]*\}/g,"");
+const plain=s=>s.replace(rulRx,"$2").replace(atlRx,"$2").replace(linkRx,(m,id,txt)=>txt||(byId[id]?byId[id].t:id)).replace(/<[^>]+>/g," ").replace(/\$\{[^}]*\}/g,"");
 A.forEach(a=>a.text=(a.t+" "+plain(a.lead)+" "+plain(a.b)).toLowerCase().replace(/ё/g,"е"));
 
 const $=id=>document.getElementById(id);

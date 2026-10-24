@@ -1,0 +1,36 @@
+<style>
+/* Кампания: предупреждение на входе и пометки ведущему */
+.gate{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:16px;background:var(--bg)}
+.gate[hidden]{display:none}
+.gate-box{max-width:520px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:28px 26px 24px;box-shadow:0 20px 50px -20px rgba(0,0,0,.35)}
+.gate-kicker{font:12px var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--open)}
+.gate h2{font:400 30px/1.15 var(--f-disp);margin:8px 0 12px}
+.gate p{margin:0 0 12px;line-height:1.5}
+.gate .small{font-size:14px;color:var(--muted)}
+.gate-btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.gate-btns a,.gate-btns button{font:15px var(--f-body);border-radius:8px;padding:9px 16px;cursor:pointer;text-decoration:none;border:1px solid var(--line);background:transparent;color:var(--ink)}
+.gate-btns .primary{background:var(--accent);border-color:var(--accent);color:var(--panel)}
+.todo{border-left:3px solid var(--draft);background:var(--draft-soft);padding:10px 14px;border-radius:0 8px 8px 0;margin:6px 0 16px}
+.todo p{margin:0}
+p.todo::before,.todo>p:first-child::before{content:"Не решено · ";font:12px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--draft)}
+</style>
+<div class="gate" id="gate" hidden role="dialog" aria-modal="true" aria-labelledby="gateT">
+  <div class="gate-box">
+    <div class="gate-kicker">Владения ведущего</div>
+    <h2 id="gateT">Дальше — кампания</h2>
+    <p>Здесь сюжет, тайны и развязка кампании. Если вы игрок, прочитанное может помешать насладиться игрой: вы узнаете то, что должны найти сами.</p>
+    <p class="small">Правила, атлас и лист путника открыты всем — они в соседних вкладках.</p>
+    <div class="gate-btns"><button type="button" class="primary" id="gateOk">Я ведущий — открыть</button><a id="gateNo" href="https://claude.ai/artifact/AmASUy51PbjhvngTJCasdg">К своду правил</a></div>
+  </div>
+</div>
+<script>
+(function(){
+  var g=document.getElementById('gate'),seen=false;
+  try{seen=localStorage.getItem('zz-camp-gm')==='1'}catch(e){}
+  if(!seen)g.hidden=false;
+  document.getElementById('gateOk').addEventListener('click',function(){
+    try{localStorage.setItem('zz-camp-gm','1')}catch(e){}
+    g.hidden=true;
+  });
+})();
+</script>

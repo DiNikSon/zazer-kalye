@@ -48,6 +48,11 @@ const APPS = [
   // solo: на вкладке есть кнопка «Скрыть шапку» (ссылка ?solo для игроков)
   { id: 'stats', file: 'stats.html', tab: 'Тест характеристик', title: 'Тест характеристик', solo: true },
   { id: 'skills', file: 'skills.html', tab: 'Тест навыков', title: 'Тест навыков', solo: true },
+  {
+    id: 'camp', file: 'campaign.html', tab: 'Кампания', title: 'Кампания: поиск «пацаноида»',
+    hook: 'window.__zzNav=function(k){if(k&&byId[k])show(k)};',
+    css: '.ext{display:none!important}',
+  },
 ];
 
 // Каркас, в который Claude оборачивает артефакты, — чтобы страницы выглядели так же.

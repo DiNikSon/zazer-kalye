@@ -10,7 +10,7 @@
 Эти страницы рабочие сами по себе (так же выглядят артефакты в Claude).
 Склейку в одну страницу для сайта делает tools/bundle.mjs.
 """
-import json, os, shutil, subprocess, sys
+import json, os, re, shutil, subprocess, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, 'src')
@@ -81,6 +81,41 @@ js = ('const ATLAS_DATA=(()=>{const d=' + json.dumps(atlas_data, ensure_ascii=Fa
 rules = rd(SRC, 'rules', 'rules.html')
 assert '/*ATLASDATA*/' in rules
 wr('rules.html', rules.replace('/*ATLASDATA*/', js))
+
+# 3б. Кампания — тот же движок, что у свода правил, со своими статьями и предупреждением на входе
+camp = rules
+def swap(text, start, end, new, what):
+    i = text.index(start)
+    j = text.index(end, i) + len(end)
+    return text[:i] + new + text[j:]
+cjs = rd(SRC, 'campaign', 'campaign.js')
+c_sec = cjs[cjs.index('const SECTIONS=['):cjs.index('];', cjs.index('const SECTIONS=[')) + 2]
+c_art = cjs[cjs.index('const A=['):cjs.rindex('];') + 2]
+camp = swap(camp, 'const SECTIONS=[', '];', c_sec, 'SECTIONS')
+# ((id)) без текста — подставляем название статьи свода
+rules_titles = dict(re.findall(r'\{id:"([a-z0-9-]+)",sec:"[a-z]+",st:"[a-z]+",t:"([^"]+)"', rules))
+c_art = re.sub(r'\(\(([a-z0-9-]+)\)\)', lambda m: '((%s|%s))' % (m.group(1), rules_titles.get(m.group(1), m.group(1))), c_art)
+camp = swap(camp, 'const A=[', '\n];', c_art.rstrip(), 'A')
+for a, b in [('<title>Свод правил Зазеркалья</title>', '<title>Кампания: поиск «пацаноида»</title>'),
+             ('<h1>Свод правил<span>Я</span></h1>', '<h1>Кампания<span>Я</span></h1>'),
+             ('placeholder="Найти правило: подготовка, лицо, отдых…"', 'placeholder="Найти в кампании: друг, куб, улики…"'),
+             ('aria-label="Поиск по своду"', 'aria-label="Поиск по кампании"'),
+             ('show(byId[start]?start:"worlds",false);', 'show(byId[start]?start:order[0].id,false);'),
+             ('<header>', rd(SRC, 'campaign', 'gate.html') + '\n<header>')]:
+    assert camp.count(a) == 1, a
+    camp = camp.replace(a, b)
+assert camp.count('zz-rules-last') == 2
+camp = camp.replace('zz-rules-last', 'zz-camp-last')
+# ссылки кампании на статьи кампании и свода должны вести на существующие статьи
+rules_ids = set(re.findall(r'\{id:"([a-z0-9-]+)"', rules))
+camp_ids = set(re.findall(r'\{id:"([a-z0-9-]+)"', c_art))
+bad = sorted({m for m in re.findall(r'\[\[([a-z0-9-]+)', c_art) if m not in camp_ids}
+             | {m for m in re.findall(r'\(\(([a-z0-9-]+)\|', c_art) if m not in rules_ids}
+             | {m for m in re.findall(r'\{\{([a-z_0-9]+)\|', c_art) if m not in {n['id'] for n in nodes} and not re.fullmatch(r'p\d+', m)})
+if bad:
+    sys.exit('campaign.js: ссылки на несуществующее: ' + ', '.join(bad))
+assert '/*ATLASDATA*/' in camp
+wr('campaign.html', camp.replace('/*ATLASDATA*/', js))
 
 # 4. Лист и тесты — как есть
 shutil.copyfile(os.path.join(SRC, 'sheet', 'list.html'), os.path.join(OUT, 'sheet.html'))
