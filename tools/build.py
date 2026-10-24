@@ -89,6 +89,14 @@ def swap(text, start, end, new, what):
     j = text.index(end, i) + len(end)
     return text[:i] + new + text[j:]
 cjs = rd(SRC, 'campaign', 'campaign.js')
+# статьи должны разбираться как JS и не содержать дыр в массиве
+chk = subprocess.run(['node', '-e', 'const s=require("fs").readFileSync(process.argv[1],"utf8");'
+    'const [S,A]=new Function(s+";return [SECTIONS,A]")();const ids=new Set(S.map(x=>x[0]));'
+    'if(A.some(a=>!a)||A.length!==Object.keys(A).length)throw "пустой элемент в A (лишняя запятая?)";'
+    'for(const a of A)if(!a.id||!a.t||!ids.has(a.sec))throw "статья без id/t или с неизвестным разделом: "+JSON.stringify(a.id);',
+    os.path.join(SRC, 'campaign', 'campaign.js')], capture_output=True, text=True)
+if chk.returncode:
+    sys.exit('campaign.js: ' + (chk.stderr.strip().splitlines() or ['ошибка'])[-1])
 c_sec = cjs[cjs.index('const SECTIONS=['):cjs.index('];', cjs.index('const SECTIONS=[')) + 2]
 c_art = cjs[cjs.index('const A=['):cjs.rindex('];') + 2]
 camp = swap(camp, 'const SECTIONS=[', '];', c_sec, 'SECTIONS')
